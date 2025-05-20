@@ -40,13 +40,13 @@ const Messenger = () => {
             {type === 'personal' && (
               <div className="message-status">
                 {item.sent && <span className="sent-status">✓</span>}
-                {item.unread > 0 && <span className="unread-badge">{item.unread}</span>}
+               
               </div>
             )}
             {type === 'group' && (
               <div className="group-info">
                 <span className="member-count">{item.members.toLocaleString()} a'zo</span>
-                {item.unread > 0 && <span className="unread-badge">{item.unread}</span>}
+               
               </div>
             )}
             {type === 'channel' && (

@@ -3,8 +3,11 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import "./messenger.css"
-import profile1 from "../assets/profile1.png"
-
+import profile1 from "../assets/1.jpg"
+import savedMessage from "../assets/3.png"
+import zugerberk from "../assets/4.jpg"
+import pichaai from "../assets/5.jpg"
+import sam from "../assets/7.webp"
 const Messenger = () => {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState("Suhbatlar")
@@ -18,7 +21,7 @@ const Messenger = () => {
         name: "Saqlangan habarlar",
         message: "Kerakli narsalarim",
         time: "04:20 AM",
-        image: "https://cdn-icons-png.flaticon.com/512/9698/9698047.png",
+        image: "https://cdn-icons-png.flaticon.com/512/565/565296.png", // Changed to a bookmark icon
       },
       {
         id: 2,
@@ -26,7 +29,7 @@ const Messenger = () => {
         message: "Yangi kirish amalga oshirildi",
         time: "11:38 AM",
         image:
-          "https://play-lh.googleusercontent.com/xQ5HGl1litqA_UFjuOWEXWqhfHwsXnXwJfYCkK-AJnyRHM5Lq1Lj5MIm0fPpc0v2_A=w240-h480-rw",
+          savedMessage,
         verified: true,
         unread: 1,
       },
@@ -35,7 +38,7 @@ const Messenger = () => {
         name: "Otabek Arabboyev",
         message: "Telefon qilib yuboring, muhim masala bor",
         time: "10:24 AM",
-        image: "https://avatars.githubusercontent.com/u/95227460?v=4",
+        image: profile1,
         sent: true,
       },
       {
@@ -61,7 +64,7 @@ const Messenger = () => {
         name: "Mark Zuckerberg",
         message: "Threads ilovasini ko'rib chiqdingizmi?",
         time: "Wed",
-        image: "/placeholder.svg?height=100&width=100",
+        image: zugerberk,
         verified: true,
       },
       {
@@ -69,7 +72,7 @@ const Messenger = () => {
         name: "Sundar Pichai",
         message: "Google I/O tadbiriga taklif qilaman",
         time: "Wed",
-        image: "https://pbs.twimg.com/profile_images/864282616597405701/M-FEJMZ0_400x400.jpg",
+        image: pichaai,
         verified: true,
         unread: 3,
       },
@@ -95,7 +98,7 @@ const Messenger = () => {
         name: "Sam Altman",
         message: "ChatGPT-5 test qilishda yordam bera olasizmi?",
         time: "Sun",
-        image: "https://pbs.twimg.com/profile_images/1625400791663759362/4hi5ABNU_400x400.jpg",
+        image: sam,
         verified: true,
         unread: 1,
       },
@@ -470,7 +473,7 @@ const Messenger = () => {
                   <div className="club-header">
                     <div className="chat-avatar">
                       <img src={chat.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(chat.name)}&background=random`} alt={chat.name} />
-                      {chat.unread && <span className="unread-badge">{chat.unread}</span>}
+                      
                     </div>
                     <div className="club-content">
                       <div className="chat-name">
@@ -521,7 +524,7 @@ const Messenger = () => {
                 <>
                   <div className="chat-avatar">
                     <img src={chat.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(chat.name)}&background=random`} alt={chat.name} />
-                    {chat.unread && <span className="unread-badge">{chat.unread}</span>}
+                    
                   </div>
                   <div className="chat-content">
                     <div className="chat-name">
