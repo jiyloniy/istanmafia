@@ -1303,7 +1303,7 @@ const Home = () => {
                           <img 
                             src={currentMedia.file_url.startsWith('http') 
                               ? currentMedia.file_url 
-                              : `http://${API_HOST}${currentMedia.file_url}`} 
+                              : `https://${API_HOST}${currentMedia.file_url}`} 
                             alt="Post content" 
                             className="post-img" 
                             loading="lazy"
@@ -1317,7 +1317,7 @@ const Home = () => {
                           <video 
                             src={currentMedia.file_url.startsWith('http') 
                               ? currentMedia.file_url 
-                              : `http://${API_HOST}:${API_PORT}${currentMedia.file_url}`} 
+                              : `https://${API_HOST}${currentMedia.file_url}`} 
                             controls 
                             className="post-video"
                             preload="metadata"
