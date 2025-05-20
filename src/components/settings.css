@@ -1,0 +1,259 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+.settings-container {
+  max-width: 430px;
+  width: 100%;
+  margin: 0 auto;
+  background-color: #f8f8f8;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 10px;
+  position: relative;
+}
+
+.settings-header {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+}
+
+.back-button2 {
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(2px);
+}
+
+.back-button span {
+  color: white;
+  font-size: 24px;
+  line-height: 1;
+  margin-right: 2px;
+}
+
+.settings-profile-section {
+  padding: 0;
+  background-color: #fff;
+  margin-bottom: 8px;
+  width: 100%;
+  max-height: 430px;
+}
+
+.settings-profile-header {
+  width: 100%;
+  height: 430px;
+  position: relative;
+  background: transparent;
+}
+
+.settings-profile-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+  z-index: 1;
+}
+
+.settings-profile-image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.settings-profile-title {
+  position: absolute;
+  bottom: -45px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 2;
+}
+
+.settings-profile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-profile-name {
+  font-size:20px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.settings-verified-badge {
+  color: #0095f6;
+  margin-left: 4px;
+  font-size: 14px;
+}
+
+.settings-profile-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #002C9D;
+  color: #fff;
+  font-size: 15px;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.settings-badge-star {
+  color: #ccf514;
+  font-size: 16px;
+}
+
+.settings-contact-section {
+  width: 100%;
+  padding: 8px;
+  margin-top: 50px;
+}
+
+.settings-contact-item {
+  background-color: #E9E9E9;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.settings-phone-number {
+  color: #262626;
+  font-size: 15px;
+  font-weight: 400;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.settings-contact-label {
+  color: #8e8e8e;
+  font-size: 13px;
+}
+
+.settings-username-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settings-qr-code {
+  color: #00acc1;
+}
+
+/* Menu sections */
+.settings-menu-section {
+  padding: 0 8px;
+  margin-bottom: 8px;
+}
+
+.settings-section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #262626;
+  margin: 3px 8px 8px;
+  /* roboto  */
+  font-family: 'Roboto', sans-serif;
+}
+
+.settings-menu-item {
+  display: flex;
+  align-items: center;
+  background-color: #E9E9E9;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  transition: background-color 0.2s;
+}
+
+.settings-menu-icon {
+  font-size: 18px;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.settings-menu-text {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 400;
+  color: #262626;
+}
+
+.settings-menu-arrow {
+  color: #8e8e8e;
+  font-size: 16px;
+}
+
+.settings-language-label {
+  color: #0095f6;
+  font-size: 14px;
+  margin-right: 8px;
+}
+
+.settings-premium-item {
+  background: linear-gradient(90deg, #7D9CF2 0%, #A070E7 100%);
+  color: #fff;
+}
+
+.settings-verify-item {
+  background: linear-gradient(90deg, #4C9EEB 0%, #2563eb 100%);
+  color: #fff;
+}
+
+.settings-premium-item .settings-menu-text,
+.settings-verify-item .settings-menu-text,
+.settings-premium-item .settings-menu-arrow,
+.settings-verify-item .settings-menu-arrow,
+.settings-premium-item .settings-menu-icon,
+.settings-verify-item .settings-menu-icon {
+  color: #fff;
+}
+
+/* Logout button */
+.settings-logout-button {
+  bottom: 16px;
+  left: 5px;
+  right: 5px;
+  max-width: calc(430px - 32px);
+  margin: 0 auto;
+  background-color: #008C8C;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  height: 44px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  transition: background-color 0.2s;
+  margin: 12px 16px 8px;
+}
+
+.settings-logout-icon {
+  fill: white;
+}

@@ -1,0 +1,472 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './messenger.css';
+
+const Messenger = () => {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('Suhbatlar');
+
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  const tabs = ['Suhbatlar', 'Guruhlar', 'Kanallar', 'Klublar'];
+
+  // Render functions
+  const renderChatItem = (item, type) => {
+    return (
+      <div key={item.id} className="chat-item">
+        <div className="chat-avatar">
+          <img src={item.image} alt={item.name} />
+        </div>
+        <div className="chat-content">
+          <div className="chat-header">
+            <div className="chat-name">
+              {item.name}
+              {item.verified && (
+                <span className="verified-badge">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 0C3.6 0 0 3.6 0 8C0 12.4 3.6 16 8 16C12.4 16 16 12.4 16 8C16 3.6 12.4 0 8 0ZM7 11.4L3.6 8L5 6.6L7 8.6L11 4.6L12.4 6L7 11.4Z" fill="#0095f6"/>
+                  </svg>
+                </span>
+              )}
+            </div>
+            <span className="chat-time">{item.time}</span>
+          </div>
+          <div className="chat-message">
+            <div className="message-content">
+              <span className="message-text">{item.message}</span>
+            </div>
+            {type === 'personal' && (
+              <div className="message-status">
+                {item.sent && <span className="sent-status">✓</span>}
+                {item.unread > 0 && <span className="unread-badge">{item.unread}</span>}
+              </div>
+            )}
+            {type === 'group' && (
+              <div className="group-info">
+                <span className="member-count">{item.members.toLocaleString()} a'zo</span>
+                {item.unread > 0 && <span className="unread-badge">{item.unread}</span>}
+              </div>
+            )}
+            {type === 'channel' && (
+              <span className="subscriber-count">{item.subscribers.toLocaleString()} obunachi</span>
+            )}
+            {type === 'club' && (
+              <div className="club-info">
+                <span className="club-type">{item.type === 'group' ? 'Guruh' : 'Kanal'}</span>
+                <span className="member-count">
+                  {item.type === 'group' ? 
+                    `${item.members.toLocaleString()} a'zo` : 
+                    `${item.subscribers.toLocaleString()} obunachi`
+                  }
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const personalChats = [
+    {
+      id: 1,
+      name: 'Saqlangan habarlar',
+      message: 'Muhim hujjatlar va eslatmalar',
+      time: '04:20 AM',
+      image: 'https://picsum.photos/200?random=saved',
+      verified: true
+    },
+    {
+      id: 2,
+      name: 'Istan Yordam',
+      message: 'Yangi kirish amalgandi',
+      time: '11:38 AM',
+      image: 'https://picsum.photos/200?random=support',
+      verified: true,
+      unread: 1
+    },
+    {
+      id: 3,
+      name: 'Otabek Arabboyev',
+      message: 'Loyiha haqida gaplashamiz',
+      time: '10:24 AM',
+      image: 'https://picsum.photos/200?random=otabek',
+      sent: true
+    },
+    {
+      id: 4,
+      name: 'Sardor Umarov',
+      message: 'Bugun meeting boladimi?',
+      time: '09:15 AM',
+      image: 'https://picsum.photos/200?random=sardor',
+      sent: true,
+      unread: 2
+    },
+    {
+      id: 5,
+      name: 'Dilshod Karimov',
+      message: 'Frontend dizaynini ko\'rib chiqing',
+      time: '08:45 AM',
+      image: 'https://picsum.photos/200?random=dilshod',
+      verified: true
+    },
+    {
+      id: 6,
+      name: 'Aziza Rahimova',
+      message: 'UX/UI dizayn tayyor',
+      time: '08:30 AM',
+      image: 'https://picsum.photos/200?random=aziza',
+      sent: true
+    },
+    {
+      id: 7,
+      name: 'Jamshid Tursunov',
+      message: 'Backend API dokumentatsiyasi',
+      time: '07:50 AM',
+      image: 'https://picsum.photos/200?random=jamshid',
+      unread: 3
+    },
+    {
+      id: 8,
+      name: 'Malika Azizova',
+      message: 'Marketing strategiyasi',
+      time: '07:20 AM',
+      image: 'https://picsum.photos/200?random=malika',
+      verified: true,
+      sent: true
+    },
+    {
+      id: 9,
+      name: 'Bobur Alimov',
+      message: 'Mobile app test natijasi',
+      time: '06:45 AM',
+      image: 'https://picsum.photos/200?random=bobur',
+      unread: 1
+    },
+    {
+      id: 10,
+      name: 'Nilufar Karimova',
+      message: 'SMM hisoboti tayyor',
+      time: '06:30 AM',
+      image: 'https://picsum.photos/200?random=nilufar',
+      sent: true
+    }
+  ];
+
+  const groups = [
+    {
+      id: 1,
+      name: 'Frontend Developers',
+      message: 'React va Vue muhokamasi',
+      time: '2:45 PM',
+      image: 'https://picsum.photos/200?random=frontend',
+      members: 1200,
+      verified: true,
+      unread: 5
+    },
+    {
+      id: 2,
+      name: 'Backend Masters',
+      message: 'Node.js performance tips',
+      time: '2:30 PM',
+      image: 'https://picsum.photos/200?random=backend',
+      members: 850,
+      verified: true
+    },
+    {
+      id: 3,
+      name: 'Mobile Developers',
+      message: 'Flutter vs React Native',
+      time: '2:15 PM',
+      image: 'https://picsum.photos/200?random=mobile',
+      members: 950,
+      unread: 2
+    },
+    {
+      id: 4,
+      name: 'DevOps Team',
+      message: 'Kubernetes setup guide',
+      time: '2:00 PM',
+      image: 'https://picsum.photos/200?random=devops',
+      members: 650,
+      verified: true
+    },
+    {
+      id: 5,
+      name: 'UI/UX Design',
+      message: 'Figma prototypes',
+      time: '1:45 PM',
+      image: 'https://picsum.photos/200?random=uiux',
+      members: 780
+    },
+    {
+      id: 6,
+      name: 'Data Science',
+      message: 'Machine Learning projects',
+      time: '1:30 PM',
+      image: 'https://picsum.photos/200?random=datascience',
+      members: 520,
+      verified: true,
+      unread: 3
+    },
+    {
+      id: 7,
+      name: 'Blockchain Dev',
+      message: 'Smart Contract security',
+      time: '1:15 PM',
+      image: 'https://picsum.photos/200?random=blockchain',
+      members: 430
+    },
+    {
+      id: 8,
+      name: 'QA Engineers',
+      message: 'Automated testing',
+      time: '1:00 PM',
+      image: 'https://picsum.photos/200?random=qa',
+      members: 380,
+      verified: true
+    },
+    {
+      id: 9,
+      name: 'System Admins',
+      message: 'Server monitoring',
+      time: '12:45 PM',
+      image: 'https://picsum.photos/200?random=sysadmin',
+      members: 290
+    },
+    {
+      id: 10,
+      name: 'Security Team',
+      message: 'Penetration testing',
+      time: '12:30 PM',
+      image: 'https://picsum.photos/200?random=security',
+      members: 250,
+      verified: true,
+      unread: 1
+    }
+  ];
+
+  const channels = [
+    {
+      id: 1,
+      name: 'Tech News UZ',
+      message: 'Yangi texnologiyalar',
+      time: '12:45 PM',
+      image: 'https://picsum.photos/200?random=technews',
+      subscribers: 15000,
+      verified: true
+    },
+    {
+      id: 2,
+      name: 'IT Career Guide',
+      message: 'Dasturchilar uchun',
+      time: '12:30 PM',
+      image: 'https://picsum.photos/200?random=career',
+      subscribers: 12000,
+      verified: true
+    },
+    {
+      id: 3,
+      name: 'Startup News',
+      message: 'Yangi investitsiyalar',
+      time: '12:15 PM',
+      image: 'https://picsum.photos/200?random=startup',
+      subscribers: 8500
+    },
+    {
+      id: 4,
+      name: 'Digital Marketing',
+      message: 'SMM strategiyalari',
+      time: '12:00 PM',
+      image: 'https://picsum.photos/200?random=marketing',
+      subscribers: 10200,
+      verified: true
+    },
+    {
+      id: 5,
+      name: 'UX/UI Design',
+      message: 'Yangi dizayn trendlari',
+      time: '11:45 AM',
+      image: 'https://picsum.photos/200?random=design',
+      subscribers: 7800
+    },
+    {
+      id: 6,
+      name: 'Cybersecurity',
+      message: 'Xavfsizlik yangiliklari',
+      time: '11:30 AM',
+      image: 'https://picsum.photos/200?random=security',
+      subscribers: 9300,
+      verified: true
+    },
+    {
+      id: 7,
+      name: 'Mobile Dev',
+      message: 'Android va iOS yangiliklari',
+      time: '11:15 AM',
+      image: 'https://picsum.photos/200?random=mobile',
+      subscribers: 11500
+    },
+    {
+      id: 8,
+      name: 'Data Science',
+      message: 'ML va AI yangiliklari',
+      time: '11:00 AM',
+      image: 'https://picsum.photos/200?random=datascience',
+      subscribers: 6200,
+      verified: true
+    },
+    {
+      id: 9,
+      name: 'Cloud Tech',
+      message: 'AWS va Azure yangiliklari',
+      time: '10:45 AM',
+      image: 'https://picsum.photos/200?random=cloud',
+      subscribers: 5500
+    },
+    {
+      id: 10,
+      name: 'Game Dev UZ',
+      message: 'O\'yin industriyasi',
+      time: '10:30 AM',
+      image: 'https://picsum.photos/200?random=gamedev',
+      subscribers: 4800,
+      verified: true
+    }
+  ];
+
+  const clubs = [
+    {
+      id: 1,
+      name: 'Tech Hub Tashkent',
+      message: 'Dasturchilar uchun networking',
+      time: '3:45 PM',
+      image: 'https://picsum.photos/200?random=techhub',
+      members: 3500,
+      verified: true,
+      type: 'group'
+    },
+    {
+      id: 2,
+      name: 'Digital Creative',
+      message: 'Portfolio reviews',
+      time: '2:30 PM',
+      image: 'https://picsum.photos/200?random=creative',
+      subscribers: 2800,
+      type: 'channel',
+      verified: true
+    },
+    {
+      id: 3,
+      name: 'Startup Club',
+      message: 'Mentorlik dasturi',
+      time: '1:15 PM',
+      image: 'https://picsum.photos/200?random=startupclub',
+      members: 2200,
+      verified: true,
+      type: 'group'
+    },
+    {
+      id: 4,
+      name: 'Innovation Lab',
+      message: 'Yangi texnologiyalar',
+      time: '12:00 PM',
+      image: 'https://picsum.photos/200?random=innovation',
+      subscribers: 4200,
+      type: 'channel',
+      verified: true
+    },
+    {
+      id: 5,
+      name: 'Design Academy',
+      message: 'UX kurslari',
+      time: '11:30 AM',
+      image: 'https://picsum.photos/200?random=academy',
+      members: 1800,
+      type: 'group'
+    },
+    {
+      id: 6,
+      name: 'Tech Accelerator',
+      message: 'Startaplar uchun investitsiya',
+      time: '11:00 AM',
+      image: 'https://picsum.photos/200?random=accelerator',
+      subscribers: 5500,
+      type: 'channel',
+      verified: true
+    },
+    {
+      id: 7,
+      name: 'IT Education Hub',
+      message: 'Dasturlash darslari',
+      time: '10:30 AM',
+      image: 'https://picsum.photos/200?random=education',
+      members: 3200,
+      type: 'group',
+      verified: true
+    },
+    {
+      id: 8,
+      name: 'Blockchain Community',
+      message: 'Web3 loyihalar',
+      time: '10:00 AM',
+      image: 'https://picsum.photos/200?random=blockchain',
+      subscribers: 2900,
+      type: 'channel'
+    },
+    {
+      id: 9,
+      name: 'Women in Tech',
+      message: 'IT sohasidagi ayollar',
+      time: '09:30 AM',
+      image: 'https://picsum.photos/200?random=womenintech',
+      members: 1500,
+      type: 'group',
+      verified: true
+    },
+    {
+      id: 10,
+      name: 'Tech Mentors',
+      message: 'Karyera maslahatlari',
+      time: '09:00 AM',
+      image: 'https://picsum.photos/200?random=mentors',
+      subscribers: 3800,
+      type: 'channel',
+      verified: true
+    }
+  ];
+
+  return (
+    <div className="messenger">
+      <div className="messenger-header">
+        <button className="back-button" onClick={handleBack}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+        <div className="tab-buttons">
+          {tabs.map(tab => (
+            <button
+              key={tab}
+              className={`tab-button ${activeTab === tab ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      </div>
+      
+      <div className="chat-list">
+        {activeTab === 'Suhbatlar' && personalChats.map(chat => renderChatItem(chat, 'personal'))}
+        {activeTab === 'Guruhlar' && groups.map(group => renderChatItem(group, 'group'))}
+        {activeTab === 'Kanallar' && channels.map(channel => renderChatItem(channel, 'channel'))}
+        {activeTab === 'Klublar' && clubs.map(club => renderChatItem(club, 'club'))}
+      </div>
+    </div>
+  );
+};
+
+export default Messenger;

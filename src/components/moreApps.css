@@ -1,0 +1,284 @@
+/* More Apps Page Styles */
+* {
+  font-family: "Roboto" sans-serif;
+}
+.more-apps-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #ffffff;
+}
+
+/* Header Styles */
+.more-apps-header {
+  background-color: #ffffff; /* Changed to white as per image */
+  padding: 10px 0; /* Adjusted padding */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  /* Removed box-shadow and border-radius from header, will be on search bar */
+}
+
+.search-bar-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f0; /* Light grey background for search bar */
+  border-radius: 30px; /* Rounded corners */
+  padding: 8px 12px; /* Padding inside search bar */
+  margin: 0 16px 10px 16px; /* Margin around search bar */
+  height: 48px; /* Fixed height for the search bar */
+}
+
+.menu-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 8px 0 4px; /* Adjusted padding */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-icon {
+  font-size: 28px; /* Adjusted size */
+  color: #5f6368; /* Icon color */
+  line-height: 1;
+}
+
+.search-bar-text {
+  flex-grow: 1; /* Takes available space */
+  font-size: 16px;
+  color: #5f6368; /* Text color */
+  margin-left: 8px; /* Space from menu icon */
+  line-height: 1;
+}
+
+.search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px 0 8px; /* Adjusted padding */
+  font-size: 24px; /* Adjusted size */
+  color: #5f6368; /* Icon color */
+  cursor: pointer;
+}
+
+/* Category Tabs */
+.category-tabs {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  padding: 0 22px; /* Removed bottom padding here, will be on ::after or border */
+  background-color: transparent;
+  margin-top: 8px; /* Reduced margin-top */
+  border-bottom: 1px solid #e0e0e0; /* Light grey full-width line */
+  position: relative; /* For positioning the active tab's underline relative to this */
+}
+
+.category-tabs::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.category-tab {
+  white-space: nowrap;
+  padding: 12px 12px; /* Adjusted padding */
+  margin-right: 30px;
+  border: none;
+  background: none;
+  font-size: 15px; /* Slightly adjusted font size */
+  font-weight: 500;
+  color: #3c4043; /* Consistent text color for all tabs, slightly darker */
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.category-tab.active {
+  color: #3c4043; /* Active tab text color same as inactive */
+  font-weight: 500; /* Same font-weight as inactive */
+}
+
+.category-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; /* Sits on top of the parent's border-bottom */
+  left: 50%;
+  transform: translateX(-50%); /* Center the underline */
+  width: 40px; /* Shorter width for the underline */
+  height: 3px;
+  background-color: #bdc1c6; /* Light grey underline color */
+  border-radius: 2px; /* Slightly rounded ends for the underline */
+}
+
+/* Main Content */
+.more-apps-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 16px 90px; /* Increased top padding for more breathing room */
+}
+
+.app-category {
+  margin-bottom: 24px; /* Slightly more margin between categories */
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px; /* More space below category title */
+}
+
+.category-header h2 {
+  font-size: 20px; /* Increased category title font size */
+  font-weight: 600; 
+  color: #202124;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px; 
+  height: 18px; 
+  background-color: #1a73e8;
+  color: white;
+  border-radius: 50%;
+  font-size: 10px; 
+  margin-left: 7px;
+  line-height: 1;
+}
+
+.app-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  gap: 32px; 
+  padding-bottom: 12px;
+  padding-left: 4px;
+}
+
+.app-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.app-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 120px; /* Match app-icon width */
+}
+
+.app-icon {
+  width: 120px; /* Increased icon size */
+  height: 120px; /* Increased icon size */
+  border-radius: 26px; /* Adjusted border radius for new size */
+  overflow: hidden;
+  margin-bottom: 24px; /* Increased space below icon */
+  background-color: #f1f3f4; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(60,64,67,0.15); 
+}
+
+.app-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.app-details {
+  width: 100%;
+  text-align: left;
+}
+
+.app-name {
+  font-size: 12px;
+  font-weight: 400;
+  margin: 0 0 4px 0;
+  margin-left: 10px;
+  color: #292929;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4; 
+  height: calc(12px * 1.4 * 2); 
+  font-family: 'Roboto', sans-serif;
+  
+}
+
+.app-rating {
+  font-size: 12px; /* Increased rating font size for visibility */
+  color: #292929; /* Darker color for rating, same as app name for consistency */
+  margin-top: 3px; /* Adjusted margin */
+  font-weight: 500; /* Slightly bolder to make star prominent */
+  margin-left: 10px;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-top: 1px solid #efefef;
+  padding: 8px 0;
+  z-index: 40;
+}
+
+.nav-tabs {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.nav-tab {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.nav-tab img {
+  width: 24px;
+  height: 24px;
+  opacity: 0.6;
+}
+
+.nav-tab.active img {
+  opacity: 1;
+}
+
+.nav-tab.active-tab .tab-icon {
+  opacity: 1; /* Active icon is fully opaque/colored */
+  /* If the 'apps.png' itself is the solid blue version, this will reveal it. */
+  /* To mimic the slight scale effect on active tabs sometimes seen: */
+  /* transform: scale(1.05); */ 
+}
+
+/* If your active 'apps' icon is a specific blue PNG, ensure it's used. 
+   If all icons are outlines and you need to color the active one, 
+   consider using SVG icons or a font icon library for better CSS control over fill/stroke. */
+
+/* Optional: if you want text labels below icons (not in screenshot) */
+/* .nav-tab-label {
+  font-size: 10px;
+  color: #5f6368;
+  margin-top: 2px;
+}
+
+.nav-tab.active-tab .nav-tab-label {
+  color: #1a73e8;
+} */

@@ -1,0 +1,403 @@
+.profile-container {
+  padding: 16px;
+  background-color: #fff;
+}
+
+.profile-header2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.back-btn,
+.menu-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: #000;
+}
+
+.profile-info-section2 {
+  padding: 1px;
+  background-color: #fff;
+}
+
+.profile-main-info2 {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.profile-image2 {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid #eee;
+  flex-shrink: 0;
+}
+
+.profile-image2 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-stats2 {
+  display: flex;
+  gap: 32px;
+  flex: 1;
+  justify-content: space-between;
+  padding: 0;
+}
+
+.stat-item2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-number2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 2px;
+}
+
+.stat-label2 {
+  font-size: 13px;
+  color: #666;
+}
+
+.profile-badge2 {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 24px;
+  background-color: #002C9D;
+  color: white;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  position: absolute;
+  top: -32px;
+  right: 150px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.profile-badge2 span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-details2 {
+  padding: 0 16px;
+}
+
+.profile-name2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 4px;
+}
+
+.profile-contact {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.profile-email {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.profile-bio2 {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+  margin-bottom: 0;
+  line-height: 1.4;
+}
+
+.profile-name2 {
+  font-size: 16px;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #262626;
+}
+
+.profile-contact,
+.profile-email {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.profile-bio {
+  margin: 8px 0 0 0;
+  font-size: 14px;
+}
+
+.profile-tabs {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+.tab-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  color: #53AFAF;
+  cursor: pointer;
+  position: relative;
+  font-weight: bold;
+}
+
+.tab-btn.active {
+  color: #000000;
+  font-weight: 500;
+  font-size: 16px;
+  border-bottom: 2px solid #000000;
+  /* bold */
+  font-weight: bold;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #000000;
+}
+
+/* Skills Sections */
+.skills-section {
+  margin: px 16px;
+}
+
+.skills-section h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #262626;
+}
+
+.skill-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 8px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+}
+
+.skill-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f8f8;
+  border-radius: 50%;
+}
+
+.skill-icon-img {
+  width: 40px;
+  height: 40px;
+}
+
+.skill-details {
+  flex-grow: 1;
+}
+
+.skill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.skill-name {
+  font-weight: 500;
+  color: #262626;
+  font-size: 14px;
+}
+
+.skill-score {
+  color: #262626;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.skill-progress {
+  height: 4px;
+  background-color: #e0e0e0;
+  border-radius: 2px;
+  margin-bottom: 4px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #00A389;
+  transition: width 0.3s ease;
+}
+
+.skill-date {
+  font-size: 12px;
+  color: #666666;
+}
+
+/* Media Grid Styles */
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background-color: #fafafa;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.media-item {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.media-item img,
+.media-item video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Ma'lumotlar section styles */
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+  margin-top: 2px;
+  padding: 8px;
+}
+
+.skills-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px;
+}
+
+.skill-tag {
+  background-color: #008080;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 24px;
+  font-size: 14px;
+}
+
+.achievement-list {
+  padding: 0 8px;
+}
+
+.achievement-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.achievement-content {
+  flex: 1;
+}
+
+.achievement-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #000;
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
+.achievement-meta {
+  font-size: 14px;
+  color: #008080;
+}
+
+.achievement-image {
+  width: 120px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 16px;
+}
+
+.portfolio-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.portfolio-image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.portfolio-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #000;
+  margin: 0;
+}
+
+.media-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.media-item.video-item::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M15 8v8H5V8h10m1-2H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4V7c0-.55-.45-1-1-1z"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0px 1px 2px rgba(0,0,0,0.3));
+}
