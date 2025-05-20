@@ -30,8 +30,46 @@ import profile1 from '../assets/credit-card_12689973.png'
 // import Settings from './Settings';
 import Notifications from './Notifications';
 
+// Create a preloaded default image to ensure it's always available
+const defaultImageUrl = '../assets/default.png';
+let preloadedDefaultImage = new Image();
+preloadedDefaultImage.src = defaultImageUrl;
+
 const Home = () => {
   const navigate = useNavigate();
+  
+  // Reference to the actual default image object
+  const defaultImageRef = useRef();
+  
+  // Initialize the default image on component mount
+  useEffect(() => {
+    // Create an in-memory default image that we can use as a fallback
+    const defaultImg = new Image();
+    defaultImg.src = Default;
+    defaultImageRef.current = defaultImg;
+  }, []);
+  
+  // Utility function to safely handle image URLs and prevent infinite loading loops
+  const getSafeImageUrl = (imageUrl, apiPrefix = '') => {
+    if (!imageUrl) return Default; // If no image URL, use the imported Default
+    if (typeof imageUrl !== 'string') return Default; // If imageUrl is not a string, use Default
+    if (imageUrl.startsWith('http')) return imageUrl; // If already a full URL, use as is
+    return apiPrefix + imageUrl; // Otherwise, prepend API prefix
+  };
+  
+  // Utility function to handle image loading errors
+  const handleImageError = (e) => {
+    if (!e || !e.target) return; // Guard against null events
+    e.target.onerror = null; // Prevent infinite error loops
+    
+    // Use the imported Default as a static path
+    if (Default && typeof Default === 'string') {
+      e.target.src = Default;
+    } else {
+      // As a last resort, hide the broken image
+      e.target.style.display = 'none';
+    }
+  };
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   // const [showSettings, setShowSettings] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -861,7 +899,8 @@ const Home = () => {
             <div className="story-user-info">
               <div className="story-user-avatar">
                 <img 
-                  src={activeUserStory.profile_picture ? `https://api.istan.uz/${activeUserStory.profile_picture}` : (instaImg || Default)} onError={(e) => { e.target.onerror = null; e.target.src = Default; }} 
+                  src={getSafeImageUrl(activeUserStory.profile_picture, 'https://api.istan.uz/', instaImg || Default)} 
+                  onError={handleImageError} 
                   alt={activeUserStory.name} 
                 />
               </div>
@@ -977,7 +1016,8 @@ const Home = () => {
                   <div key={comment.id || index} className="comment-item">
                     <div className="comment-avatar">
                       <img 
-                        src={API_URL2 + comment.user?.profile_picture || instaImg} 
+                        src={getSafeImageUrl(comment.user?.profile_picture, API_URL2, instaImg || Default)}
+                        onError={handleImageError} 
                         alt={comment.user?.username || 'User'} 
                         className="comment-avatar-img" 
                       />
@@ -1052,9 +1092,10 @@ const Home = () => {
               <div className="profile-avatar-container">
                 <div className="profile-avatar" style={{ width: "84px", height: "84px" }}>
                   <img 
-                    src={userData?.profile_picture ? `https://api.istan.uz/${userData.profile_picture}` : Default} 
+                    src={getSafeImageUrl(userData?.profile_picture, 'https://api.istan.uz/')} 
                     alt="Profile" 
                     className="avatar-img" 
+                    onError={handleImageError}
                   />
                 </div>
                 <div className="profile-badge">
@@ -1094,7 +1135,7 @@ const Home = () => {
               onClick={item.onClick}
             >
               <div className="menu-icon">
-                <img src={item.icon || Default} onError={(e) => { e.target.onerror = null; e.target.src = Default; }} alt={item.label} className="menu-icon-img" />
+                <img src={item.icon || Default} onError={handleImageError} alt={item.label} className="menu-icon-img" />
               </div>
               <span className="menu-label">{item.label}</span>
             </button>
@@ -1130,10 +1171,10 @@ const Home = () => {
                       onClick={() => handleStoryClick(userStoryItem)}
                     >
                       <img
-                        src={userStoryItem.profile_picture ? `https://api.istan.uz/${userStoryItem.profile_picture}` : Default}
+                        src={getSafeImageUrl(userStoryItem.profile_picture, 'https://api.istan.uz/')}
                         alt={userStoryItem.name || 'Story User'}
                         className="story-img"
-                        onError={(e) => { e.target.onerror = null; e.target.src = Default; }}
+                        onError={handleImageError}
                       />
                     </div>
                   ))}
@@ -1147,16 +1188,16 @@ const Home = () => {
             {/* Right side - Icons */}
             <div className="nav-right">
               <button className="nav-icon-button">
-                <img src={arxiv || Default} alt="arxiv" className="nav-icon" onError={(e) => { e.target.onerror = null; e.target.src = Default; }} />
+                <img src={arxiv || Default} alt="arxiv" className="nav-icon" onError={handleImageError} />
               </button>
               <button className="nav-icon-button" onClick={() => setShowNotifications(true)}>
-                <img src={notfikation || Default} alt="notfikation" className="nav-icon" onError={(e) => { e.target.onerror = null; e.target.src = Default; }} />
+                <img src={notfikation || Default} alt="notfikation" className="nav-icon" onError={handleImageError} />
                 <div className="notification-badge">
                   <span className="badge-count">1</span>
                 </div>
               </button>
               <button className="nav-icon-button" onClick={() => navigate('/messenger')}>
-                <img src={message || Default} alt="message" className="nav-icon" onError={(e) => { e.target.onerror = null; e.target.src = Default; }} />
+                <img src={message || Default} alt="message" className="nav-icon" onError={handleImageError} />
                 <div className="notification-badge">
                   <span className="badge-count">1</span>
                 </div>
@@ -1178,8 +1219,9 @@ const Home = () => {
               <div className="story-item" onClick={() => handleStoryClick(stories.find(s => s.is_own || (s.stories && s.stories.some(story => story.is_own))))}>  
                 <div className="story-circle">
                   <img 
-                    src={userInfo?.profile_picture ? API_URL2 + userInfo.profile_picture : Default} 
+                    src={getSafeImageUrl(userInfo?.profile_picture, API_URL2)} 
                     alt="Your Story" 
+                    onError={handleImageError}
                   />
                 </div>
                 <span className="story-username">Your story</span>
@@ -1252,9 +1294,10 @@ const Home = () => {
               <div className="post-header">
                 <div className="post-avatar">
                   <img 
-                    src={post.user.profile_picture ? API_URL2 + post.user.profile_picture : Default} 
+                    src={getSafeImageUrl(post.user.profile_picture, API_URL2)} 
                     alt={post.user.name} 
-                    className="avatar-img" 
+                    className="avatar-img"
+                    onError={handleImageError}
                   />
                 </div>
                 <div className="post-user-info">
@@ -1307,10 +1350,7 @@ const Home = () => {
                             alt="Post content" 
                             className="post-img" 
                             loading="lazy"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = "Default";
-                            }}
+                            onError={handleImageError}
                             draggable="false"
                           />
                         ) : (
@@ -1323,7 +1363,7 @@ const Home = () => {
                             preload="metadata"
                             onError={(e) => {
                               e.target.onerror = null;
-                              e.target.poster = "Default";
+                              e.target.poster = Default;
                             }}
                           />
                         )}
@@ -1407,7 +1447,7 @@ const Home = () => {
                   {post.likes_count > 0 && (
                     <div className="likes-avatars">
                       <div className="like-avatar">
-                        <img src={instaImg || "Default"} alt="Liker" className="like-avatar-img" />
+                        <img src={instaImg || Default} alt="Liker" className="like-avatar-img" onError={handleImageError} />
                       </div>
                     </div>
                   )}
@@ -1521,13 +1561,13 @@ const Home = () => {
               className={`nav-tab ${activeTab === 'home' ? 'active-tab' : ''}`} 
               onClick={() => setActiveTab('home')}
             >
-              <img src={home || "Default"} alt="Home" className="tab-icon" />
+              <img src={home || Default} alt="Home" className="tab-icon" onError={handleImageError} />
             </button>
             <button 
               className={`nav-tab ${activeTab === 'search' ? 'active-tab' : ''}`} 
               onClick={() => setActiveTab('search')}
             >
-              <img src={search || "Default"} alt="Search" className="tab-icon" />
+              <img src={search || Default} alt="Search" className="tab-icon" onError={handleImageError} />
             </button>
             <button 
               className={`nav-tab ${activeTab === 'addContent' ? 'active-tab' : ''}`} 
@@ -1536,7 +1576,7 @@ const Home = () => {
                 setShowPostCreate(true);
               }}
             >
-              <img src={addContent || "Default"} alt="Add Content" className="tab-icon" />
+              <img src={addContent || Default} alt="Add Content" className="tab-icon" onError={handleImageError} />
             </button>
             <button 
               className={`nav-tab ${activeTab === 'email' ? 'active-tab' : ''}`} 
@@ -1545,7 +1585,7 @@ const Home = () => {
                 navigate('/email');
               }}
             >
-              <img src={email || "Default"} alt="Email" className="tab-icon" />
+              <img src={email || Default} alt="Email" className="tab-icon" onError={handleImageError} />
             </button>
             <button 
               className={`nav-tab ${activeTab === 'apps' ? 'active-tab' : ''}`} 
@@ -1554,7 +1594,7 @@ const Home = () => {
                 navigate('/more-apps');
               }}
             >
-              <img src={apps || "Default"} alt="Apps" className="tab-icon" />
+              <img src={apps || Default} alt="Apps" className="tab-icon" onError={handleImageError} />
             </button>
           </div>
         </div>
