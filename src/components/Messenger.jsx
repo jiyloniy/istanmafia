@@ -4,8 +4,9 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import "./messenger.css"
 import profile1 from "../assets/1.jpg"
+import logo from "../assets/25.png"
 import savedMessage from "../assets/3.png"
-import zugerberk from "../assets/4.jpg"
+import zugerberk from "../assets/4.webp"
 import pichaai from "../assets/5.jpg"
 import sam from "../assets/7.webp"
 const Messenger = () => {
@@ -21,7 +22,7 @@ const Messenger = () => {
         name: "Saqlangan habarlar",
         message: "Kerakli narsalarim",
         time: "04:20 AM",
-        image: "https://cdn-icons-png.flaticon.com/512/565/565296.png", // Changed to a bookmark icon
+        image: savedMessage,
       },
       {
         id: 2,
@@ -29,7 +30,7 @@ const Messenger = () => {
         message: "Yangi kirish amalga oshirildi",
         time: "11:38 AM",
         image:
-          savedMessage,
+        logo,
         verified: true,
         unread: 1,
       },
