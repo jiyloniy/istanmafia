@@ -1,1222 +1,1003 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import './home.css';
-import { API, API_HOST, API_PORT, getTokens, likePost, savePost, addComment, getComments, getStoryFeed, viewStory, getMe, API_URL2, ENDPOINTS, API_URL } from '../config/api';
-import {deleteComment} from '../config/api';
-// Import image assets
-// Note: In a real project, you would import actual image files
-// These are placeholders for demonstration
-import arxiv from '../assets/arxiv.png'
-import notfikation from '../assets/notfikation.png'
-import message from '../assets/message.png'
-import instaImg from '../assets/insta-img.png'
-import CreatePost from './CreatePost';
-import Default from '../assets/default.png';
-import home from '../assets/home.png'
-import search from '../assets/search.png'
-import addContent from '../assets/add-content.png'
-import email from '../assets/email.png'
-import apps from '../assets/apps.png'
-// Removed unused import: chiqish
-import profile2 from '../assets/business_10412163.png'
-import profile3 from '../assets/settings_12280787.png'
-import profile4 from '../assets/worldwide_811544.png'
-import profile5 from '../assets/customer-support_3193153.png'
-import profile6 from '../assets/night-mode_3838496 (1).png'
-import profile7 from '../assets/letter-i_9215114.png'
-import profile8 from '../assets/user_3161848.png'
-import profile1 from '../assets/credit-card_12689973.png'
-// import Settings from './Settings';
-import Notifications from './Notifications';
+"use client"
 
-// Create a preloaded default image to ensure it's always available
-const defaultImageUrl = '../assets/default.png';
-let preloadedDefaultImage = new Image();
-preloadedDefaultImage.src = defaultImageUrl;
+import { useState, useEffect, useRef } from "react"
+import { useNavigate } from "react-router-dom"
+import "./home.css"
+import {
+  API,
+  API_HOST,
+  getTokens,
+  likePost,
+  savePost,
+  addComment,
+  getComments,
+  getStoryFeed,
+  viewStory,
+  getMe,
+  API_URL2,
+  ENDPOINTS,
+  API_URL,
+} from "../config/api"
+import { deleteComment } from "../config/api"
+// Import image assets
+import arxiv from "../assets/arxiv.png"
+import notfikation from "../assets/notfikation.png"
+import message from "../assets/message.png"
+import instaImg from "../assets/insta-img.png"
+import CreatePost from "./CreatePost"
+import Default from "../assets/default.png"
+import home from "../assets/home.png"
+import search from "../assets/search.png"
+import addContent from "../assets/add-content.png"
+import email from "../assets/email.png"
+import apps from "../assets/apps.png"
+import profile2 from "../assets/business_10412163.png"
+import profile3 from "../assets/settings_12280787.png"
+import profile4 from "../assets/worldwide_811544.png"
+import profile5 from "../assets/customer-support_3193153.png"
+import profile6 from "../assets/night-mode_3838496 (1).png"
+import profile7 from "../assets/letter-i_9215114.png"
+import profile8 from "../assets/user_3161848.png"
+import profile1 from "../assets/credit-card_12689973.png"
+import Notifications from "./Notifications"
+
+const defaultImageUrl = "../assets/default.png"
+const preloadedDefaultImage = new Image()
+preloadedDefaultImage.src = defaultImageUrl
 
 const Home = () => {
-  const navigate = useNavigate();
-  
+  const navigate = useNavigate()
+
   // Foydali funksiyasi uchun state
-  const [usefulStats, setUsefulStats] = useState({});
-  
+  const [usefulStats, setUsefulStats] = useState({})
+
   // Reference to the actual default image object
-  const defaultImageRef = useRef();
-  
+  const defaultImageRef = useRef()
+
   // Initialize the default image on component mount
   useEffect(() => {
-    // Create an in-memory default image that we can use as a fallback
-    const defaultImg = new Image();
-    defaultImg.src = Default;
-    defaultImageRef.current = defaultImg;
-  }, []);
-  
+    const defaultImg = new Image()
+    defaultImg.src = Default
+    defaultImageRef.current = defaultImg
+  }, [])
+
   // Utility function to safely handle image URLs and prevent infinite loading loops
-  const getSafeImageUrl = (imageUrl, apiPrefix = '') => {
-    if (!imageUrl) return Default; // If no image URL, use the imported Default
-    if (typeof imageUrl !== 'string') return Default; // If imageUrl is not a string, use Default
-    if (imageUrl.startsWith('http')) return imageUrl; // If already a full URL, use as is
-    return apiPrefix + imageUrl; // Otherwise, prepend API prefix
-  };
-  
+  const getSafeImageUrl = (imageUrl, apiPrefix = "") => {
+    if (!imageUrl) return Default
+    if (typeof imageUrl !== "string") return Default
+    if (imageUrl.startsWith("http")) return imageUrl
+    return apiPrefix + imageUrl
+  }
+
   // Utility function to handle image loading errors
   const handleImageError = (e) => {
-    if (!e || !e.target) return; // Guard against null events
-    e.target.onerror = null; // Prevent infinite error loops
-    
-    // Use the imported Default as a static path
-    if (Default && typeof Default === 'string') {
-      e.target.src = Default;
+    if (!e || !e.target) return
+    e.target.onerror = null
+
+    if (Default && typeof Default === "string") {
+      e.target.src = Default
     } else {
-      // As a last resort, hide the broken image
-      e.target.style.display = 'none';
+      e.target.style.display = "none"
     }
-  };
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  // const [showSettings, setShowSettings] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showPostCreate, setShowPostCreate] = useState(false);
-  const [activeTab, setActiveTab] = useState('home');
-  const [activeStory, setActiveStory] = useState(null);
-  const [showStory, setShowStory] = useState(false);
-  const [expandedCaptions, setExpandedCaptions] = useState({});
-  const [activeMediaIndices, setActiveMediaIndices] = useState({});
-  const [touchStart, setTouchStart] = useState({});
-  const [touchEnd, setTouchEnd] = useState({});
-  const [likedPosts, setLikedPosts] = useState({});
-  const [savedPosts, setSavedPosts] = useState({});
-  const [showComments, setShowComments] = useState(false);
-  const [activeCommentPost, setActiveCommentPost] = useState(null);
-  const [comments, setComments] = useState({});
-  const [commentText, setCommentText] = useState('');
-  const [commentTouchStart, setCommentTouchStart] = useState(null);
-  const [commentTouchCurrent, setCommentTouchCurrent] = useState(null);
-  const [isSwipingComment, setIsSwipingComment] = useState(false);
-  const [isClosingComment, setIsClosingComment] = useState(false);
-  
-  // Media long press states
-  const [mediaLongPress, setMediaLongPress] = useState({});
-  const [mediaProgress, setMediaProgress] = useState({});
-  const [mediaTimers, setMediaTimers] = useState({});
-  const [showMediaUseful, setShowMediaUseful] = useState({});
-  
-  // Stories data state is already declared below
-  const [showStoryRow, setShowStoryRow] = useState(false);
-  const [lastScrollPosition, setLastScrollPosition] = useState(0);
-  const [profileVisible, setProfileVisible] = useState(true);
-  const [storyCount, setStoryCount] = useState(0);
-  
+  }
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [showPostCreate, setShowPostCreate] = useState(false)
+  const [activeTab, setActiveTab] = useState("home")
+  const [activeStory, setActiveStory] = useState(null)
+  const [showStory, setShowStory] = useState(false)
+  const [expandedCaptions, setExpandedCaptions] = useState({})
+  const [activeMediaIndices, setActiveMediaIndices] = useState({})
+  const [touchStart, setTouchStart] = useState({})
+  const [touchEnd, setTouchEnd] = useState({})
+  const [likedPosts, setLikedPosts] = useState({})
+  const [savedPosts, setSavedPosts] = useState({})
+  const [showComments, setShowComments] = useState(false)
+  const [activeCommentPost, setActiveCommentPost] = useState(null)
+  const [comments, setComments] = useState({})
+  const [commentText, setCommentText] = useState("")
+  const [commentTouchStart, setCommentTouchStart] = useState(null)
+  const [commentTouchCurrent, setCommentTouchCurrent] = useState(null)
+  const [isSwipingComment, setIsSwipingComment] = useState(false)
+  const [isClosingComment, setIsClosingComment] = useState(false)
+
+  // SUPER AI Media long press states
+  const [mediaHolding, setMediaHolding] = useState({}) // 3 second hold phase
+  const [mediaProgress, setMediaProgress] = useState({}) // Progress bar phase
+  const [showProgressBar, setShowProgressBar] = useState({}) // Show progress bar
+  const [showSuccess, setShowSuccess] = useState({}) // Success with confetti
+  const [mediaTimers, setMediaTimers] = useState({})
+
+  const [showStoryRow, setShowStoryRow] = useState(false)
+  const [lastScrollPosition, setLastScrollPosition] = useState(0)
+  const [profileVisible, setProfileVisible] = useState(true)
+  const [storyCount, setStoryCount] = useState(0)
+
   // Handle scroll to hide stories when scrolling up or down and show profile
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollPos = window.pageYOffset;
-      const scrollDifference = Math.abs(currentScrollPos - lastScrollPosition);
-      
-      // Only trigger if scrolling more than a threshold to avoid small scroll movements
-      if (scrollDifference > 5 && showStoryRow) {
-        // Hide stories and show profile on any significant scroll
-        setShowStoryRow(false);
-        setProfileVisible(true);
-      }
-      
-      setLastScrollPosition(currentScrollPos);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollPosition, showStoryRow]);
-  
-  // Posts data state
-  const [posts, setPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(1);
-  const [error, setError] = useState(null);
+      const currentScrollPos = window.pageYOffset
+      const scrollDifference = Math.abs(currentScrollPos - lastScrollPosition)
 
-  // AI status constants with descriptions
+      if (scrollDifference > 5 && showStoryRow) {
+        setShowStoryRow(false)
+        setProfileVisible(true)
+      }
+
+      setLastScrollPosition(currentScrollPos)
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [lastScrollPosition, showStoryRow])
+
+  // Posts data state
+  const [posts, setPosts] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [hasMore, setHasMore] = useState(true)
+  const [page, setPage] = useState(1)
+  const [error, setError] = useState(null)
+
+  // AI status constants
   const AI_STATUS = {
-    INTERESTING_FACT: 'interesting_fact',
-    FUNNY: 'funny',
-    VERIFIED: 'verified',
-    FAKE: 'fake',
-    USEFUL: 'useful',
-    DEBATABLE: 'debatable',
-    EDUCATIONAL: 'educational',
-    TRENDING: 'trending',
-    // INSPIRATIONAL: 'inspirational',
-    BREAKING_NEWS: 'breaking_news',
-    OPINION: 'opinion',
-    // RESEARCH: 'research',
-    // CULTURAL: 'cultural',
-    // HISTORICAL: 'historical',
-    // INNOVATIVE: 'innovative'
-  };
+    INTERESTING_FACT: "interesting_fact",
+    FUNNY: "funny",
+    VERIFIED: "verified",
+    FAKE: "fake",
+    USEFUL: "useful",
+    DEBATABLE: "debatable",
+    EDUCATIONAL: "educational",
+    TRENDING: "trending",
+    BREAKING_NEWS: "breaking_news",
+    OPINION: "opinion",
+  }
 
   // AI status styles, icons and descriptions
   const AI_STATUS_CONFIG = {
     interesting_fact: {
-      // ranglarni teskari rangga almashtirish kerak
-      color: '#ffffff',
-
-      label: 'qiziqarli',
-      description: `Istan AI: Bu post qiziqarli va o‘quvchilar uchun foydali faktlarni o‘z ichiga oladi. Bunday postlar odatda yangi bilim va tushunchalarni taqdim etadi.`
+      color: "#ffffff",
+      label: "qiziqarli",
+      description: `Istan AI: Bu post qiziqarli va o'quvchilar uchun foydali faktlarni o'z ichiga oladi. Bunday postlar odatda yangi bilim va tushunchalarni taqdim etadi.`,
     },
     funny: {
-      color: '#ffffff',
-      icon: '😄',
-      label: 'kulgu',
-      description: `Istan AI: Bu post ko‘pchilikni kuldiradigan va kayfiyatni ko‘taradigan mazmunda. Ijobiy emotsiyalar uchun tavsiya etiladi!`
+      color: "#ffffff",
+      icon: "😄",
+      label: "kulgu",
+      description: `Istan AI: Bu post ko'pchilikni kuldiradigan va kayfiyatni ko'taradigan mazmunda. Ijobiy emotsiyalar uchun tavsiya etiladi!`,
     },
     verified: {
-      color: '#ffffff',
-      icon: '✓',
-      label: 'aniq',
-      description: `Istan AI: Bu postdagi ma’lumotlar ishonchli manbalardan olingan va tekshirilgan. Siz bu ma’lumotlarga ishonishingiz mumkin.`
+      color: "#ffffff",
+      icon: "✓",
+      label: "aniq",
+      description: `Istan AI: Bu postdagi ma'lumotlar ishonchli manbalardan olingan va tekshirilgan. Siz bu ma'lumotlarga ishonishingiz mumkin.`,
     },
     fake: {
-      color: '#ffffff',
-      icon: '⚠️',
-      label: 'yolg‘on',
-      description: `Istan AI: Bu postdagi ma’lumotlar noto‘g‘ri yoki chalg‘ituvchi. Iltimos, tanqidiy fikrlang va tekshirib ko‘ring.`
+      color: "#ffffff",
+      icon: "⚠️",
+      label: "yolg'on",
+      description: `Istan AI: Bu postdagi ma'lumotlar noto'g'ri yoki chalg'ituvchi. Iltimos, tanqidiy fikrlang va tekshirib ko'ring.`,
     },
     useful: {
-      color: '#ffffff',
-      icon: '💡',
-      label: 'foydali',
-      description: `Istan AI: Bu post amaliy ahamiyatga ega va kundalik hayotda qo‘llash mumkin bo‘lgan ma’lumotlarni o‘z ichiga oladi.`
+      color: "#ffffff",
+      icon: "💡",
+      label: "foydali",
+      description: `Istan AI: Bu post amaliy ahamiyatga ega va kundalik hayotda qo'llash mumkin bo'lgan ma'lumotlarni o'z ichiga oladi.`,
     },
     debatable: {
-      color: '#ffffff',
-      icon: '🤔',
-      label: 'bahs',
-      description: `Istan AI: Bu mavzu bo‘yicha turli fikrlar mavjud. Siz ham o‘z fikringizni bildiring va boshqalar bilan muhokama qiling.`
+      color: "#ffffff",
+      icon: "🤔",
+      label: "bahs",
+      description: `Istan AI: Bu mavzu bo'yicha turli fikrlar mavjud. Siz ham o'z fikringizni bildiring va boshqalar bilan muhokama qiling.`,
     },
     educational: {
-      color: '#ffffff',
-      // icon: '📚',
-      label: 'talim',
-      description: `Istan AI: Bu post taʼlim va o‘qitish maqsadida yaratilgan. O‘quvchilar uchun foydali maʼlumotlar mavjud.`
+      color: "#ffffff",
+      label: "talim",
+      description: `Istan AI: Bu post taʼlim va o'qitish maqsadida yaratilgan. O'quvchilar uchun foydali maʼlumotlar mavjud.`,
     },
     trending: {
-      color: '#ffffff',
-      icon: '📈',
-      label: 'trend',
-      description: `Istan AI: Bu post hozirda eng ko‘p muhokama qilinayotgan mavzulardan biri. Dolzarb yangiliklar va tendentsiyalar haqida.`
-    },
-    inspirational: {
-      color: '#ffffff',
-      icon: '✨',
-      label: 'Ilhom',
-      description: `Istan AI: Bu post ilhomlantiruvchi va ruhlantiruvchi mazmunda. Hayotiy motivatsiya va ijobiy o‘zgarishlar haqida.`
+      color: "#ffffff",
+      icon: "📈",
+      label: "trend",
+      description: `Istan AI: Bu post hozirda eng ko'p muhokama qilinayotgan mavzulardan biri. Dolzarb yangiliklar va tendentsiyalar haqida.`,
     },
     breaking_news: {
-      color: '#ffffff',
-      icon: '🔥',
-      label: 'muhim',
-      description: `Istan AI: Bu post muhim va shoshilinch yangilik. Tezkor xabar berish maqsadida joylangan.`
+      color: "#ffffff",
+      icon: "🔥",
+      label: "muhim",
+      description: `Istan AI: Bu post muhim va shoshilinch yangilik. Tezkor xabar berish maqsadida joylangan.`,
     },
     opinion: {
-      color: '#ffffff',
-      icon: '💭',
-      label: 'fikr',
-      description: `Istan AI: Bu post muallifning shaxsiy fikr-mulohazalari. Boshqalar bilan o‘z nuqtai nazaringizni ulashing.`
+      color: "#ffffff",
+      icon: "💭",
+      label: "fikr",
+      description: `Istan AI: Bu post muallifning shaxsiy fikr-mulohazalari. Boshqalar bilan o'z nuqtai nazaringizni ulashing.`,
     },
-    research: {
-      color: '#ffffff',
-      icon: '🔬',
-      label: 'tadqiqot',
-      description: `Istan AI: Bu post ilmiy tadqiqot va izlanishlar natijalarini o‘z ichiga oladi. Chuqur tahlil va xulosalar mavjud.`
-    },
-    cultural: {
-      color: '#ffffff',
-      icon: '🎭',
-      label: 'madaniy',
-      description: `Istan AI: Bu post madaniyat, sanʼat va milliy qadriyatlar haqida. O‘zbek madaniyatining boy merosi aks etgan.`
-    },
-    historical: {
-      color: '#ffffff',
-      icon: '📜',
-      label: 'tarixiy',
-      description: `Istan AI: Bu post tarixiy voqealar va shaxslar haqida. O‘tmishdan saboq olish va kelajakka yo‘l ochish uchun.`
-    },
-    innovative: {
-      color: '#ffffff',
-      icon: '🚀',
-      label: 'innovatsion',
-      description: `Istan AI: Bu post yangi g‘oyalar va innovatsion yechimlar haqida. Zamonaviy texnologiyalar va kashfiyotlar.`
-    }
-  };
+  }
 
   // State for showing AI status description modal
-  const [showStatusModal, setShowStatusModal] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [showStatusModal, setShowStatusModal] = useState(false)
+  const [selectedStatus, setSelectedStatus] = useState(null)
 
   // Function to show AI status description
   const showAIStatusDescription = (status) => {
-    setSelectedStatus(status);
-    setShowStatusModal(true);
-  };
+    setSelectedStatus(status)
+    setShowStatusModal(true)
+  }
 
   // Function to analyze content and assign AI status
   const getAIStatus = (post) => {
-    // Here you would normally make an API call to your AI service
-    // For demo, we'll assign a random status that won't change for the same post
-    const statuses = Object.keys(AI_STATUS);
-    // Use post.id to generate a consistent random index for each post
-    const randomIndex = Math.floor((parseInt(post.id) % statuses.length));
-    return AI_STATUS[statuses[randomIndex]];
-  };
-  
-  // Observer for infinite scrolling
-  const observer = useRef();
-  const lastPostElementRef = useRef();
+    const statuses = Object.keys(AI_STATUS)
+    const randomIndex = Math.floor(Number.parseInt(post.id) % statuses.length)
+    return AI_STATUS[statuses[randomIndex]]
+  }
 
-  // Fetch stories and user data when component mounts  // Har bir post uchun boshlang'ich foydali statistikasini o'rnatish
+  // Observer for infinite scrolling
+  const observer = useRef()
+  const lastPostElementRef = useRef()
+
+  // Fetch stories and user data when component mounts
   useEffect(() => {
     if (posts.length > 0) {
-      const initialStats = {};
-      posts.forEach(post => {
+      const initialStats = {}
+      posts.forEach((post) => {
         initialStats[post.id] = {
           usefulCount: Math.floor(Math.random() * 50),
           totalCount: Math.floor(Math.random() * 100),
-          initialPercent: Math.floor(Math.random() * 40) + 20
-        };
-      });
-      setUsefulStats(initialStats);
+          initialPercent: Math.floor(Math.random() * 40) + 20,
+        }
+      })
+      setUsefulStats(initialStats)
     }
-  }, [posts]);
+  }, [posts])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userResponse = await getMe();
-        if (userResponse && userResponse.status === 'success' && userResponse.data) {
-          setUserData(userResponse.data);
+        const userResponse = await getMe()
+        if (userResponse && userResponse.status === "success" && userResponse.data) {
+          setUserData(userResponse.data)
         }
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error)
       }
 
       const fetchStories = async () => {
-      setStoriesLoading(true);
-      setStoriesError(null);
-      
-      // Dummy stories data to use if API fails
-     
-      
-      try {
-        const response = await getStoryFeed();
-        // console.log('Stories API response:', response);
-        
-        if (response && response.status === 'success' && response.data && response.data.user_stories) {
-          // API returns data in the format shown in the user's message
-          setStories(response.data.user_stories);
-          
-          // Count unviewed stories for the navigation display
-          const storyCount = response.data.user_stories.reduce((count, userStory) => {
-            const unviewedStories = userStory.stories.filter(story => !story.viewed);
-            return count + unviewedStories.length;
-          }, 0);
-          
-          setStoryCount(storyCount);
-        } else {
-          // console.log('Using dummy stories data');
-          setStoryCount(4); // Default count for dummy data
-        }
-      } catch (error) {
-        console.error('Error fetching stories:', error);
-        setStoriesError('Failed to load stories');
-        setStoryCount(4); // Default count for dummy data
-      } finally {
-        setStoriesLoading(false);
-      }
-    };
+        setStoriesLoading(true)
+        setStoriesError(null)
 
-    fetchStories();
-    };
-    fetchData();
-  }, []);
+        try {
+          const response = await getStoryFeed()
+
+          if (response && response.status === "success" && response.data && response.data.user_stories) {
+            setStories(response.data.user_stories)
+
+            const storyCount = response.data.user_stories.reduce((count, userStory) => {
+              const unviewedStories = userStory.stories.filter((story) => !story.viewed)
+              return count + unviewedStories.length
+            }, 0)
+
+            setStoryCount(storyCount)
+          } else {
+            setStoryCount(4)
+          }
+        } catch (error) {
+          console.error("Error fetching stories:", error)
+          setStoriesError("Failed to load stories")
+          setStoryCount(4)
+        } finally {
+          setStoriesLoading(false)
+        }
+      }
+
+      fetchStories()
+    }
+    fetchData()
+  }, [])
 
   // Fetch posts from posts/feed endpoint when component mounts or page changes
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        setIsLoading(true);
-        setError(null);
-        
-        // Get user token
-        const tokens = getTokens();
-        const token = tokens?.access;
-        
+        setIsLoading(true)
+        setError(null)
+
+        const tokens = getTokens()
+        const token = tokens?.access
+
         if (!token) {
-          // console.log('No authentication token found');
-          setIsLoading(false);
-          return;
+          setIsLoading(false)
+          return
         }
-        
-        // Request options with authorization header
+
         const requestOptions = {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        };
-        
-        // Fetch data from posts/feed endpoint with pagination
-        const paginatedUrl = `${API.POST_FEED}?page=${page}&limit=10`;
-        // console.log('Fetching data from:', paginatedUrl);
-        
-        const response = await fetch(paginatedUrl, requestOptions);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+            Authorization: `Bearer ${token}`,
+          },
         }
-        
-        const result = await response.json();
-        // console.log('Posts feed data:', result);
-        
-        if (result.status === 'success' && result.data && result.data.posts) {
-          // Extract initial like and save states from API data
-          const initialLikedPosts = {};
-          const initialSavedPosts = {};
-          
-          result.data.posts.forEach(post => {
-            initialLikedPosts[post.id] = post.has_liked || false;
-            initialSavedPosts[post.id] = post.has_saved || false;
-          });
-          
-          // Update like and save states
+
+        const paginatedUrl = `${API.POST_FEED}?page=${page}&limit=10`
+        const response = await fetch(paginatedUrl, requestOptions)
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`)
+        }
+
+        const result = await response.json()
+
+        if (result.status === "success" && result.data && result.data.posts) {
+          const initialLikedPosts = {}
+          const initialSavedPosts = {}
+
+          result.data.posts.forEach((post) => {
+            initialLikedPosts[post.id] = post.has_liked || false
+            initialSavedPosts[post.id] = post.has_saved || false
+          })
+
           if (page === 1) {
-            setLikedPosts(initialLikedPosts);
-            setSavedPosts(initialSavedPosts);
+            setLikedPosts(initialLikedPosts)
+            setSavedPosts(initialSavedPosts)
           } else {
-            setLikedPosts(prev => ({ ...prev, ...initialLikedPosts }));
-            setSavedPosts(prev => ({ ...prev, ...initialSavedPosts }));
+            setLikedPosts((prev) => ({ ...prev, ...initialLikedPosts }))
+            setSavedPosts((prev) => ({ ...prev, ...initialSavedPosts }))
           }
-          
-          // If it's the first page, replace posts, otherwise append
+
           if (page === 1) {
-            setPosts(result.data.posts);
+            setPosts(result.data.posts)
           } else {
-            setPosts(prevPosts => [...prevPosts, ...result.data.posts]);
+            setPosts((prevPosts) => [...prevPosts, ...result.data.posts])
           }
-          
-          // Check if there are more posts to load
-          setHasMore(result.data.posts.length > 0 && result.data.pagination.has_next);
+
+          setHasMore(result.data.posts.length > 0 && result.data.pagination.has_next)
         } else {
-          console.error('Unexpected API response format:', result);
-          setError('Unexpected API response format');
+          console.error("Unexpected API response format:", result)
+          setError("Unexpected API response format")
         }
       } catch (error) {
-        console.error('Error fetching posts feed:', error);
-        setError(error.message);
+        console.error("Error fetching posts feed:", error)
+        setError(error.message)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
-    
-    fetchPosts();
-  }, [page]); // Re-fetch when page changes
-  
+    }
+
+    fetchPosts()
+  }, [page])
+
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         const response = await fetch(`${API_URL}${ENDPOINTS.ME}`, {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-          }
-        });
-        const result = await response.json();
-        if (result.status === 'success') {
-          setUserInfo(result.data);
-          console.log(result.data.profile_picture);
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
+        const result = await response.json()
+        if (result.status === "success") {
+          setUserInfo(result.data)
+          console.log(result.data.profile_picture)
         }
       } catch (error) {
-        console.error('Error fetching user info:', error);
+        console.error("Error fetching user info:", error)
       }
-    };
-    fetchUserInfo();
-  }, []);
+    }
+    fetchUserInfo()
+  }, [])
 
   // Set up intersection observer for infinite scrolling
   useEffect(() => {
     const currentObserver = new IntersectionObserver(
-      entries => {
+      (entries) => {
         if (entries[0].isIntersecting && hasMore && !isLoading) {
-          setPage(prevPage => prevPage + 1);
+          setPage((prevPage) => prevPage + 1)
         }
       },
-      { threshold: 0.5 }
-    );
-    
-    observer.current = currentObserver;
-    
-    const currentElement = lastPostElementRef.current;
+      { threshold: 0.5 },
+    )
+
+    observer.current = currentObserver
+
+    const currentElement = lastPostElementRef.current
     if (currentElement) {
-      currentObserver.observe(currentElement);
+      currentObserver.observe(currentElement)
     }
-    
+
     return () => {
       if (currentElement) {
-        currentObserver.unobserve(currentElement);
+        currentObserver.unobserve(currentElement)
       }
-    };
-  }, [hasMore, isLoading, posts]);
-  
+    }
+  }, [hasMore, isLoading, posts])
+
   // Close drawer when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const drawer = document.getElementById("drawer");
+      const drawer = document.getElementById("drawer")
       if (drawer && !drawer.contains(event.target) && isDrawerOpen) {
-        setIsDrawerOpen(false);
+        setIsDrawerOpen(false)
       }
-    };
+    }
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside)
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isDrawerOpen]);
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isDrawerOpen])
 
   const menuItems = [
-    { icon: profile8, label: "Profilim", onClick: () => navigate('/profile') },
+    { icon: profile8, label: "Profilim", onClick: () => navigate("/profile") },
     { icon: profile1, label: "To'lovlar" },
     { icon: profile2, label: "Kontaktlar" },
-    { icon: profile3, label: "Sozlamalar", onClick: () => navigate('/settings') },
+    { icon: profile3, label: "Sozlamalar", onClick: () => navigate("/settings") },
     { icon: profile4, label: "Tarmoqdan foydalanish" },
     { icon: profile5, label: "Yordam 24/7" },
     { icon: profile6, label: "Tungi rejim" },
     { icon: profile7, label: "Dastur haqida" },
-  ];
-  
+  ]
+
   // Stories state
-  const [stories, setStories] = useState([]);
-  const [storiesLoading, setStoriesLoading] = useState(false);
-  const [storiesError, setStoriesError] = useState(null);
-  const [userData, setUserData] = useState(null);
-  const [userInfo, setUserInfo] = useState(null);
-  const [activeUserStory, setActiveUserStory] = useState(null);
-  const [activeStoryIndex, setActiveStoryIndex] = useState(0);
-  const [storyProgress, setStoryProgress] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  
+  const [stories, setStories] = useState([])
+  const [storiesLoading, setStoriesLoading] = useState(false)
+  const [storiesError, setStoriesError] = useState(null)
+  const [userData, setUserData] = useState(null)
+  const [userInfo, setUserInfo] = useState(null)
+  const [activeUserStory, setActiveUserStory] = useState(null)
+  const [activeStoryIndex, setActiveStoryIndex] = useState(0)
+  const [storyProgress, setStoryProgress] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
+
   // Function to handle caption expansion
   const toggleCaption = (postId) => {
-    setExpandedCaptions(prev => ({
+    setExpandedCaptions((prev) => ({
       ...prev,
-      [postId]: !prev[postId]
-    }));
-  };
-  
+      [postId]: !prev[postId],
+    }))
+  }
+
   // Function to navigate to next media item in carousel
   const nextMedia = (postId) => {
-    setActiveMediaIndices(prev => {
-      const post = posts.find(p => p.id === postId);
-      const totalMedia = post ? [post.main_media, ...post.additional_media].length : 1;
-      const currentIndex = prev[postId] || 0;
+    setActiveMediaIndices((prev) => {
+      const post = posts.find((p) => p.id === postId)
+      const totalMedia = post ? [post.main_media, ...post.additional_media].length : 1
+      const currentIndex = prev[postId] || 0
       return {
         ...prev,
-        [postId]: (currentIndex + 1) % totalMedia
-      };
-    });
-  };
-  
+        [postId]: (currentIndex + 1) % totalMedia,
+      }
+    })
+  }
+
   // Function to navigate to previous media item in carousel
   const prevMedia = (postId) => {
-    setActiveMediaIndices(prev => {
-      const post = posts.find(p => p.id === postId);
-      const totalMedia = post ? [post.main_media, ...post.additional_media].length : 1;
-      const currentIndex = prev[postId] || 0;
+    setActiveMediaIndices((prev) => {
+      const post = posts.find((p) => p.id === postId)
+      const totalMedia = post ? [post.main_media, ...post.additional_media].length : 1
+      const currentIndex = prev[postId] || 0
       return {
         ...prev,
-        [postId]: (currentIndex - 1 + totalMedia) % totalMedia
-      };
-    });
-  };
+        [postId]: (currentIndex - 1 + totalMedia) % totalMedia,
+      }
+    })
+  }
 
-  // Touch handlers for swipe functionality
-  
   // Touch handlers for swipe functionality
   const handleTouchStart = (e, postId) => {
     setTouchStart({
       ...touchStart,
-      [postId]: { x: e.touches[0].clientX, y: e.touches[0].clientY }
-    });
-  };
-  
+      [postId]: { x: e.touches[0].clientX, y: e.touches[0].clientY },
+    })
+  }
+
   const handleTouchMove = (e, postId) => {
-    if (!touchStart[postId]) return;
-    
+    if (!touchStart[postId]) return
+
     setTouchEnd({
       ...touchEnd,
-      [postId]: { x: e.touches[0].clientX, y: e.touches[0].clientY }
-    });
-  };
-  
+      [postId]: { x: e.touches[0].clientX, y: e.touches[0].clientY },
+    })
+  }
+
   const handleTouchEnd = (postId) => {
-    if (!touchStart[postId] || !touchEnd[postId]) return;
-    
-    const xDiff = touchStart[postId].x - touchEnd[postId].x;
-    const yDiff = touchStart[postId].y - touchEnd[postId].y;
-    
-    // Only register as a swipe if the horizontal movement is greater than vertical
-    // and greater than a minimum threshold (30px)
+    if (!touchStart[postId] || !touchEnd[postId]) return
+
+    const xDiff = touchStart[postId].x - touchEnd[postId].x
+    const yDiff = touchStart[postId].y - touchEnd[postId].y
+
     if (Math.abs(xDiff) > Math.abs(yDiff) && Math.abs(xDiff) > 30) {
       if (xDiff > 0) {
-        // Swipe left, go to next
-        nextMedia(postId);
+        nextMedia(postId)
       } else {
-        // Swipe right, go to previous
-        prevMedia(postId);
+        prevMedia(postId)
       }
     }
-    
-    // Reset touch states
-    const newTouchStart = {...touchStart};
-    const newTouchEnd = {...touchEnd};
-    delete newTouchStart[postId];
-    delete newTouchEnd[postId];
-    setTouchStart(newTouchStart);
-    setTouchEnd(newTouchEnd);
-  };
-  
+
+    const newTouchStart = { ...touchStart }
+    const newTouchEnd = { ...touchEnd }
+    delete newTouchStart[postId]
+    delete newTouchEnd[postId]
+    setTouchStart(newTouchStart)
+    setTouchEnd(newTouchEnd)
+  }
+
   // Mouse handlers for drag functionality
   const handleMouseDown = (e, postId) => {
     setTouchStart({
       ...touchStart,
-      [postId]: { x: e.clientX, y: e.clientY }
-    });
-  };
-  
+      [postId]: { x: e.clientX, y: e.clientY },
+    })
+  }
+
   const handleMouseMove = (e, postId) => {
-    if (!touchStart[postId]) return;
-    
+    if (!touchStart[postId]) return
+
     setTouchEnd({
       ...touchEnd,
-      [postId]: { x: e.clientX, y: e.clientY }
-    });
-  };
-  
+      [postId]: { x: e.clientX, y: e.clientY },
+    })
+  }
+
   const handleMouseUp = (postId) => {
-    handleTouchEnd(postId);
-  };
-  
+    handleTouchEnd(postId)
+  }
+
   const handleMouseLeave = (postId) => {
     if (touchStart[postId]) {
-      handleTouchEnd(postId);
+      handleTouchEnd(postId)
     }
-  };
-  
-  // Media long press handlers
-  // Media long press handlers - IMPROVED VERSION
-const handleMediaLongPressStart = (postId) => {
-  if (showMediaUseful[postId]) return;
-  
-  setMediaLongPress(prev => ({ ...prev, [postId]: true }));
-  setMediaProgress(prev => ({ ...prev, [postId]: 0 }));
-  
-  const startTime = Date.now();
-  
-  // Phase 1: 4 second waiting period
-  const waitingTimer = setInterval(() => {
-    const elapsed = Date.now() - startTime;
-    const waitProgress = Math.min((elapsed / 4000) * 100, 100);
-    
-    setMediaProgress(prev => ({ ...prev, [postId]: waitProgress }));
-    
-    if (waitProgress >= 100) {
-      clearInterval(waitingTimer);
-      
-      // Phase 2: Start actual progress after waiting
-      const progressStartTime = Date.now();
-      const progressTimer = setInterval(() => {
-        const progressElapsed = Date.now() - progressStartTime;
-        const actualProgress = Math.min((progressElapsed / 4000) * 100, 100);
-        
-        setMediaProgress(prev => ({ ...prev, [postId]: 100 + actualProgress }));
-        
-        if (actualProgress >= 100) {
-          clearInterval(progressTimer);
-          setShowMediaUseful(prev => ({ ...prev, [postId]: true }));
-          setMediaLongPress(prev => ({ ...prev, [postId]: false }));
-          setMediaProgress(prev => ({ ...prev, [postId]: 0 }));
-        }
-      }, 20);
-      
-      setMediaTimers(prev => ({ ...prev, [postId]: progressTimer }));
-    }
-  }, 20);
-  
-  setMediaTimers(prev => ({ ...prev, [postId]: waitingTimer }));
-};
+  }
+
+  // SUPER AI Media long press handlers - 3 phases
+  const handleMediaLongPressStart = (postId) => {
+    if (showSuccess[postId]) return
+
+    // Phase 1: 3 second mandatory hold (no visual feedback)
+    setMediaHolding((prev) => ({ ...prev, [postId]: true }))
+    const startTime = Date.now()
+
+    const holdTimer = setInterval(() => {
+      const elapsed = Date.now() - startTime
+
+      if (elapsed >= 1200) {
+        // Phase 1 complete - start Phase 2 (progress bar)
+        clearInterval(holdTimer)
+        setMediaHolding((prev) => ({ ...prev, [postId]: false }))
+        setShowProgressBar((prev) => ({ ...prev, [postId]: true }))
+        setMediaProgress((prev) => ({ ...prev, [postId]: 0 }))
+
+        // Phase 2: Fast progress bar (1.5 seconds)
+        const progressStartTime = Date.now()
+        const progressTimer = setInterval(() => {
+          const progressElapsed = Date.now() - progressStartTime
+          const progress = Math.min((progressElapsed / 1500) * 100, 100) // 1.5 seconds
+
+          setMediaProgress((prev) => ({ ...prev, [postId]: progress }))
+
+          if (progress >= 100) {
+            // Phase 3: Success with confetti
+            clearInterval(progressTimer)
+            setShowProgressBar((prev) => ({ ...prev, [postId]: false }))
+            setShowSuccess((prev) => ({ ...prev, [postId]: true }))
+
+            // Auto-hide after 2 seconds
+            setTimeout(() => {
+              setShowSuccess((prev) => ({ ...prev, [postId]: false }))
+              setMediaProgress((prev) => ({ ...prev, [postId]: 0 }))
+            }, 2000)
+          }
+        }, 20)
+
+        setMediaTimers((prev) => ({ ...prev, [postId]: progressTimer }))
+      }
+    }, 50)
+
+    setMediaTimers((prev) => ({ ...prev, [postId]: holdTimer }))
+  }
 
   const handleMediaLongPressEnd = (postId) => {
-    if (showMediaUseful[postId]) return;
-    
-    const timer = mediaTimers[postId];
+    if (showSuccess[postId]) return
+
+    const timer = mediaTimers[postId]
     if (timer) {
-      clearInterval(timer);
+      clearInterval(timer)
     }
-    
-    setMediaLongPress(prev => ({ ...prev, [postId]: false }));
-    setMediaProgress(prev => ({ ...prev, [postId]: 0 }));
-    setMediaTimers(prev => {
-      const newTimers = { ...prev };
-      delete newTimers[postId];
-      return newTimers;
-    });
-  };
-  
+
+    // Reset all states
+    setMediaHolding((prev) => ({ ...prev, [postId]: false }))
+    setShowProgressBar((prev) => ({ ...prev, [postId]: false }))
+    setMediaProgress((prev) => ({ ...prev, [postId]: 0 }))
+    setMediaTimers((prev) => {
+      const newTimers = { ...prev }
+      delete newTimers[postId]
+      return newTimers
+    })
+  }
+
   // Handle post likes
   const handleLike = async (postId) => {
     try {
-      // Store the previous state to revert if needed
-      const previousState = likedPosts[postId];
-      
-      // Optimistically update UI
-      setLikedPosts(prev => ({
+      const previousState = likedPosts[postId]
+
+      setLikedPosts((prev) => ({
         ...prev,
-        [postId]: !prev[postId]
-      }));
-      
-      // Update the post's like count in the UI
-      setPosts(prev => prev.map(post => {
-        if (post.id === postId) {
-          return {
-            ...post,
-            likes_count: previousState ? post.likes_count - 1 : post.likes_count + 1
-          };
-        }
-        return post;
-      }));
-      
-      // Call API to like/unlike post
-      const response = await likePost(postId);
-      
-      // If API call fails, revert the UI change
-      if (response.status !== 'success') {
-        // Revert like state
-        setLikedPosts(prev => ({
-          ...prev,
-          [postId]: previousState
-        }));
-        
-        // Revert like count
-        setPosts(prev => prev.map(post => {
+        [postId]: !prev[postId],
+      }))
+
+      setPosts((prev) =>
+        prev.map((post) => {
           if (post.id === postId) {
             return {
               ...post,
-              likes_count: previousState ? post.likes_count + 1 : post.likes_count - 1
-            };
+              likes_count: previousState ? post.likes_count - 1 : post.likes_count + 1,
+            }
           }
-          return post;
-        }));
-        
-        console.error('Error liking post:', response.message);
-      } else {
-        // console.log('Post like status updated:', response.data);
+          return post
+        }),
+      )
+
+      const response = await likePost(postId)
+
+      if (response.status !== "success") {
+        setLikedPosts((prev) => ({
+          ...prev,
+          [postId]: previousState,
+        }))
+
+        setPosts((prev) =>
+          prev.map((post) => {
+            if (post.id === postId) {
+              return {
+                ...post,
+                likes_count: previousState ? post.likes_count + 1 : post.likes_count - 1,
+              }
+            }
+            return post
+          }),
+        )
+
+        console.error("Error liking post:", response.message)
       }
     } catch (error) {
-      // Revert UI change on error
-      setLikedPosts(prev => ({
+      setLikedPosts((prev) => ({
         ...prev,
-        [postId]: !prev[postId]
-      }));
-      console.error('Error liking post:', error);
+        [postId]: !prev[postId],
+      }))
+      console.error("Error liking post:", error)
     }
-  };
+  }
 
   // Handle post saves
   const handleSave = async (postId) => {
     try {
-      // Store the previous state to revert if needed
-      const previousState = savedPosts[postId];
-      
-      // Optimistically update UI
-      setSavedPosts(prev => ({
+      const previousState = savedPosts[postId]
+
+      setSavedPosts((prev) => ({
         ...prev,
-        [postId]: !prev[postId]
-      }));
-      
-      // Call API to save/unsave post
-      const response = await savePost(postId);
-      
-      // If API call fails, revert the UI change
-      if (response.status !== 'success') {
-        // Revert save state
-        setSavedPosts(prev => ({
+        [postId]: !prev[postId],
+      }))
+
+      const response = await savePost(postId)
+
+      if (response.status !== "success") {
+        setSavedPosts((prev) => ({
           ...prev,
-          [postId]: previousState
-        }));
-        console.error('Error saving post:', response.message);
-      } else {
-        // console.log('Post save status updated:', response.data);
+          [postId]: previousState,
+        }))
+        console.error("Error saving post:", response.message)
       }
     } catch (error) {
-      // Revert UI change on error
-      setSavedPosts(prev => ({
+      setSavedPosts((prev) => ({
         ...prev,
-        [postId]: !prev[postId]
-      }));
-      console.error('Error saving post:', error);
+        [postId]: !prev[postId],
+      }))
+      console.error("Error saving post:", error)
     }
-  };
+  }
 
   // Handle comments
   const handleComment = async (postId) => {
     try {
-      setActiveCommentPost(postId);
-      setShowComments(true);
-      
-      // Always fetch fresh comments when opening the comment drawer
+      setActiveCommentPost(postId)
+      setShowComments(true)
+
       try {
-        const response = await getComments(postId);
-        if (response.status === 'success') {
-          setComments(prev => ({
+        const response = await getComments(postId)
+        if (response.status === "success") {
+          setComments((prev) => ({
             ...prev,
-            [postId]: response.data.comments || []
-          }));
-          // console.log('Comments retrieved:', response.data);
+            [postId]: response.data.comments || [],
+          }))
         } else {
-          console.error('Error fetching comments:', response.message);
+          console.error("Error fetching comments:", response.message)
         }
       } catch (error) {
-        console.error('Error fetching comments:', error);
+        console.error("Error fetching comments:", error)
       }
     } catch (error) {
-      console.error('Error handling comment action:', error);
+      console.error("Error handling comment action:", error)
     }
-  };
-  
+  }
+
   // Handle comment submission
   const handleCommentSubmit = async (postId) => {
-    if (!commentText.trim()) return;
-    
+    if (!commentText.trim()) return
+
     try {
-      const response = await addComment(postId, commentText);
-      // console.log('Comment submission response:', response);
-      
-      if (response.status === 'success') {
-        // Create a new comment object based on the API response
+      const response = await addComment(postId, commentText)
+
+      if (response.status === "success") {
         const newComment = {
           id: response.data.comment_id,
           text: response.data.text,
           user: response.data.user,
           created_at: response.data.created_at,
-          is_own_comment: true
-        };
-        
-        // Add the new comment to the top of the comments list
-        setComments(prev => ({
+          is_own_comment: true,
+        }
+
+        setComments((prev) => ({
           ...prev,
-          [postId]: [
-            newComment,
-            ...(prev[postId] || [])
-          ]
-        }));
-        
-        // Clear the comment input
-        setCommentText('');
+          [postId]: [newComment, ...(prev[postId] || [])],
+        }))
+
+        setCommentText("")
       } else {
-        console.error('Error adding comment:', response.message);
+        console.error("Error adding comment:", response.message)
       }
     } catch (error) {
-      console.error('Error submitting comment:', error);
+      console.error("Error submitting comment:", error)
     }
-  };
-  
+  }
+
   // Comment drawer touch handlers
   const handleCommentTouchStart = (e) => {
-    setCommentTouchStart(e.touches[0].clientY);
-    setCommentTouchCurrent(e.touches[0].clientY);
-  };
+    setCommentTouchStart(e.touches[0].clientY)
+    setCommentTouchCurrent(e.touches[0].clientY)
+  }
 
   const handleCommentTouchMove = (e) => {
-    setCommentTouchCurrent(e.touches[0].clientY);
-    const diff = e.touches[0].clientY - commentTouchStart;
-    
-    // Only allow swiping down
+    setCommentTouchCurrent(e.touches[0].clientY)
+    const diff = e.touches[0].clientY - commentTouchStart
+
     if (diff > 0) {
-      setIsSwipingComment(true);
-      const commentContainer = e.currentTarget;
-      commentContainer.style.transform = `translateY(${diff}px)`;
+      setIsSwipingComment(true)
+      const commentContainer = e.currentTarget
+      commentContainer.style.transform = `translateY(${diff}px)`
     }
-  };
+  }
 
   const handleCommentTouchEnd = (e) => {
-    const diff = commentTouchCurrent - commentTouchStart;
-    const commentContainer = e.currentTarget;
-    
-    // If swiped down more than 100px, close the drawer
+    const diff = commentTouchCurrent - commentTouchStart
+    const commentContainer = e.currentTarget
+
     if (diff > 100) {
-      setIsClosingComment(true);
-      // Wait for animation to complete before hiding
+      setIsClosingComment(true)
       setTimeout(() => {
-        setShowComments(false);
-        setActiveCommentPost(null);
-        setIsClosingComment(false);
-        commentContainer.style.transform = '';
-      }, 300);
+        setShowComments(false)
+        setActiveCommentPost(null)
+        setIsClosingComment(false)
+        commentContainer.style.transform = ""
+      }, 300)
     } else {
-      // Reset position
-      commentContainer.style.transform = '';
+      commentContainer.style.transform = ""
     }
-    
-    setIsSwipingComment(false);
-  };
+
+    setIsSwipingComment(false)
+  }
 
   // Close comments drawer
   const handleCloseComments = () => {
-    setIsClosingComment(true);
+    setIsClosingComment(true)
     setTimeout(() => {
-      setShowComments(false);
-      setActiveCommentPost(null);
-      setIsClosingComment(false);
-    }, 300);
-  };
+      setShowComments(false)
+      setActiveCommentPost(null)
+      setIsClosingComment(false)
+    }, 300)
+  }
 
   // Handle comment deletion
   const handleDeleteComment = async (commentId) => {
     try {
-      const response = await deleteComment(commentId);
-      
-      if (response.status === 'success') {
-        // Remove the deleted comment from all posts
-        setComments(prev => {
-          const newComments = {};
-          
-          // For each post, filter out the deleted comment
-          Object.keys(prev).forEach(postId => {
-            newComments[postId] = prev[postId].filter(comment => comment.id !== commentId);
-          });
-          
-          return newComments;
-        });
+      const response = await deleteComment(commentId)
+
+      if (response.status === "success") {
+        setComments((prev) => {
+          const newComments = {}
+
+          Object.keys(prev).forEach((postId) => {
+            newComments[postId] = prev[postId].filter((comment) => comment.id !== commentId)
+          })
+
+          return newComments
+        })
       } else {
-        console.error('Error deleting comment:', response.message);
+        console.error("Error deleting comment:", response.message)
       }
     } catch (error) {
-      console.error('Error deleting comment:', error);
+      console.error("Error deleting comment:", error)
     }
-  };
+  }
 
   // Handle share
   const handleShare = (postId) => {
-    // Share functionality would typically open a share dialog
-    alert(`Share post ${postId}`);
-  };
-  
+    alert(`Share post ${postId}`)
+  }
+
   // Handle story click
   const handleStoryClick = async (userStory) => {
-    if (!userStory) return;
-    
-    setActiveUserStory(userStory);
-    setActiveStoryIndex(0);
-    setShowStory(true);
-    setStoryProgress(0);
-    setIsPaused(false);
-    
-    // Mark story as viewed in the UI
+    if (!userStory) return
+
+    setActiveUserStory(userStory)
+    setActiveStoryIndex(0)
+    setShowStory(true)
+    setStoryProgress(0)
+    setIsPaused(false)
+
     if (userStory.stories && userStory.stories.length > 0) {
       try {
-        const response = await viewStory(userStory.stories[0].id);
-        // console.log('View story response:', response);
-        
-        // Update the stories state to reflect the viewed status
-        setStories(prevStories => {
-          return prevStories.map(story => {
+        const response = await viewStory(userStory.stories[0].id)
+
+        setStories((prevStories) => {
+          return prevStories.map((story) => {
             if (story.user_id === userStory.user_id) {
               return {
                 ...story,
                 stories: story.stories.map((s, index) => {
                   if (index === 0) {
-                    return { ...s, viewed: true };
+                    return { ...s, viewed: true }
                   }
-                  return s;
-                })
-              };
+                  return s
+                }),
+              }
             }
-            return story;
-          });
-        });
-        
-        // Update story count for unviewed stories
-        setStoryCount(prev => Math.max(0, prev - 1));
+            return story
+          })
+        })
+
+        setStoryCount((prev) => Math.max(0, prev - 1))
       } catch (error) {
-        console.error('Error viewing story:', error);
+        console.error("Error viewing story:", error)
       }
     }
-  };
-  
+  }
+
   // Handle next story
   const handleNextStory = async () => {
-    if (!activeUserStory || !activeUserStory.stories || isVideoLoading) return;
-    
-    const currentStories = activeUserStory.stories;
-    
+    if (!activeUserStory || !activeUserStory.stories || isVideoLoading) return
+
+    const currentStories = activeUserStory.stories
+
     if (activeStoryIndex < currentStories.length - 1) {
-      // Move to next story in the same user's stories
-      setActiveStoryIndex(prevIndex => prevIndex + 1);
-      setStoryProgress(0);
-      setIsMediaLoaded(false);
-      setIsMediaLoading(true);
-      
-      // Call the viewStory API for the next story
+      setActiveStoryIndex((prevIndex) => prevIndex + 1)
+      setStoryProgress(0)
+      setIsMediaLoaded(false)
+      setIsMediaLoading(true)
+
       try {
-        const response = await viewStory(currentStories[activeStoryIndex + 1].id);
-        // console.log('View next story response:', response);
-        
-        // Mark this story as viewed in the UI
-        setStories(prevStories => {
-          return prevStories.map(story => {
+        const response = await viewStory(currentStories[activeStoryIndex + 1].id)
+
+        setStories((prevStories) => {
+          return prevStories.map((story) => {
             if (story.user_id === activeUserStory.user_id) {
               return {
                 ...story,
                 stories: story.stories.map((s, index) => {
                   if (index === activeStoryIndex + 1) {
-                    return { ...s, viewed: true };
+                    return { ...s, viewed: true }
                   }
-                  return s;
-                })
-              };
+                  return s
+                }),
+              }
             }
-            return story;
-          });
-        });
+            return story
+          })
+        })
       } catch (error) {
-        console.error('Error viewing next story:', error);
+        console.error("Error viewing next story:", error)
       }
     } else {
-      // Move to the next user's stories if available
-      const currentUserIndex = stories.findIndex(s => s.user_id === activeUserStory.user_id);
-      
+      const currentUserIndex = stories.findIndex((s) => s.user_id === activeUserStory.user_id)
+
       if (currentUserIndex < stories.length - 1) {
-        const nextUserStory = stories[currentUserIndex + 1];
-        handleStoryClick(nextUserStory);
+        const nextUserStory = stories[currentUserIndex + 1]
+        handleStoryClick(nextUserStory)
       } else {
-        // No more stories, close the viewer
-        handleCloseStory();
+        handleCloseStory()
       }
     }
-  };
-  
+  }
+
   // Handle previous story
   const handlePrevStory = async () => {
-    if (!activeUserStory || !activeUserStory.stories || isVideoLoading) return;
-    
+    if (!activeUserStory || !activeUserStory.stories || isVideoLoading) return
+
     if (activeStoryIndex > 0) {
-      // Move to previous story in the same user's stories
-      setActiveStoryIndex(prevIndex => prevIndex - 1);
-      setStoryProgress(0);
-      setIsMediaLoaded(false);
-      setIsMediaLoading(true);
+      setActiveStoryIndex((prevIndex) => prevIndex - 1)
+      setStoryProgress(0)
+      setIsMediaLoaded(false)
+      setIsMediaLoading(true)
     } else {
-      // Move to the previous user's stories if available
-      const currentUserIndex = stories.findIndex(s => s.user_id === activeUserStory.user_id);
-      
+      const currentUserIndex = stories.findIndex((s) => s.user_id === activeUserStory.user_id)
+
       if (currentUserIndex > 0) {
-        const prevUserStory = stories[currentUserIndex - 1];
-        setActiveUserStory(prevUserStory);
-        setActiveStoryIndex(prevUserStory.stories.length - 1);
-        setStoryProgress(0);
-        setIsMediaLoaded(false);
-        setIsMediaLoading(true);
+        const prevUserStory = stories[currentUserIndex - 1]
+        setActiveUserStory(prevUserStory)
+        setActiveStoryIndex(prevUserStory.stories.length - 1)
+        setStoryProgress(0)
+        setIsMediaLoaded(false)
+        setIsMediaLoading(true)
       }
     }
-  };
+  }
 
   // Close story
   const handleCloseStory = () => {
-    setShowStory(false);
-    setActiveUserStory(null);
-    setActiveStoryIndex(0);
-    setStoryProgress(0);
-    setIsMediaLoaded(false);
-    setIsMediaLoading(false);
-    setIsVideoLoading(false);
-  };
+    setShowStory(false)
+    setActiveUserStory(null)
+    setActiveStoryIndex(0)
+    setStoryProgress(0)
+    setIsMediaLoaded(false)
+    setIsMediaLoading(false)
+    setIsVideoLoading(false)
+  }
 
   // State to track media loading
-  const [isMediaLoaded, setIsMediaLoaded] = useState(false);
-  const [isMediaLoading, setIsMediaLoading] = useState(false);
-  const [isVideoLoading, setIsVideoLoading] = useState(false);
+  const [isMediaLoaded, setIsMediaLoaded] = useState(false)
+  const [isMediaLoading, setIsMediaLoading] = useState(false)
+  const [isVideoLoading, setIsVideoLoading] = useState(false)
 
   // Handle media load event
   const handleMediaLoaded = () => {
-    setIsMediaLoaded(true);
-    setIsMediaLoading(false);
-    setIsVideoLoading(false);
-  };
+    setIsMediaLoaded(true)
+    setIsMediaLoading(false)
+    setIsVideoLoading(false)
+  }
 
   // Reset media loaded state when story changes
   useEffect(() => {
-    setIsMediaLoaded(false);
-    setIsMediaLoading(true);
-    setIsVideoLoading(true);
-  }, [activeUserStory, activeStoryIndex]);
-  
+    setIsMediaLoaded(false)
+    setIsMediaLoading(true)
+    setIsVideoLoading(true)
+  }, [activeUserStory, activeStoryIndex])
+
   // Handle story progress and auto-advance
   useEffect(() => {
-    if (!showStory || !activeUserStory || isPaused || !isMediaLoaded) return;
-    
-    // Determine story duration based on media type
-    const currentStory = activeUserStory.stories[activeStoryIndex];
-    const isVideo = currentStory && currentStory.media_type === 'video';
-    const storyDuration = isVideo ? 30000 : 5000; // 30 seconds for video, 5 seconds for images
-    
-    const interval = 50; // Update progress every 50ms
-    const increment = (interval / storyDuration) * 100;
-    
+    if (!showStory || !activeUserStory || isPaused || !isMediaLoaded) return
+
+    const currentStory = activeUserStory.stories[activeStoryIndex]
+    const isVideo = currentStory && currentStory.media_type === "video"
+    const storyDuration = isVideo ? 30000 : 5000
+
+    const interval = 50
+    const increment = (interval / storyDuration) * 100
+
     const timer = setInterval(() => {
-      setStoryProgress(prev => {
+      setStoryProgress((prev) => {
         if (prev >= 100) {
-          // Move to next story when progress reaches 100%
-          handleNextStory();
-          return 0;
+          handleNextStory()
+          return 0
         }
-        return prev + increment;
-      });
-    }, interval);
-    
-    return () => clearInterval(timer);
-  }, [showStory, activeUserStory, activeStoryIndex, isPaused, isMediaLoaded]);
+        return prev + increment
+      })
+    }, interval)
 
-  // --- FOYDALI LONG PRESS KOMPONENTI ---
-const THANK_YOU_MESSAGES = [
-  "Rahmat!",
-  "Sizning fikringiz biz uchun muhim!",
-  "Bahoyingiz uchun tashakkur!",
-  "Sizga minnatdormiz!",
-];
+    return () => clearInterval(timer)
+  }, [showStory, activeUserStory, activeStoryIndex, isPaused, isMediaLoaded])
 
-function getRandomThankYou() {
-  return THANK_YOU_MESSAGES[Math.floor(Math.random() * THANK_YOU_MESSAGES.length)];
-}
-
-function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0, onComplete }) {
-  const [progress, setProgress] = useState(0);
-  const [isPressing, setIsPressing] = useState(false);
-  const [showThanks, setShowThanks] = useState(false);
-  const [oldPercent, setOldPercent] = useState(initialPercent);
-  const [newPercent, setNewPercent] = useState(initialPercent);
-  const [thankYou, setThankYou] = useState("");
-  const [localUsefulCount, setLocalUsefulCount] = useState(usefulCount);
-  const [localTotalCount, setLocalTotalCount] = useState(totalCount);
-  const timerRef = useRef(null);
-
-  const handleMouseDown = () => {
-    if (showThanks) return; // Agar allaqachon belgilangan bo'lsa, qayta bosishni oldini olish
-    
-    setIsPressing(true);
-    setShowThanks(false);
-    setProgress(0);
-    let start = Date.now();
-    
-    timerRef.current = setInterval(() => {
-      const elapsed = Date.now() - start;
-      const percent = Math.min((elapsed / 4000) * 100, 100);
-      setProgress(percent);
-      
-      if (percent === 100) {
-        clearInterval(timerRef.current);
-        const inc = Math.floor(Math.random() * 3) + 1;
-        setNewPercent(oldPercent + inc);
-        setThankYou(getRandomThankYou());
-        setShowThanks(true);
-        setIsPressing(false);
-        setLocalUsefulCount(prev => prev + 1);
-        setLocalTotalCount(prev => prev + 1);
-        if (onComplete) onComplete();
-      }
-    }, 20);
-  };
-
-  const handleMouseUp = () => {
-    if (!isPressing || showThanks) return;
-    
-    clearInterval(timerRef.current);
-    if (progress < 100) {
-      setProgress(0);
-      setIsPressing(false);
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-    };
-  }, []);
-
-  const percent = localTotalCount > 0 ? Math.round((localUsefulCount / localTotalCount) * 100) : 0;
-
-  return (
-    <div className="flex flex-col items-center justify-center w-full py-4">
-      <div
-        className={`relative w-full h-32 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-sm flex flex-col items-center justify-center cursor-pointer select-none transition-all duration-200 ${
-          isPressing ? "scale-98" : ""
-        }`}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onTouchStart={handleMouseDown}
-        onTouchEnd={handleMouseUp}
-      >
-        <span className="text-base font-medium text-blue-800 mb-2">
-          Ushbu kontent foydalimi?
-        </span>
-        <div className="w-4/5 h-3 bg-blue-200 rounded-full overflow-hidden mb-2">
-          <div
-            className="h-full bg-blue-500 transition-all duration-100"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-        <div className="flex justify-between w-4/5 text-xs text-blue-700">
-          <span>Oldin: {oldPercent}%</span>
-          <span>Endi: {progress === 100 ? newPercent : oldPercent}%</span>
-        </div>
-        <div className="flex justify-between w-4/5 text-xs text-blue-700 mt-2">
-          <span>Foydali topganlar: <b>{localUsefulCount}</b></span>
-          <span>Jami: <b>{localTotalCount}</b></span>
-          <span>Foydali: <b>{percent}%</b></span>
-        </div>
-        {!showThanks ? (
-          <span className="mt-2 text-xs text-gray-500">
-            4 sekund bosib turing
-          </span>
-        ) : (
-          <span className="mt-2 text-sm font-medium text-green-600 animate-bounce">
-            {thankYou}
-          </span>
-        )}
-      </div>
-    </div>
-  );
-}
-// --- KOMPONENTNI KARTAGA QO'SHISH UCHUN MISOL ---
-<UsefulLongPress initialPercent={23} usefulCount={12} totalCount={20} />
   return (
     <div className="app-container">
-      {/* {showSettings && <Settings onClose={() => setShowSettings(false)} />} */}
       {showNotifications && <Notifications onClose={() => setShowNotifications(false)} />}
       {showPostCreate && <CreatePost onClose={() => setShowPostCreate(false)} />}
-      
+
       {/* Full Screen Story Viewer */}
       {showStory && activeUserStory && activeUserStory.stories && activeUserStory.stories.length > 0 && (
-        <div 
-          className="story-viewer"
-          onTouchStart={() => setIsPaused(true)}
-          onTouchEnd={() => setIsPaused(false)}
-        >
+        <div className="story-viewer" onTouchStart={() => setIsPaused(true)} onTouchEnd={() => setIsPaused(false)}>
           {/* Progress bars */}
           <div className="story-progress-container">
             {activeUserStory.stories.map((_, index) => (
               <div key={index} className="story-progress-bar-container">
-                <div 
-                  className={`story-progress-bar ${index < activeStoryIndex ? 'completed' : index === activeStoryIndex ? 'active' : ''}`}
+                <div
+                  className={`story-progress-bar ${index < activeStoryIndex ? "completed" : index === activeStoryIndex ? "active" : ""}`}
                   style={index === activeStoryIndex ? { width: `${storyProgress}%` } : {}}
                 ></div>
               </div>
@@ -1227,22 +1008,32 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
           <div className="story-header">
             <div className="story-user-info">
               <div className="story-user-avatar">
-                <img 
-                  src={getSafeImageUrl(activeUserStory.profile_picture, 'https://api.istan.uz/', instaImg || Default)} 
-                  onError={handleImageError} 
-                  alt={activeUserStory.name} 
+                <img
+                  src={getSafeImageUrl(activeUserStory.profile_picture, "https://api.istan.uz/", instaImg || Default)}
+                  onError={handleImageError}
+                  alt={activeUserStory.name}
                 />
               </div>
               <div className="story-info">
                 <div className="story-username">{activeUserStory.name}</div>
                 <div className="story-time">
-                  {activeUserStory.stories[activeStoryIndex] && 
-                    new Date(activeUserStory.stories[activeStoryIndex].created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                  {activeUserStory.stories[activeStoryIndex] &&
+                    new Date(activeUserStory.stories[activeStoryIndex].created_at).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                 </div>
               </div>
             </div>
             <button className="story-close-btn" onClick={handleCloseStory}>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                width="24"
+                height="24"
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -1255,55 +1046,53 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
                 <div className="loading-spinner"></div>
               </div>
             )}
-            
-            {activeUserStory.stories[activeStoryIndex] && (
-              activeUserStory.stories[activeStoryIndex].media_type === 'video' ? (
-                <video 
+
+            {activeUserStory.stories[activeStoryIndex] &&
+              (activeUserStory.stories[activeStoryIndex].media_type === "video" ? (
+                <video
                   key={`story-video-${activeStoryIndex}`}
-                  src={`https://api.istan.uz/${activeUserStory.stories[activeStoryIndex].media_url}`} 
+                  src={`https://api.istan.uz/${activeUserStory.stories[activeStoryIndex].media_url}`}
                   className="story-media"
                   autoPlay
                   playsInline
                   controls
                   onLoadStart={() => {
-                    setIsVideoLoading(true);
-                    setIsMediaLoading(true);
-                    setIsMediaLoaded(false);
+                    setIsVideoLoading(true)
+                    setIsMediaLoading(true)
+                    setIsMediaLoaded(false)
                   }}
                   onLoadedData={() => {
-                    setIsVideoLoading(false);
-                    setIsMediaLoading(false);
-                    setIsMediaLoaded(true);
-                    // Start playing with sound
-                    const video = document.querySelector('.story-media');
+                    setIsVideoLoading(false)
+                    setIsMediaLoading(false)
+                    setIsMediaLoaded(true)
+                    const video = document.querySelector(".story-media")
                     if (video) {
-                      video.volume = 1.0;
-                      video.play();
+                      video.volume = 1.0
+                      video.play()
                     }
                   }}
                   onError={() => {
-                    console.error('Error loading video');
-                    setIsMediaLoading(false);
-                    setIsMediaLoaded(true);
-                    setIsVideoLoading(false);
+                    console.error("Error loading video")
+                    setIsMediaLoading(false)
+                    setIsMediaLoaded(true)
+                    setIsVideoLoading(false)
                   }}
                 />
               ) : (
-                <img 
-                  src={`https://api.istan.uz/${activeUserStory.stories[activeStoryIndex].media_url}`} 
-                  alt="Story content" 
+                <img
+                  src={`https://api.istan.uz/${activeUserStory.stories[activeStoryIndex].media_url}`}
+                  alt="Story content"
                   className="story-media"
                   onLoad={handleMediaLoaded}
                   onError={() => {
-                    console.error('Error loading image');
-                    setIsMediaLoading(false);
-                    setIsMediaLoaded(true); // Force progress to continue even if media fails
+                    console.error("Error loading image")
+                    setIsMediaLoading(false)
+                    setIsMediaLoaded(true)
                   }}
                 />
-              )
-            )}
+              ))}
 
-            {/* Navigation controls - without tap highlight */}
+            {/* Navigation controls */}
             <div className="story-navigation">
               <div className="story-nav-prev" onClick={handlePrevStory}></div>
               <div className="story-nav-next" onClick={handleNextStory}></div>
@@ -1311,20 +1100,19 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
           </div>
         </div>
       )}
-      
+
       {/* Comments Drawer */}
       {showComments && activeCommentPost && (
-        <div 
+        <div
           className="comments-modal"
           onClick={(e) => {
-            // Close if clicking the backdrop (not the container)
-            if (e.target.className === 'comments-modal') {
-              handleCloseComments();
+            if (e.target.className === "comments-modal") {
+              handleCloseComments()
             }
           }}
         >
-          <div 
-            className={`comments-container ${isSwipingComment ? 'swiping' : ''} ${isClosingComment ? 'closing' : ''}`}
+          <div
+            className={`comments-container ${isSwipingComment ? "swiping" : ""} ${isClosingComment ? "closing" : ""}`}
             onTouchStart={handleCommentTouchStart}
             onTouchMove={handleCommentTouchMove}
             onTouchEnd={handleCommentTouchEnd}
@@ -1333,29 +1121,36 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
             <div className="comments-header">
               <h3>Comments</h3>
               <button className="comments-close-btn" onClick={handleCloseComments}>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  width="18"
+                  height="18"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            
+
             <div className="comments-list">
               {comments[activeCommentPost] && comments[activeCommentPost].length > 0 ? (
                 comments[activeCommentPost].map((comment, index) => (
                   <div key={comment.id || index} className="comment-item">
                     <div className="comment-avatar">
-                      <img 
+                      <img
                         src={getSafeImageUrl(comment.user?.profile_picture, API_URL2, instaImg || Default)}
-                        onError={handleImageError} 
-                        alt={comment.user?.username || 'User'} 
-                        className="comment-avatar-img" 
+                        onError={handleImageError}
+                        alt={comment.user?.username || "User"}
+                        className="comment-avatar-img"
                       />
                     </div>
                     <div className="comment-content">
-                      <div className="comment-username">{comment.user?.username || 'User'}</div>
+                      <div className="comment-username">{comment.user?.username || "User"}</div>
                       <div className="comment-text">{comment.text}</div>
                       <div className="comment-time">
-                        {new Date(comment.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        {new Date(comment.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                       </div>
                       {comment.is_own_comment && (
                         <button className="comment-delete-btn" onClick={() => handleDeleteComment(comment.id)}>
@@ -1369,7 +1164,7 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
                 <div className="no-comments">No comments yet. Be the first to comment!</div>
               )}
             </div>
-            
+
             <div className="comment-input-container">
               <input
                 type="text"
@@ -1377,9 +1172,9 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
                 placeholder="Add a comment..."
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleCommentSubmit(activeCommentPost)}
+                onKeyPress={(e) => e.key === "Enter" && handleCommentSubmit(activeCommentPost)}
               />
-              <button 
+              <button
                 className="comment-submit-btn"
                 onClick={() => handleCommentSubmit(activeCommentPost)}
                 disabled={!commentText.trim()}
@@ -1390,27 +1185,22 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
           </div>
         </div>
       )}
-      
+
       {/* Drawer Backdrop */}
-      {isDrawerOpen && (
-        <div
-          className="drawer-backdrop"
-          onClick={() => setIsDrawerOpen(false)}
-        />
-      )}
+      {isDrawerOpen && <div className="drawer-backdrop" onClick={() => setIsDrawerOpen(false)} />}
 
       {/* Drawer */}
-      <div
-        id="drawer"
-        className={`drawer ${isDrawerOpen ? 'drawer-open' : 'drawer-closed'}`}
-      >
+      <div id="drawer" className={`drawer ${isDrawerOpen ? "drawer-open" : "drawer-closed"}`}>
         {/* Profile Section */}
         <div className="drawer-profile">
-          <button
-            className="drawer-close-btn"
-            onClick={() => setIsDrawerOpen(false)}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <button className="drawer-close-btn" onClick={() => setIsDrawerOpen(false)}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="icon"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -1420,33 +1210,37 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
             <div className="profile-header">
               <div className="profile-avatar-container">
                 <div className="profile-avatar" style={{ width: "84px", height: "84px" }}>
-                  <img 
-                    src={getSafeImageUrl(userData?.profile_picture, 'https://api.istan.uz/') || "/placeholder.svg"} 
-                    alt="Profile" 
-                    className="avatar-img" 
+                  <img
+                    src={getSafeImageUrl(userData?.profile_picture, "https://api.istan.uz/") || "/placeholder.svg"}
+                    alt="Profile"
+                    className="avatar-img"
                     onError={handleImageError}
                   />
                 </div>
                 <div className="profile-badge">
-                  <span className="badge-text">{Array.isArray(userData?.profession) ? userData.profession[0] : (userData?.profession || 'Dasturchi')}</span>
+                  <span className="badge-text">
+                    {Array.isArray(userData?.profession) ? userData.profession[0] : userData?.profession || "Dasturchi"}
+                  </span>
                   <span className="badge-star">★</span>
-                  <span className="badge-rating">{userData?.rating || '5.5'}</span>
+                  <span className="badge-rating">{userData?.rating || "5.5"}</span>
                 </div>
               </div>
 
               <div className="profile-details">
-                {/* Name and Verification */}
                 <div className="profile-name-container">
-                  <h3 className="profile-name">{userData?.name || 'Loading...'}</h3>
+                  <h3 className="profile-name">{userData?.name || "Loading..."}</h3>
                   {userData?.is_verified && (
                     <svg className="verification-icon" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   )}
                 </div>
 
-                {/* Phone Number */}
-                <p className="profile-phone">{userData?.phone || 'Loading...'}</p>
+                <p className="profile-phone">{userData?.phone || "Loading..."}</p>
               </div>
             </div>
           </div>
@@ -1454,15 +1248,9 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
 
         <div className="drawer-divider"></div>
 
-        {/* Menu Items */}
-        
         <div className="drawer-menu">
           {menuItems.map((item, index) => (
-            <button
-              key={index}
-              className="menu-item"
-              onClick={item.onClick}
-            >
+            <button key={index} className="menu-item" onClick={item.onClick}>
               <div className="menu-icon">
                 <img src={item.icon || Default} onError={handleImageError} alt={item.label} className="menu-icon-img" />
               </div>
@@ -1470,11 +1258,11 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
             </button>
           ))}
         </div>
-        
-        {/* Version Info */}
+
         <div className="version-info">
           <p className="version-text">
-            Istan superapp android uchun<br />
+            Istan superapp android uchun
+            <br />
             versiya 0.1 - a15.amd64
           </p>
         </div>
@@ -1484,10 +1272,15 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
       <div className="top-nav">
         <div className="nav-container">
           <div className="nav-content">
-            {/* Left side - Menu and Profile */}
             <div className="nav-left">
               <button className="menu-button" onClick={() => setIsDrawerOpen(true)}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="icon"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
@@ -1495,26 +1288,25 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
                 <div className="stories-avatars">
                   {stories.slice(0, 3).map((userStoryItem) => (
                     <div
-                      key={userStoryItem.user_id} 
+                      key={userStoryItem.user_id}
                       className="story-avatar"
                       onClick={() => handleStoryClick(userStoryItem)}
                     >
                       <img
-                        src={getSafeImageUrl(userStoryItem.profile_picture, 'https://api.istan.uz/') || "/placeholder.svg"}
-                        alt={userStoryItem.name || 'Story User'}
+                        src={
+                          getSafeImageUrl(userStoryItem.profile_picture, "https://api.istan.uz/") || "/placeholder.svg"
+                        }
+                        alt={userStoryItem.name || "Story User"}
                         className="story-img"
                         onError={handleImageError}
                       />
                     </div>
                   ))}
                 </div>
-                {storyCount > 0 && (
-                  <span className="stories-count">{`${storyCount} Hikayolar`}</span>
-                )}
+                {storyCount > 0 && <span className="stories-count">{`${storyCount} Hikayalar`}</span>}
               </div>
             </div>
 
-            {/* Right side - Icons */}
             <div className="nav-right">
               <button className="nav-icon-button">
                 <img src={arxiv || Default} alt="arxiv" className="nav-icon" onError={handleImageError} />
@@ -1525,7 +1317,7 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
                   <span className="badge-count">1</span>
                 </div>
               </button>
-              <button className="nav-icon-button" onClick={() => navigate('/messenger')}>
+              <button className="nav-icon-button" onClick={() => navigate("/messenger")}>
                 <img src={message || Default} alt="message" className="nav-icon" onError={handleImageError} />
                 <div className="notification-badge">
                   <span className="badge-count">1</span>
@@ -1538,827 +1330,830 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
 
       {/* Main Content Area */}
       <main className="main-content">
-
-        
-        {/* Stories Section - Horizontal row below navbar, only shows when clicked */}
+        {/* Stories Section */}
         {showStoryRow && (
           <div className="stories-row">
             <div className="stories-container">
-              {/* Your Story */}
-              <div className="story-item" onClick={() => handleStoryClick(stories.find(s => s.is_own || (s.stories && s.stories.some(story => story.is_own))))}>  
+              <div
+                className="story-item"
+                onClick={() =>
+                  handleStoryClick(
+                    stories.find((s) => s.is_own || (s.stories && s.stories.some((story) => story.is_own))),
+                  )
+                }
+              >
                 <div className="story-circle">
-                  <img 
-                    src={getSafeImageUrl(userInfo?.profile_picture, API_URL2) || "/placeholder.svg"} 
-                    alt="Your Story" 
+                  <img
+                    src={getSafeImageUrl(userInfo?.profile_picture, API_URL2) || "/placeholder.svg"}
+                    alt="Your Story"
                     onError={handleImageError}
                   />
                 </div>
                 <span className="story-username">Your story</span>
               </div>
-              
-              {/* Other users' stories */}
-              {stories.filter(userStory => !userStory.is_own && (!userStory.stories || !userStory.stories.some(story => story.is_own))).map((userStory, index) => {
-                // Check if user has any unviewed stories
-                const hasUnviewedStories = userStory.stories && userStory.stories.some(story => !story.viewed);
-                // Determine border color based on viewed status
-                const borderClass = hasUnviewedStories 
-                  ? index % 3 === 0 ? 'pink-border' : index % 3 === 1 ? 'yellow-border' : 'blue-border'
-                  : '';
-                  
-                return (
-                  <div 
-                    key={userStory.user_id} 
-                    className="story-item"
-                    onClick={() => handleStoryClick(userStory)}
-                  >
-                    <div className={`story-circle ${borderClass}`}>
-                      <img 
-                        src={API_URL2 + userStory.profile_picture || 
-                             (index % 4 === 0 ? profile1 : 
-                              index % 4 === 1 ? profile2 : 
-                              index % 4 === 2 ? profile3 : profile4) || 
-                             API_URL2 + userStory.profile_picture || Default} 
-                        alt={userStory.name || userStory.username || `User ${index + 1}`} 
-                      />
+
+              {stories
+                .filter(
+                  (userStory) =>
+                    !userStory.is_own && (!userStory.stories || !userStory.stories.some((story) => story.is_own)),
+                )
+                .map((userStory, index) => {
+                  const hasUnviewedStories = userStory.stories && userStory.stories.some((story) => !story.viewed)
+                  const borderClass = hasUnviewedStories
+                    ? index % 3 === 0
+                      ? "pink-border"
+                      : index % 3 === 1
+                        ? "yellow-border"
+                        : "blue-border"
+                    : ""
+
+                  return (
+                    <div key={userStory.user_id} className="story-item" onClick={() => handleStoryClick(userStory)}>
+                      <div className={`story-circle ${borderClass}`}>
+                        <img
+                          src={
+                            API_URL2 + userStory.profile_picture ||
+                            (index % 4 === 0
+                              ? profile1
+                              : index % 4 === 1
+                                ? profile2
+                                : index % 4 === 2
+                                  ? profile3
+                                  : profile4) ||
+                            API_URL2 + userStory.profile_picture ||
+                            Default
+                          }
+                          alt={userStory.name || userStory.username || `User ${index + 1}`}
+                        />
+                      </div>
+                      <span className="story-username">{userStory.name || `User ${index + 1}`}</span>
                     </div>
-                    <span className="story-username">{ userStory.name || `User ${index + 1}`}</span>
-                  </div>
-                );
-              })}
+                  )
+                })}
             </div>
           </div>
         )}
-        
+
         {/* Posts content */}
         <div className="posts-container">
-          {/* Error message */}
           {error && (
             <div className="error-message">
               <p>Error: {error}</p>
-              <button 
+              <button
                 onClick={() => {
-                  setError(null);
-                  setPage(1);
+                  setError(null)
+                  setPage(1)
                 }}
-                style={{ padding: '8px 16px', marginTop: '10px', cursor: 'pointer' }}
+                style={{ padding: "8px 16px", marginTop: "10px", cursor: "pointer" }}
               >
                 Try Again
               </button>
             </div>
           )}
 
-        {/* Posts from API */}
-        {posts.length > 0 ? (
-          posts.map((post, index) => {
-            const isLastItem = index === posts.length - 1;
-            const postStats = usefulStats[post.id] || {
-              usefulCount: 0,
-              totalCount: 0,
-              initialPercent: 23
-            };
-            
-            return (
-              <div 
-                key={post.id}
-                className="post milliy-post"
-                ref={isLastItem ? lastPostElementRef : null}
-              >
-                {/* AI Status Badge */}
-                <div
-                  className={`ai-status-badge ai-status-${getAIStatus(post)}`}
-                  onClick={() => showAIStatusDescription(getAIStatus(post))}
-                  style={{
-                    cursor: 'pointer',
-                    position: 'absolute',
-                    top: '35px',
-                    right: '16px',
-                    left: 'auto',
-                    padding: '4px 12px',
-                    // borderRadius: '10px',
-                    // background: 'none',
-                    color: '#222',
-                    // border: '1.5px solid #222',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    fontSize: '13px',
-                    fontWeight: 700,
-                    zIndex: 2,
-                    minWidth: 'unset',
-                    maxWidth: '60vw',
-                    flexWrap: 'nowrap',
-                    letterSpacing: '0.01em',
-                    boxShadow: 'none',
-                    // add italic font style
-                    fontStyle: 'italic',
-                  }}
-                >
-                  
-                  <span style={{ fontSize: '14px', fontWeight: 700 }}>
-                    <span style={{
-                      fontSize:'15px',
-                      fontStyle:'normal',
-                    }}>
-                      AI tekshirgan:{' '}  
-                    </span>
-                    {AI_STATUS_CONFIG[getAIStatus(post)].label}
-                    
-                    </span>
-                  
-                </div>
-                  
-                {/* AI Status Description Modal */}
-                {showStatusModal && selectedStatus === getAIStatus(post) && (
-                  <div
-                    className="ai-status-modal"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowStatusModal(false);
-                    }}
-                    style={{
-                      position: 'fixed',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      backgroundColor: 'rgba(0,0,0,0.35)',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      zIndex: 1000,
-                      padding: '20px'
-                    }}
-                  >
+          {posts.length > 0
+            ? posts.map((post, index) => {
+                const isLastItem = index === posts.length - 1
+
+                return (
+                  <div key={post.id} className="post milliy-post" ref={isLastItem ? lastPostElementRef : null}>
+                    {/* AI Status Badge */}
                     <div
-                      className="modal-content"
-                      onClick={(e) => e.stopPropagation()}
+                      className={`ai-status-badge ai-status-${getAIStatus(post)}`}
+                      onClick={() => showAIStatusDescription(getAIStatus(post))}
                       style={{
-                        backgroundColor: '#fff',
-                        borderRadius: '18px',
-                        padding: '22px',
-                        maxWidth: '95%',
-                        width: '340px',
-                        position: 'relative',
-                        boxShadow: '0 4px 24px rgba(0,0,0,0.10)'
+                        cursor: "pointer",
+                        position: "absolute",
+                        top: "35px",
+                        right: "16px",
+                        left: "auto",
+                        padding: "4px 12px",
+                        color: "#222",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        fontSize: "13px",
+                        fontWeight: 700,
+                        zIndex: 2,
+                        minWidth: "unset",
+                        maxWidth: "60vw",
+                        flexWrap: "nowrap",
+                        letterSpacing: "0.01em",
+                        boxShadow: "none",
+                        fontStyle: "italic",
                       }}
                     >
-                      <div style={{
+                      <span style={{ fontSize: "14px", fontWeight: 700 }}>
+                        <span
+                          style={{
+                            fontSize: "15px",
+                            fontStyle: "normal",
+                          }}
+                        >
+                          AI tekshirgan:{" "}
+                        </span>
+                        {AI_STATUS_CONFIG[getAIStatus(post)].label}
+                      </span>
+                    </div>
 
-                        // backgroundColor: AI_STATUS_CONFIG[selectedStatus].color + '18'
-                      }}>
-                        
-                      </div>
-                      <p style={{
-                        margin: '0',
-                        fontSize: '14px',
-                        lineHeight: '1.6',
-                        color: '#333',
-                        textAlign: 'left'
-                      }}>
-                        {AI_STATUS_CONFIG[selectedStatus].description}
-                      </p>
-                      <button
-                        onClick={() => setShowStatusModal(false)}
+                    {/* AI Status Description Modal */}
+                    {showStatusModal && selectedStatus === getAIStatus(post) && (
+                      <div
+                        className="ai-status-modal"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setShowStatusModal(false)
+                        }}
                         style={{
-                          position: 'absolute',
-                          top: '-12px',
-                          right: '-12px',
-                          width: '30px',
-                          height: '30px',
-                          borderRadius: '50%',
-                          border: 'none',
-                          backgroundColor: '#fff',
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '18px'
+                          position: "fixed",
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          backgroundColor: "rgba(0,0,0,0.35)",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          zIndex: 1000,
+                          padding: "20px",
                         }}
                       >
-                        ×
-                      </button>
-                    </div>
-                  </div>
-                )}
-              <div className="post-header">
-                <div className="post-avatar" style={{
-                  // background: 'linear-gradient(135deg, #e0e7ff 0%, #fbc2eb 100%)', // Yangi rangli fon
-                  borderRadius: '50%',
-                  padding: '3px',
-                  boxShadow: '0 2px 8px rgba(80,80,180,0.10)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '58px',
-                  height: '58px',
-                }}>
-                  <img 
-                    src={getSafeImageUrl(post.user.profile_picture, API_URL2) || "/placeholder.svg"} 
-                    alt={post.user.name} 
-                    className="avatar-img"
-                    onError={handleImageError}
-                    style={{
-                      borderRadius: '50%',
-                      width: '52px',
-                      height: '52px',
-                      objectFit: 'cover',
-                      border: '2px solid #fff',
-                    }}
-                  />
-                </div>
-                <div className="post-user-info">
-                  <div className="user-name-container">
-                    <div className="user-name" style={{
-                      color: '#4F46E5', // Indigo rang
-                      fontWeight: 700,
-                      fontSize: '16px',
-                      letterSpacing: '0.01em',
-                    }}>{post.user.name}</div>
-                    {post.is_own_post && (
-                      <div className="verification-badge">
-                        <svg className="verification-icon-small" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
+                        <div
+                          className="modal-content"
+                          onClick={(e) => e.stopPropagation()}
+                          style={{
+                            backgroundColor: "#fff",
+                            borderRadius: "18px",
+                            padding: "22px",
+                            maxWidth: "95%",
+                            width: "340px",
+                            position: "relative",
+                            boxShadow: "0 4px 24px rgba(0,0,0,0.10)",
+                          }}
+                        >
+                          <p
+                            style={{
+                              margin: "0",
+                              fontSize: "14px",
+                              lineHeight: "1.6",
+                              color: "#333",
+                              textAlign: "left",
+                            }}
+                          >
+                            {AI_STATUS_CONFIG[selectedStatus].description}
+                          </p>
+                          <button
+                            onClick={() => setShowStatusModal(false)}
+                            style={{
+                              position: "absolute",
+                              top: "-12px",
+                              right: "-12px",
+                              width: "30px",
+                              height: "30px",
+                              borderRadius: "50%",
+                              border: "none",
+                              backgroundColor: "#fff",
+                              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "18px",
+                            }}
+                          >
+                            ×
+                          </button>
+                        </div>
                       </div>
                     )}
-                  </div>
-                  {post.location_name && (
-                    <div className="user-location">{post.location_name}</div>
-                  )}
-                </div>
-                
-              </div>
 
-              <div className="post-image">
-                {/* Combine main media and additional media for carousel */}
-                {(() => {
-                  const allMedia = [post.main_media, ...post.additional_media];
-                  const currentIndex = activeMediaIndices[post.id] || 0;
-                  const currentMedia = allMedia[currentIndex];
-                  
-                  return (
-                    <div className="carousel-container">
-                      {/* Media display with touch/swipe handlers */}
-                      <div 
-                        className="media-container"
-                        style={{ position: 'relative' }}
-                        onTouchStart={(e) => {
-                          handleTouchStart(e, post.id);
-                          handleMediaLongPressStart(post.id);
-                        }}
-                        onTouchMove={(e) => handleTouchMove(e, post.id)}
-                        onTouchEnd={() => {
-                          handleTouchEnd(post.id);
-                          handleMediaLongPressEnd(post.id);
-                        }}
-                        onMouseDown={(e) => {
-                          handleMouseDown(e, post.id);
-                          handleMediaLongPressStart(post.id);
-                        }}
-                        onMouseMove={(e) => handleMouseMove(e, post.id)}
-                        onMouseUp={() => {
-                          handleMouseUp(post.id);
-                          handleMediaLongPressEnd(post.id);
-                        }}
-                        onMouseLeave={() => {
-                          handleMouseLeave(post.id);
-                          handleMediaLongPressEnd(post.id);
+                    <div className="post-header">
+                      <div
+                        className="post-avatar"
+                        style={{
+                          borderRadius: "50%",
+                          padding: "3px",
+                          boxShadow: "0 2px 8px rgba(80,80,180,0.10)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          width: "58px",
+                          height: "58px",
                         }}
                       >
-                        {/* Long Press Progress Overlay - IMPROVED */}
-{mediaLongPress[post.id] && (
-  <div style={{
-    position: 'absolute',
-    top: '0',
-    left: '0',
-    right: '0',
-    bottom: '0',
-    zIndex: 10,
-    background: 'rgba(0,0,0,0.75)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backdropFilter: 'blur(2px)'
-  }}>
-    <div style={{
-      background: 'rgba(255,255,255,0.95)',
-      borderRadius: '20px',
-      padding: '24px',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: '16px',
-      minWidth: '160px',
-      boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-      transform: 'scale(1)',
-      animation: 'fadeInScale 0.3s ease-out'
-    }}>
-      {/* Progress Circle */}
-      <div style={{
-        width: '80px',
-        height: '80px',
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <svg style={{ 
-          width: '80px', 
-          height: '80px', 
-          transform: 'rotate(-90deg)', 
-          position: 'absolute' 
-        }}>
-          {/* Background circle */}
-          <circle
-            cx="40"
-            cy="40"
-            r="32"
-            stroke="rgba(79, 70, 229, 0.2)"
-            strokeWidth="6"
-            fill="none"
-          />
-          {/* Progress circle */}
-          <circle
-            cx="40"
-            cy="40"
-            r="32"
-            stroke={mediaProgress[post.id] <= 100 ? "#6366f1" : "#10b981"}
-            strokeWidth="6"
-            fill="none"
-            strokeLinecap="round"
-            strokeDasharray={201.06}
-            strokeDashoffset={201.06 - ((mediaProgress[post.id] <= 100 ? mediaProgress[post.id] : mediaProgress[post.id] - 100) / 100) * 201.06}
-            style={{ 
-              transition: 'stroke-dashoffset 0.1s ease, stroke 0.3s ease',
-              filter: 'drop-shadow(0 0 4px rgba(99, 102, 241, 0.4))'
-            }}
-          />
-        </svg>
-        <div style={{
-          color: mediaProgress[post.id] <= 100 ? '#4f46e5' : '#059669',
-          fontSize: '16px',
-          fontWeight: 'bold',
-          textAlign: 'center'
-        }}>
-          {Math.round(mediaProgress[post.id] <= 100 ? mediaProgress[post.id] : mediaProgress[post.id] - 100)}%
-        </div>
-      </div>
-      
-      {/* Status Text */}
-      <div style={{
-        textAlign: 'center',
-        color: '#374151',
-        fontSize: '13px',
-        lineHeight: '1.4',
-        fontWeight: '500'
-      }}>
-        {mediaProgress[post.id] <= 100 ? (
-          <>
-            <div style={{ color: '#6366f1', fontWeight: '600', marginBottom: '4px' }}>
-              Kutilmoqda...
-            </div>
-            <div>Bosib turing</div>
-          </>
-        ) : (
-          <>
-            <div style={{ color: '#10b981', fontWeight: '600', marginBottom: '4px' }}>
-              Baholanmoqda...
-            </div>
-            <div>Foydali deb belgilanmoqda</div>
-          </>
-        )}
-      </div>
-    </div>
-  </div>
-)}
-
-                        {/* Enhanced Useful Rating Component */}
-{showMediaUseful[post.id] && (
-  <div style={{
-    position: 'absolute',
-    top: '0',
-    left: '0',
-    right: '0',
-    bottom: '0',
-    zIndex: 15,
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '20px',
-    animation: 'slideInUp 0.5s ease-out'
-  }}>
-    <div style={{
-      background: 'rgba(255,255,255,0.95)',
-      borderRadius: '24px',
-      padding: '32px 24px',
-      textAlign: 'center',
-      maxWidth: '320px',
-      width: '100%',
-      boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-      backdropFilter: 'blur(10px)',
-      border: '1px solid rgba(255,255,255,0.2)',
-      animation: 'bounceIn 0.6s ease-out 0.2s both'
-    }}>
-      {/* Success Icon */}
-      <div style={{
-        width: '80px',
-        height: '80px',
-        background: 'linear-gradient(135deg, #10b981, #059669)',
-        borderRadius: '50%',
-        margin: '0 auto 20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        animation: 'pulse 2s infinite'
-      }}>
-        <svg width="40" height="40" fill="white" viewBox="0 0 24 24">
-          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-        </svg>
-      </div>
-      
-      {/* Title */}
-      <h3 style={{
-        color: '#1f2937',
-        fontSize: '20px',
-        fontWeight: '700',
-        margin: '0 0 16px 0',
-        animation: 'fadeInUp 0.6s ease-out 0.4s both'
-      }}>
-        Sizning fikringiz qabul qilindi!
-      </h3>
-      
-      {/* Progress Circle */}
-      <div style={{
-        width: '100px',
-        height: '100px',
-        margin: '0 auto 20px',
-        position: 'relative',
-        animation: 'fadeInUp 0.6s ease-out 0.6s both'
-      }}>
-        <svg style={{ width: '100px', height: '100px', transform: 'rotate(-90deg)' }}>
-          <circle
-            cx="50"
-            cy="50"
-            r="40"
-            stroke="rgba(16, 185, 129, 0.2)"
-            strokeWidth="8"
-            fill="none"
-          />
-          <circle
-            cx="50"
-            cy="50"
-            r="40"
-            stroke="#10b981"
-            strokeWidth="8"
-            fill="none"
-            strokeLinecap="round"
-            strokeDasharray={251.3}
-            strokeDashoffset={0}
-            style={{ 
-              animation: 'drawCircle 1s ease-out 0.8s both'
-            }}
-          />
-        </svg>
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          color: '#10b981',
-          fontSize: '24px',
-          fontWeight: 'bold'
-        }}>
-          100%
-        </div>
-      </div>
-      
-      {/* Stats */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        marginBottom: '16px',
-        animation: 'fadeInUp 0.6s ease-out 0.8s both'
-      }}>
-        <span style={{ color: '#6b7280', fontSize: '14px' }}>
-          Oldin: <strong style={{ color: '#374151' }}>{postStats.initialPercent}%</strong>
-        </span>
-        <span style={{ color: '#6b7280', fontSize: '14px' }}>
-          Endi: <strong style={{ color: '#10b981' }}>{postStats.initialPercent + 4}%</strong>
-        </span>
-      </div>
-      
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        marginBottom: '20px',
-        fontSize: '12px',
-        color: '#6b7280',
-        animation: 'fadeInUp 0.6s ease-out 1s both'
-      }}>
-        <span>Foydali: <strong>{postStats.usefulCount + 1}</strong></span>
-        <span>Jami: <strong>{postStats.totalCount + 1}</strong></span>
-        <span>Foiz: <strong>{Math.round(((postStats.usefulCount + 1) / (postStats.totalCount + 1)) * 100)}%</strong></span>
-      </div>
-      
-      {/* Thank you message */}
-      <div style={{
-        color: '#10b981',
-        fontSize: '18px',
-        fontWeight: '600',
-        animation: 'fadeInUp 0.6s ease-out 1.2s both'
-      }}>
-        Barakalla!
-      </div>
-    </div>
-    
-    {/* Close button */}
-    <button 
-      onClick={() => setShowMediaUseful(prev => ({ ...prev, [post.id]: false }))}
-      style={{
-        position: 'absolute',
-        top: '20px',
-        right: '20px',
-        background: 'rgba(255,255,255,0.2)',
-        border: 'none',
-        borderRadius: '50%',
-        width: '40px',
-        height: '40px',
-        color: 'white',
-        fontSize: '20px',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backdropFilter: 'blur(10px)',
-        transition: 'all 0.3s ease',
-        animation: 'fadeIn 0.6s ease-out 1.4s both'
-      }}
-      onMouseEnter={(e) => {
-        e.target.style.background = 'rgba(255,255,255,0.3)';
-        e.target.style.transform = 'scale(1.1)';
-      }}
-      onMouseLeave={(e) => {
-        e.target.style.background = 'rgba(255,255,255,0.2)';
-        e.target.style.transform = 'scale(1)';
-      }}
-    >
-      ×
-    </button>
-  </div>
-)}
-
-                        {/* Existing media content */}
-                        {currentMedia.media_type === 'image' ? (
-                          <img 
-                            src={currentMedia.file_url.startsWith('http') 
-                              ? currentMedia.file_url 
-                              : `https://${API_HOST}${currentMedia.file_url}`} 
-                            alt="Post content" 
-                            className="post-img" 
-                            loading="lazy"
-                            onError={handleImageError}
-                            draggable="false"
-                          />
-                        ) : (
-                          <video 
-                            src={currentMedia.file_url.startsWith('http') 
-                              ? currentMedia.file_url 
-                              : `https://${API_HOST}${currentMedia.file_url}`} 
-                            controls 
-                            className="post-video"
-                            preload="metadata"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.poster = Default;
-                            }}
-                          />
-                        )}
+                        <img
+                          src={getSafeImageUrl(post.user.profile_picture, API_URL2) || "/placeholder.svg"}
+                          alt={post.user.name}
+                          className="avatar-img"
+                          onError={handleImageError}
+                          style={{
+                            borderRadius: "50%",
+                            width: "52px",
+                            height: "52px",
+                            objectFit: "cover",
+                            border: "2px solid #fff",
+                          }}
+                        />
                       </div>
-                      
-                      {/* Only show dots indicator if there are multiple media items */}
-                      {allMedia.length > 1 && (
-                        <div className="carousel-indicators">
-                          {allMedia.map((_, index) => (
-                            <span 
-                              key={index}
-                              className={`carousel-dot ${index === currentIndex ? 'active' : ''}`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setActiveMediaIndices(prev => ({
-                                  ...prev,
-                                  [post.id]: index
-                                }));
+                      <div className="post-user-info">
+                        <div className="user-name-container">
+                          <div
+                            className="user-name"
+                            style={{
+                              color: "#4F46E5",
+                              fontWeight: 700,
+                              fontSize: "16px",
+                              letterSpacing: "0.01em",
+                            }}
+                          >
+                            {post.user.name}
+                          </div>
+                          {post.is_own_post && (
+                            <div className="verification-badge">
+                              <svg className="verification-icon-small" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                        {post.location_name && <div className="user-location">{post.location_name}</div>}
+                      </div>
+                    </div>
+
+                    <div className="post-image">
+                      {(() => {
+                        const allMedia = [post.main_media, ...post.additional_media]
+                        const currentIndex = activeMediaIndices[post.id] || 0
+                        const currentMedia = allMedia[currentIndex]
+
+                        return (
+                          <div className="carousel-container">
+                            <div
+                              className="media-container"
+                              style={{ position: "relative" }}
+                              onTouchStart={(e) => {
+                                handleTouchStart(e, post.id)
+                                handleMediaLongPressStart(post.id)
                               }}
-                            />
-                          ))}
+                              onTouchMove={(e) => handleTouchMove(e, post.id)}
+                              onTouchEnd={() => {
+                                handleTouchEnd(post.id)
+                                handleMediaLongPressEnd(post.id)
+                              }}
+                              onMouseDown={(e) => {
+                                handleMouseDown(e, post.id)
+                                handleMediaLongPressStart(post.id)
+                              }}
+                              onMouseMove={(e) => handleMouseMove(e, post.id)}
+                              onMouseUp={() => {
+                                handleMouseUp(post.id)
+                                handleMediaLongPressEnd(post.id)
+                              }}
+                              onMouseLeave={() => {
+                                handleMouseLeave(post.id)
+                                handleMediaLongPressEnd(post.id)
+                              }}
+                            >
+                              {/* Phase 1: Holding (no visual feedback) */}
+                              {mediaHolding[post.id] && (
+                                <div
+                                  style={{
+                                    position: "absolute",
+                                    top: "0",
+                                    left: "0",
+                                    right: "0",
+                                    bottom: "0",
+                                    zIndex: 5,
+                                    // background: "rgba(0,0,0,0.1)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      color: "white",
+                                      fontSize: "16px",
+                                      fontWeight: "600",
+                                      // textShadow: "0 2px 4px rgba(0,0,0,0.5)",
+                                    }}
+                                  >
+                                    {/* Bosib turing... */}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Phase 2: Progress Bar */}
+                              {showProgressBar[post.id] && (
+                                <div
+                                  style={{
+                                    position: "absolute",
+                                    top: "0",
+                                    left: "0",
+                                    right: "0",
+                                    bottom: "0",
+                                    zIndex: 10,
+                                    background: "rgba(0,0,0,0.7)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    backdropFilter: "blur(2px)",
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      background: "rgba(255,255,255,0.95)",
+                                      borderRadius: "20px",
+                                      padding: "24px",
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      alignItems: "center",
+                                      gap: "16px",
+                                      minWidth: "160px",
+                                      boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+                                    }}
+                                  >
+                                    {/* Progress Circle */}
+                                    <div
+                                      style={{
+                                        width: "80px",
+                                        height: "80px",
+                                        position: "relative",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                      }}
+                                    >
+                                      <svg
+                                        style={{
+                                          width: "80px",
+                                          height: "80px",
+                                          transform: "rotate(-90deg)",
+                                          position: "absolute",
+                                        }}
+                                      >
+                                        <circle
+                                          cx="40"
+                                          cy="40"
+                                          r="32"
+                                          stroke="rgba(59, 130, 246, 0.2)"
+                                          strokeWidth="6"
+                                          fill="none"
+                                        />
+                                        <circle
+                                          cx="40"
+                                          cy="40"
+                                          r="32"
+                                          stroke="#3b82f6"
+                                          strokeWidth="6"
+                                          fill="none"
+                                          strokeLinecap="round"
+                                          strokeDasharray={201.06}
+                                          strokeDashoffset={201.06 - (mediaProgress[post.id] / 100) * 201.06}
+                                          style={{
+                                            transition: "stroke-dashoffset 0.1s ease",
+                                          }}
+                                        />
+                                      </svg>
+                                      <div
+                                        style={{
+                                          color: "#3b82f6",
+                                          fontSize: "18px",
+                                          fontWeight: "bold",
+                                          textAlign: "center",
+                                        }}
+                                      >
+                                        {Math.round(mediaProgress[post.id])}%
+                                      </div>
+                                    </div>
+
+                                    <div
+                                      style={{
+                                        textAlign: "center",
+                                        color: "#374151",
+                                        fontSize: "14px",
+                                        fontWeight: "600",
+                                      }}
+                                    >
+                                      Baholanmoqda...
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Phase 3: Success with Confetti */}
+                              {showSuccess[post.id] && (
+                                <div
+                                  className="super-ai-success"
+                                  style={{
+                                    position: "absolute",
+                                    top: "0",
+                                    left: "0",
+                                    right: "0",
+                                    bottom: "0",
+                                    zIndex: 15,
+                                    background: "rgba(16, 185, 129, 0.15)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    backdropFilter: "blur(3px)",
+                                    animation: "superAiFadeIn 0.4s ease-out",
+                                  }}
+                                >
+                                  {/* Confetti particles */}
+                                  <div className="confetti-container">
+                                    {[...Array(12)].map((_, i) => (
+                                      <div
+                                        key={i}
+                                        className="confetti-particle"
+                                        style={{
+                                          position: "absolute",
+                                          width: "8px",
+                                          height: "8px",
+                                          background: ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"][i % 5],
+                                          borderRadius: "50%",
+                                          animation: `confettiFall 2s ease-out ${i * 0.1}s infinite`,
+                                          left: `${20 + (i * 60) / 12}%`,
+                                          top: "20%",
+                                        }}
+                                      />
+                                    ))}
+                                  </div>
+
+                                  <div
+                                    style={{
+                                      background: "rgba(255,255,255,0.95)",
+                                      borderRadius: "24px",
+                                      padding: "32px 24px",
+                                      textAlign: "center",
+                                      maxWidth: "280px",
+                                      width: "90%",
+                                      boxShadow: "0 16px 64px rgba(0,0,0,0.2)",
+                                      animation: "superAiBounceIn 0.6s ease-out 0.2s both",
+                                    }}
+                                  >
+                                    {/* Success Icon */}
+                                    <div
+                                      style={{
+                                        width: "64px",
+                                        height: "64px",
+                                        background: "linear-gradient(135deg, #10b981, #059669)",
+                                        borderRadius: "50%",
+                                        margin: "0 auto 20px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        animation: "superAiPulse 1.5s infinite",
+                                      }}
+                                    >
+                                      <svg width="32" height="32" fill="white" viewBox="0 0 24 24">
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                                      </svg>
+                                    </div>
+
+                                    {/* Success Message */}
+                                    <h3
+                                      style={{
+                                        color: "#1f2937",
+                                        fontSize: "20px",
+                                        fontWeight: "700",
+                                        margin: "0 0 8px 0",
+                                      }}
+                                    >
+                                      Qabul qilindi!
+                                    </h3>
+
+                                    <p
+                                      style={{
+                                        color: "#6b7280",
+                                        fontSize: "14px",
+                                        margin: "0",
+                                      }}
+                                    >
+                                      Sizning fikringiz muhim
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Media content */}
+                              {currentMedia.media_type === "image" ? (
+                                <img
+                                  src={
+                                    currentMedia.file_url.startsWith("http")
+                                      ? currentMedia.file_url
+                                      : `https://${API_HOST}${currentMedia.file_url}`
+                                  }
+                                  alt="Post content"
+                                  className="post-img"
+                                  loading="lazy"
+                                  onError={handleImageError}
+                                  draggable="false"
+                                />
+                              ) : (
+                                <video
+                                  src={
+                                    currentMedia.file_url.startsWith("http")
+                                      ? currentMedia.file_url
+                                      : `https://${API_HOST}${currentMedia.file_url}`
+                                  }
+                                  controls
+                                  className="post-video"
+                                  preload="metadata"
+                                  onError={(e) => {
+                                    e.target.onerror = null
+                                    e.target.poster = Default
+                                  }}
+                                />
+                              )}
+                            </div>
+
+                            {allMedia.length > 1 && (
+                              <div className="carousel-indicators">
+                                {allMedia.map((_, index) => (
+                                  <span
+                                    key={index}
+                                    className={`carousel-dot ${index === currentIndex ? "active" : ""}`}
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setActiveMediaIndices((prev) => ({
+                                        ...prev,
+                                        [post.id]: index,
+                                      }))
+                                    }}
+                                  />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })()}
+                    </div>
+
+                    <div className="post-actions">
+                      <div className="action-buttons" style={{ paddingLeft: "0px" }}>
+                        <div className="action-buttons-left">
+                          <button
+                            className={`action-button ${likedPosts[post.id] ? "liked" : ""}`}
+                            onClick={() => handleLike(post.id)}
+                          >
+                            {likedPosts[post.id] ? (
+                              <svg
+                                aria-label="Unlike"
+                                className="action-icon"
+                                fill="#ed4956"
+                                height="24"
+                                role="img"
+                                viewBox="0 0 48 48"
+                                width="24"
+                              >
+                                <path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path>
+                              </svg>
+                            ) : (
+                              <svg
+                                aria-label="Like"
+                                className="action-icon"
+                                fill="none"
+                                height="24"
+                                role="img"
+                                viewBox="0 0 24 24"
+                                width="24"
+                              >
+                                <path
+                                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                                  fill="none"
+                                  stroke="black"
+                                  strokeWidth="2"
+                                ></path>
+                              </svg>
+                            )}
+                          </button>
+                          <button className="action-button" onClick={() => handleComment(post.id)}>
+                            <svg
+                              aria-label="Comment"
+                              className="action-icon"
+                              fill="none"
+                              height="24"
+                              role="img"
+                              viewBox="0 0 24 24"
+                              width="24"
+                            >
+                              <path
+                                d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z"
+                                fill="none"
+                                stroke="#000"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                              ></path>
+                            </svg>
+                          </button>
+                          <button className="action-button" onClick={() => handleShare(post.id)}>
+                            <svg
+                              aria-label="Share post"
+                              className="action-icon"
+                              fill="#000"
+                              height="24"
+                              role="img"
+                              viewBox="0 0 24 24"
+                              width="24"
+                            >
+                              <path
+                                d="M22 3 9.218 10.083M11.698 20.334 22 3.001 2 3.001 9.218 10.084l2.48 10.25z"
+                                fill="none"
+                                stroke="#000"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                              ></path>
+                            </svg>
+                          </button>
+                        </div>
+                        <button
+                          className={`action-button ${savedPosts[post.id] ? "saved" : ""}`}
+                          onClick={() => handleSave(post.id)}
+                          style={{ marginLeft: "auto", marginRight: "8px" }}
+                        >
+                          {savedPosts[post.id] ? (
+                            <svg
+                              aria-label="Remove"
+                              className="action-icon"
+                              fill="#000000"
+                              height="26"
+                              role="img"
+                              viewBox="0 0 24 24"
+                              width="26"
+                            >
+                              <polygon
+                                fill="#000000"
+                                points="20 21 12 13.44 4 21 4 3 20 3 20 21"
+                                stroke="none"
+                              ></polygon>
+                            </svg>
+                          ) : (
+                            <svg
+                              aria-label="Save"
+                              className="action-icon"
+                              fill="none"
+                              height="26"
+                              role="img"
+                              viewBox="0 0 24 24"
+                              width="26"
+                            >
+                              <polygon
+                                fill="none"
+                                points="20 21 12 13.44 4 21 4 3 20 3 20 21"
+                                stroke="black"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                              ></polygon>
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+
+                      <div className="likes-container">
+                        {post.likes_count > 0 && (
+                          <div className="likes-avatars">
+                            <div className="like-avatar">
+                              <img
+                                src={instaImg || Default}
+                                alt="Liker"
+                                className="like-avatar-img"
+                                onError={handleImageError}
+                              />
+                            </div>
+                          </div>
+                        )}
+                        <div className="likes-text">
+                          {post.likes_count > 0 ? (
+                            <>
+                              <span className="bold-text">
+                                {post.likes_count} {post.likes_count === 1 ? "like" : "likes"}
+                              </span>
+                            </>
+                          ) : (
+                            <>Be the first to like this</>
+                          )}
+                        </div>
+                      </div>
+
+                      {post.comments_count > 0 && (
+                        <div className="comments-count" onClick={() => handleComment(post.id)}>
+                          View all {post.comments_count} {post.comments_count === 1 ? "comment" : "comments"}
                         </div>
                       )}
-                    </div>
-                  );
-                })()}
-              </div>
 
-              <div className="post-actions">
-                <div className="action-buttons" style={{ paddingLeft: '0px' }}>
-                  <div className="action-buttons-left">
-                    <button 
-                      className={`action-button ${likedPosts[post.id] ? 'liked' : ''}`}
-                      onClick={() => handleLike(post.id)}
-                    >
-                      {likedPosts[post.id] ? (
-                        <svg aria-label="Unlike" className="action-icon" fill="#ed4956" height="24" role="img" viewBox="0 0 48 48" width="24">
-                          <path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path>
-                        </svg>
-                      ) : (
-                        <svg aria-label="Like" className="action-icon" fill="none" height="24" role="img" viewBox="0 0 24 24" width="24">
-                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="black" strokeWidth="2"></path>
-                        </svg>
+                      {post.caption && (
+                        <div className="post-caption">
+                          <span className="bold-text">{post.user.name}</span>{" "}
+                          {expandedCaptions[post.id] || post.caption.length <= 100 ? (
+                            <span>{post.caption}</span>
+                          ) : (
+                            <>
+                              <span>{post.caption.substring(0, 100)}...</span>
+                              <button
+                                className="more-button"
+                                onClick={() => setExpandedCaptions({ ...expandedCaptions, [post.id]: true })}
+                              >
+                                more
+                              </button>
+                            </>
+                          )}
+                        </div>
                       )}
-                    </button>
-                    <button 
-                      className="action-button"
-                      onClick={() => handleComment(post.id)}
-                    >
-                      <svg aria-label="Comment" className="action-icon" fill="none" height="24" role="img" viewBox="0 0 24 24" width="24">
-                        <path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z" fill="none" stroke="#000" strokeLinejoin="round" strokeWidth="2"></path>
-                      </svg>
-                    </button>
-                    <button 
-                      className="action-button"
-                      onClick={() => handleShare(post.id)}
-                    >
-                      <svg aria-label="Share post" className="action-icon" fill="#000" height="24" role="img" viewBox="0 0 24 24" width="24">
-                        <path d="M22 3 9.218 10.083M11.698 20.334 22 3.001 2 3.001 9.218 10.084l2.48 10.25z" fill="none" stroke="#000" strokeLinejoin="round" strokeWidth="2"></path>
-                      </svg>
-                    </button>
-                  </div>
-                  <button 
-                    className={`action-button ${savedPosts[post.id] ? 'saved' : ''}`}
-                    onClick={() => handleSave(post.id)}
-                    style={{ marginLeft: 'auto', marginRight: '8px' }}
-                  >
-                    {savedPosts[post.id] ? (
-                      <svg aria-label="Remove" className="action-icon" fill="#000000" height="26" role="img" viewBox="0 0 24 24" width="26">
-                        <polygon fill="#000000" points="20 21 12 13.44 4 21 4 3 20 3 20 21" stroke="none"></polygon>
-                      </svg>
-                    ) : (
-                      <svg aria-label="Save" className="action-icon" fill="none" height="26" role="img" viewBox="0 0 24 24" width="26">
-                        <polygon fill="none" points="20 21 12 13.44 4 21 4 3 20 3 20 21" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></polygon>
-                      </svg>
-                    )}
-                  </button>
-                </div>
 
-                <div className="likes-container">
-                  {post.likes_count > 0 && (
-                    <div className="likes-avatars">
-                      <div className="like-avatar">
-                        <img src={instaImg || Default} alt="Liker" className="like-avatar-img" onError={handleImageError} />
+                      <div className="post-date">
+                        {new Date(post.created_at).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
                       </div>
                     </div>
-                  )}
-                  <div className="likes-text">
-                    {post.likes_count > 0 ? (
-                      <>
-                        <span className="bold-text">{post.likes_count} {post.likes_count === 1 ? 'like' : 'likes'}</span>
-                      </>
-                    ) : (
-                      <>Be the first to like this</>  
-                    )}
                   </div>
+                )
+              })
+            : !isLoading && (
+                <div className="no-posts-message">
+                  <p>No posts available. Follow users to see their posts here.</p>
                 </div>
-                
-                {/* Comments count */}
-                {post.comments_count > 0 && (
-                  <div className="comments-count" onClick={() => handleComment(post.id)}>
-                    View all {post.comments_count} {post.comments_count === 1 ? 'comment' : 'comments'}
-                  </div>
-                )}
+              )}
 
-                {post.caption && (
-                  <div className="post-caption">
-                    <span className="bold-text">{post.user.name}</span>{' '}
-                    {expandedCaptions[post.id] || post.caption.length <= 100 ? (
-                      <span>{post.caption}</span>
-                    ) : (
-                      <>
-                        <span>{post.caption.substring(0, 100)}...</span>
-                        <button 
-                          className="more-button"
-                          onClick={() => setExpandedCaptions({...expandedCaptions, [post.id]: true})}
-                        >
-                          more
-                        </button>
-                      </>
-                    )}
-                  </div>
-                )}
-
-                <div className="post-date">
-                  {new Date(post.created_at).toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </div>
-              </div>
-              
-              {/* We don't need this anymore since we have a carousel */}
-            </div>
-          );
-        }))
-        : (!isLoading && (
-          <div className="no-posts-message">
-            <p>No posts available. Follow users to see their posts here.</p>
-          </div>
-        ))}
-
-        {/* Loading skeletons */}
-        {isLoading && (
-          <>
-            {[1, 2, 3].map((_, index) => (
-              <div 
-                key={`skeleton-${index}`}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="post skeleton-post">
-                  <div className="post-header">
-                    <div className="skeleton-avatar"></div>
-                    <div className="post-user-info">
-                      <div className="skeleton-text skeleton-username"></div>
-                      <div className="skeleton-text skeleton-location"></div>
-                    </div>
-                    <div className="skeleton-icon right-icon"></div>
-                  </div>
-                  <div className="skeleton-image"></div>
-                  <div className="post-actions">
-                    <div className="action-buttons">
-                      <div className="skeleton-icon"></div>
-                      <div className="skeleton-icon"></div>
-                      <div className="skeleton-icon"></div>
+          {isLoading && (
+            <>
+              {[1, 2, 3].map((_, index) => (
+                <div key={`skeleton-${index}`} style={{ animationDelay: `${index * 0.1}s` }}>
+                  <div className="post skeleton-post">
+                    <div className="post-header">
+                      <div className="skeleton-avatar"></div>
+                      <div className="post-user-info">
+                        <div className="skeleton-text skeleton-username"></div>
+                        <div className="skeleton-text skeleton-location"></div>
+                      </div>
                       <div className="skeleton-icon right-icon"></div>
                     </div>
-                    <div className="skeleton-text skeleton-caption-line"></div>
-                    <div className="skeleton-text skeleton-caption-line short"></div>
+                    <div className="skeleton-image"></div>
+                    <div className="post-actions">
+                      <div className="action-buttons">
+                        <div className="skeleton-icon"></div>
+                        <div className="skeleton-icon"></div>
+                        <div className="skeleton-icon"></div>
+                        <div className="skeleton-icon right-icon"></div>
+                      </div>
+                      <div className="skeleton-text skeleton-caption-line"></div>
+                      <div className="skeleton-text skeleton-caption-line short"></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </>
-        )}
-        
-        {/* Loading more indicator */}
-        {isLoading && posts.length > 0 && (
-          <div className="loading-text">Loading more posts...</div>
-        )}
-        
-        {/* No more posts indicator */}
-        {!isLoading && !hasMore && posts.length > 0 && (
-          <div className="loading-text">No more posts to load</div>
-        )}
+              ))}
+            </>
+          )}
+
+          {isLoading && posts.length > 0 && <div className="loading-text">Loading more posts...</div>}
+
+          {!isLoading && !hasMore && posts.length > 0 && <div className="loading-text">No more posts to load</div>}
         </div>
       </main>
+
       {/* Bottom Navigation */}
       <div className="bottom-nav">
         <div className="bottom-nav-container">
           <div className="nav-tabs">
-            <button 
-              className={`nav-tab ${activeTab === 'home' ? 'active-tab' : ''}`} 
-              onClick={() => setActiveTab('home')}
+            <button
+              className={`nav-tab ${activeTab === "home" ? "active-tab" : ""}`}
+              onClick={() => setActiveTab("home")}
             >
               <img src={home || Default} alt="Home" className="tab-icon" onError={handleImageError} />
             </button>
-            <button 
-              className={`nav-tab ${activeTab === 'search' ? 'active-tab' : ''}`} 
-              onClick={() => setActiveTab('search')}
+            <button
+              className={`nav-tab ${activeTab === "search" ? "active-tab" : ""}`}
+              onClick={() => setActiveTab("search")}
             >
               <img src={search || Default} alt="Search" className="tab-icon" onError={handleImageError} />
             </button>
-            <button 
-              className={`nav-tab ${activeTab === 'addContent' ? 'active-tab' : ''}`} 
+            <button
+              className={`nav-tab ${activeTab === "addContent" ? "active-tab" : ""}`}
               onClick={() => {
-                setActiveTab('addContent');
-                setShowPostCreate(true);
+                setActiveTab("addContent")
+                setShowPostCreate(true)
               }}
             >
               <img src={addContent || Default} alt="Add Content" className="tab-icon" onError={handleImageError} />
             </button>
-            <button 
-              className={`nav-tab ${activeTab === 'email' ? 'active-tab' : ''}`} 
+            <button
+              className={`nav-tab ${activeTab === "email" ? "active-tab" : ""}`}
               onClick={() => {
-                setActiveTab('email');
-                navigate('/email');
+                setActiveTab("email")
+                navigate("/email")
               }}
             >
               <img src={email || Default} alt="Email" className="tab-icon" onError={handleImageError} />
             </button>
-                       <button 
-              className={`nav-tab ${activeTab === 'apps' ? 'active-tab' : ''}`} 
+            <button
+              className={`nav-tab ${activeTab === "apps" ? "active-tab" : ""}`}
               onClick={() => {
-                setActiveTab('apps');
-                navigate('/more-apps');
+                setActiveTab("apps")
+                navigate("/more-apps")
               }}
             >
               <img src={apps || Default} alt="Apps" className="tab-icon" onError={handleImageError} />
@@ -2367,7 +2162,6 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
         </div>
       </div>
 
-      {/* Modal overlay and content styling */}
       {showStatusModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 relative animate-fadeIn">
@@ -2378,9 +2172,10 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
             >
               &times;
             </button>
-            {/* Modal Content */}
             <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">Modal Title</h2>
-            <p className="text-gray-600 mb-6 text-center">Bu yerda modal mazmuni bo'ladi. Siz bu joyga kerakli ma'lumot yoki formani joylashtirishingiz mumkin.</p>
+            <p className="text-gray-600 mb-6 text-center">
+              Bu yerda modal mazmuni bo'ladi. Siz bu joyga kerakli ma'lumot yoki formani joylashtirishingiz mumkin.
+            </p>
             <div className="flex justify-center">
               <button
                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition duration-200"
@@ -2393,7 +2188,7 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0,
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
