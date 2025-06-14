@@ -135,13 +135,13 @@ const Home = () => {
     DEBATABLE: 'debatable',
     EDUCATIONAL: 'educational',
     TRENDING: 'trending',
-    INSPIRATIONAL: 'inspirational',
+    // INSPIRATIONAL: 'inspirational',
     BREAKING_NEWS: 'breaking_news',
     OPINION: 'opinion',
-    RESEARCH: 'research',
-    CULTURAL: 'cultural',
-    HISTORICAL: 'historical',
-    INNOVATIVE: 'innovative'
+    // RESEARCH: 'research',
+    // CULTURAL: 'cultural',
+    // HISTORICAL: 'historical',
+    // INNOVATIVE: 'innovative'
   };
 
   // AI status styles, icons and descriptions
@@ -149,7 +149,7 @@ const Home = () => {
     interesting_fact: {
       // ranglarni teskari rangga almashtirish kerak
       color: '#ffffff',
-      icon: '🌟',
+
       label: 'Qiziqarli',
       description: `Istan AI: Bu post qiziqarli va o‘quvchilar uchun foydali faktlarni o‘z ichiga oladi. Bunday postlar odatda yangi bilim va tushunchalarni taqdim etadi.`
     },
@@ -185,7 +185,7 @@ const Home = () => {
     },
     educational: {
       color: '#ffffff',
-      icon: '📚',
+      // icon: '📚',
       label: 'Talim',
       description: `Istan AI: Bu post taʼlim va o‘qitish maqsadida yaratilgan. O‘quvchilar uchun foydali maʼlumotlar mavjud.`
     },
@@ -1432,28 +1432,31 @@ const Home = () => {
                   style={{
                     cursor: 'pointer',
                     position: 'absolute',
-                    top: '16px',
-                    left: '16px',
-                    padding: '6px 14px 6px 10px',
-                    borderRadius: '18px',
-                    background: AI_STATUS_CONFIG[getAIStatus(post)].color + '22',
-                    color: AI_STATUS_CONFIG[getAIStatus(post)].color,
+                    top: '30px',
+                    right: '16px',
+                    left: 'auto',
+                    padding: '4px 12px',
+                    borderRadius: '10px',
+                    background: 'none',
+                    color: '#222',
+                    border: '1.5px solid #222',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '7px',
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+                    gap: '6px',
+                    fontSize: '13px',
+                    fontWeight: 700,
                     zIndex: 2,
-                    border: '1.5px solid ' + AI_STATUS_CONFIG[getAIStatus(post)].color,
-                    transition: 'all 0.2s',
+                    minWidth: 'unset',
+                    maxWidth: '60vw',
+                    flexWrap: 'nowrap',
+                    letterSpacing: '0.01em',
+                    boxShadow: 'none',
                   }}
                 >
-                  <span style={{ fontSize: '17px' }}>{AI_STATUS_CONFIG[getAIStatus(post)].icon}</span>
                   <span style={{ fontSize: '15px', fontWeight: 700 }}>{AI_STATUS_CONFIG[getAIStatus(post)].label}</span>
-                  <span style={{ fontSize: '15px', marginLeft: '2px' }}>🤖</span>
+                  
                 </div>
-
+                  
                 {/* AI Status Description Modal */}
                 {showStatusModal && selectedStatus === getAIStatus(post) && (
                   <div
@@ -1490,17 +1493,12 @@ const Home = () => {
                       }}
                     >
                       <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        marginBottom: '13px',
-                        gap: '10px',
-                        padding: '7px 12px',
-                        borderRadius: '12px',
-                        backgroundColor: AI_STATUS_CONFIG[selectedStatus].color + '18'
+
+                        // backgroundColor: AI_STATUS_CONFIG[selectedStatus].color + '18'
                       }}>
-                        <span style={{ fontSize: '22px' }}>{AI_STATUS_CONFIG[selectedStatus].icon}</span>
+                        {/* <span style={{ fontSize: '22px' }}>{AI_STATUS_CONFIG[selectedStatus].icon}</span> */}
                         <span style={{ fontSize: '15px', fontWeight: 700, color: AI_STATUS_CONFIG[selectedStatus].color }}>{AI_STATUS_CONFIG[selectedStatus].label}</span>
-                        <span style={{ fontSize: '15px', marginLeft: '2px' }}>🤖</span>
+                        {/* <span style={{ fontSize: '15px', marginLeft: '2px' }}>🤖</span> */}
                       </div>
                       <p style={{
                         margin: '0',
@@ -1581,11 +1579,7 @@ const Home = () => {
                     <div className="user-location">{post.location_name}</div>
                   )}
                 </div>
-                <button className="post-menu-button">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="icon-small" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
-                  </svg>
-                </button>
+                
               </div>
 
               <div className="post-image">
@@ -1864,6 +1858,32 @@ const Home = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal overlay and content styling */}
+      {showStatusModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 relative animate-fadeIn">
+            <button
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold focus:outline-none"
+              onClick={() => setShowStatusModal(false)}
+              aria-label="Close modal"
+            >
+              &times;
+            </button>
+            {/* Modal Content */}
+            <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">Modal Title</h2>
+            <p className="text-gray-600 mb-6 text-center">Bu yerda modal mazmuni bo'ladi. Siz bu joyga kerakli ma'lumot yoki formani joylashtirishingiz mumkin.</p>
+            <div className="flex justify-center">
+              <button
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition duration-200"
+                onClick={() => setShowStatusModal(false)}
+              >
+                Yopish
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
