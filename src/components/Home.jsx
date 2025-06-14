@@ -124,6 +124,139 @@ const Home = () => {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
+
+  // AI status constants with descriptions
+  const AI_STATUS = {
+    INTERESTING_FACT: 'interesting_fact',
+    FUNNY: 'funny',
+    VERIFIED: 'verified',
+    FAKE: 'fake',
+    USEFUL: 'useful',
+    DEBATABLE: 'debatable',
+    EDUCATIONAL: 'educational',
+    TRENDING: 'trending',
+    INSPIRATIONAL: 'inspirational',
+    BREAKING_NEWS: 'breaking_news',
+    OPINION: 'opinion',
+    RESEARCH: 'research',
+    CULTURAL: 'cultural',
+    HISTORICAL: 'historical',
+    INNOVATIVE: 'innovative'
+  };
+
+  // AI status styles, icons and descriptions
+  const AI_STATUS_CONFIG = {
+    interesting_fact: {
+      color: '#4285F4',
+      icon: '🌟',
+      label: 'Qiziqarli',
+      description: 'Istan AI: Bu post qiziqarli va o\'quvchilar uchun foydali faktlarni o\'z ichiga oladi. Bunday postlar odatda yangi bilim va tushunchalarni taqdim etadi.'
+    },
+    funny: {
+      color: '#FBBC05',
+      icon: '😄',
+      label: 'Kulgu',
+      description: 'Istan AI: Bu post ko\'pchilikni kuldiradigan va kayfiyatni ko\'taradigan mazmunda. Ijobiy emotsiyalar uchun tavsiya etiladi!'
+    },
+    verified: {
+      color: '#34A853',
+      icon: '✓',
+      label: 'Aniq',
+      description: 'Istan AI: Bu postdagi ma\'lumotlar ishonchli manbalardan olingan va tekshirilgan. Siz bu ma\'lumotlarga ishonishingiz mumkin.'
+    },
+    fake: {
+      color: '#EA4335',
+      icon: '⚠️',
+      label: 'Yolg\'on',
+      description: 'Istan AI: Bu postdagi ma\'lumotlar noto\'g\'ri yoki chalg\'ituvchi. Iltimos, tanqidiy fikrlang va tekshirib ko\'ring.'
+    },
+    useful: {
+      color: '#1DA1F2',
+      icon: '💡',
+      label: 'Foydali',
+      description: 'Istan AI: Bu post amaliy ahamiyatga ega va kundalik hayotda qo\'llash mumkin bo\'lgan ma\'lumotlarni o\'z ichiga oladi.'
+    },
+    debatable: {
+      color: '#9AA0A6',
+      icon: '🤔',
+      label: 'Bahs',
+      description: 'Istan AI: Bu mavzu bo\'yicha turli fikrlar mavjud. Siz ham o\'z fikringizni bildiring va boshqalar bilan muhokama qiling.'
+    },
+    educational: {
+      color: '#8E44AD',
+      icon: '📚',
+      label: 'Ta\'lim',
+      description: 'Istan AI: Bu post ta\'lim va o\'qitish maqsadida yaratilgan. O\'quvchilar uchun foydali ma\'lumotlar mavjud.'
+    },
+    trending: {
+      color: '#E91E63',
+      icon: '📈',
+      label: 'Trend',
+      description: 'Istan AI: Bu post hozirda eng ko\'p muhokama qilinayotgan mavzulardan biri. Dolzarb yangiliklar va tendentsiyalar haqida.'
+    },
+    inspirational: {
+      color: '#FF9800',
+      icon: '✨',
+      label: 'Ilhom',
+      description: 'Istan AI: Bu post ilhomlantiruvchi va ruhlantiruvchi mazmunda. Hayotiy motivatsiya va ijobiy o\'zgarishlar haqida.'
+    },
+    breaking_news: {
+      color: '#F44336',
+      icon: '🔥',
+      label: 'Muhim',
+      description: 'Istan AI: Bu post muhim va shoshilinch yangilik. Tezkor xabar berish maqsadida joylangan.'
+    },
+    opinion: {
+      color: '#795548',
+      icon: '💭',
+      label: 'Fikr',
+      description: 'Istan AI: Bu post muallifning shaxsiy fikr-mulohazalari. Boshqalar bilan o\'z nuqtai nazaringizni ulashing.'
+    },
+    research: {
+      color: '#607D8B',
+      icon: '🔬',
+      label: 'Tadqiqot',
+      description: 'Istan AI: Bu post ilmiy tadqiqot va izlanishlar natijalarini o\'z ichiga oladi. Chuqur tahlil va xulosalar mavjud.'
+    },
+    cultural: {
+      color: '#009688',
+      icon: '🎭',
+      label: 'Madaniy',
+      description: 'Istan AI: Bu post madaniyat, san\'at va milliy qadriyatlar haqida. O\'zbek madaniyatining boy merosi aks etgan.'
+    },
+    historical: {
+      color: '#827717',
+      icon: '📜',
+      label: 'Tarixiy',
+      description: 'Istan AI: Bu post tarixiy voqealar va shaxslar haqida. O\'tmishdan saboq olish va kelajakka yo\'l ochish uchun.'
+    },
+    innovative: {
+      color: '#00BCD4',
+      icon: '🚀',
+      label: 'Innovatsion',
+      description: 'Istan AI: Bu post yangi g\'oyalar va innovatsion yechimlar haqida. Zamonaviy texnologiyalar va kashfiyotlar.'
+    }
+  };
+
+  // State for showing AI status description modal
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState(null);
+
+  // Function to show AI status description
+  const showAIStatusDescription = (status) => {
+    setSelectedStatus(status);
+    setShowStatusModal(true);
+  };
+
+  // Function to analyze content and assign AI status
+  const getAIStatus = (post) => {
+    // Here you would normally make an API call to your AI service
+    // For demo, we'll assign a random status that won't change for the same post
+    const statuses = Object.keys(AI_STATUS);
+    // Use post.id to generate a consistent random index for each post
+    const randomIndex = Math.floor((parseInt(post.id) % statuses.length));
+    return AI_STATUS[statuses[randomIndex]];
+  };
   
   // Observer for infinite scrolling
   const observer = useRef();
@@ -1287,10 +1420,127 @@ const Home = () => {
             return (
               <div 
                 key={post.id}
-                className="post"
-                style={{ animation: `fadeIn 0.3s ease forwards ${index * 0.1}s` }}
+                className="post milliy-post"
+                style={{ 
+                  animation: `fadeIn 0.3s ease forwards ${index * 0.1}s`,
+                  background: 'linear-gradient(to bottom, #ffffff, #f8f8f8)'
+                }}
                 ref={isLastItem ? lastPostElementRef : null}
               >
+                {/* AI Status Badge */}
+                <div 
+                  className="ai-status-badge"
+                  onClick={() => showAIStatusDescription(getAIStatus(post))}
+                  style={{
+                    cursor: 'pointer',
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    padding: '6px 12px',
+                    borderRadius: '16px',
+                    backgroundColor: `${AI_STATUS_CONFIG[getAIStatus(post)].color}dd`,
+                    backdropFilter: 'blur(4px)',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                    zIndex: 1,
+                    transition: 'all 0.2s ease',
+                    animation: 'pulse 2s infinite'
+                  }}
+                >
+                  <span style={{ fontSize: '16px' }}>{AI_STATUS_CONFIG[getAIStatus(post)].icon}</span>
+                  <span>{AI_STATUS_CONFIG[getAIStatus(post)].label}</span>
+                </div>
+
+                {/* AI Status Description Modal */}
+                {showStatusModal && selectedStatus === getAIStatus(post) && (
+                  <div 
+                    className="ai-status-modal"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowStatusModal(false);
+                    }}
+                    style={{
+                      position: 'fixed',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      zIndex: 1000,
+                      padding: '20px'
+                    }}
+                  >
+                    <div 
+                      className="modal-content"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{
+                        backgroundColor: '#fff',
+                        borderRadius: '20px',
+                        padding: '20px',
+                        maxWidth: '90%',
+                        width: '340px',
+                        position: 'relative',
+                        animation: 'slideUp 0.3s ease'
+                      }}
+                    >
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginBottom: '15px',
+                        gap: '10px',
+                        padding: '8px 12px',
+                        borderRadius: '12px',
+                        backgroundColor: `${AI_STATUS_CONFIG[selectedStatus].color}22`
+                      }}>
+                        <span style={{ fontSize: '24px' }}>{AI_STATUS_CONFIG[selectedStatus].icon}</span>
+                        <span style={{ 
+                          fontSize: '16px',
+                          fontWeight: '600',
+                          color: AI_STATUS_CONFIG[selectedStatus].color
+                        }}>{AI_STATUS_CONFIG[selectedStatus].label}</span>
+                      </div>
+                      
+                      <p style={{
+                        margin: '0',
+                        fontSize: '14px',
+                        lineHeight: '1.5',
+                        color: '#333'
+                      }}>
+                        {AI_STATUS_CONFIG[selectedStatus].description}
+                      </p>
+
+                      <button
+                        onClick={() => setShowStatusModal(false)}
+                        style={{
+                          position: 'absolute',
+                          top: '-12px',
+                          right: '-12px',
+                          width: '30px',
+                          height: '30px',
+                          borderRadius: '50%',
+                          border: 'none',
+                          backgroundColor: '#fff',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '18px'
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                )}
               <div className="post-header">
                 <div className="post-avatar">
                   <img 
@@ -1603,4 +1853,4 @@ const Home = () => {
   );
 };
 
-export default Home; 
+export default Home;
