@@ -38,6 +38,9 @@ preloadedDefaultImage.src = defaultImageUrl;
 const Home = () => {
   const navigate = useNavigate();
   
+  // Foydali funksiyasi uchun state
+  const [usefulStats, setUsefulStats] = useState({});
+  
   // Reference to the actual default image object
   const defaultImageRef = useRef();
   
@@ -91,6 +94,12 @@ const Home = () => {
   const [commentTouchCurrent, setCommentTouchCurrent] = useState(null);
   const [isSwipingComment, setIsSwipingComment] = useState(false);
   const [isClosingComment, setIsClosingComment] = useState(false);
+  
+  // Media long press states
+  const [mediaLongPress, setMediaLongPress] = useState({});
+  const [mediaProgress, setMediaProgress] = useState({});
+  const [mediaTimers, setMediaTimers] = useState({});
+  const [showMediaUseful, setShowMediaUseful] = useState({});
   
   // Stories data state is already declared below
   const [showStoryRow, setShowStoryRow] = useState(false);
@@ -263,7 +272,21 @@ const Home = () => {
   const observer = useRef();
   const lastPostElementRef = useRef();
 
-  // Fetch stories and user data when component mounts
+  // Fetch stories and user data when component mounts  // Har bir post uchun boshlang'ich foydali statistikasini o'rnatish
+  useEffect(() => {
+    if (posts.length > 0) {
+      const initialStats = {};
+      posts.forEach(post => {
+        initialStats[post.id] = {
+          usefulCount: Math.floor(Math.random() * 50),
+          totalCount: Math.floor(Math.random() * 100),
+          initialPercent: Math.floor(Math.random() * 40) + 20
+        };
+      });
+      setUsefulStats(initialStats);
+    }
+  }, [posts]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -584,6 +607,66 @@ const Home = () => {
     if (touchStart[postId]) {
       handleTouchEnd(postId);
     }
+  };
+  
+  // Media long press handlers
+  // Media long press handlers - IMPROVED VERSION
+const handleMediaLongPressStart = (postId) => {
+  if (showMediaUseful[postId]) return;
+  
+  setMediaLongPress(prev => ({ ...prev, [postId]: true }));
+  setMediaProgress(prev => ({ ...prev, [postId]: 0 }));
+  
+  const startTime = Date.now();
+  
+  // Phase 1: 4 second waiting period
+  const waitingTimer = setInterval(() => {
+    const elapsed = Date.now() - startTime;
+    const waitProgress = Math.min((elapsed / 4000) * 100, 100);
+    
+    setMediaProgress(prev => ({ ...prev, [postId]: waitProgress }));
+    
+    if (waitProgress >= 100) {
+      clearInterval(waitingTimer);
+      
+      // Phase 2: Start actual progress after waiting
+      const progressStartTime = Date.now();
+      const progressTimer = setInterval(() => {
+        const progressElapsed = Date.now() - progressStartTime;
+        const actualProgress = Math.min((progressElapsed / 4000) * 100, 100);
+        
+        setMediaProgress(prev => ({ ...prev, [postId]: 100 + actualProgress }));
+        
+        if (actualProgress >= 100) {
+          clearInterval(progressTimer);
+          setShowMediaUseful(prev => ({ ...prev, [postId]: true }));
+          setMediaLongPress(prev => ({ ...prev, [postId]: false }));
+          setMediaProgress(prev => ({ ...prev, [postId]: 0 }));
+        }
+      }, 20);
+      
+      setMediaTimers(prev => ({ ...prev, [postId]: progressTimer }));
+    }
+  }, 20);
+  
+  setMediaTimers(prev => ({ ...prev, [postId]: waitingTimer }));
+};
+
+  const handleMediaLongPressEnd = (postId) => {
+    if (showMediaUseful[postId]) return;
+    
+    const timer = mediaTimers[postId];
+    if (timer) {
+      clearInterval(timer);
+    }
+    
+    setMediaLongPress(prev => ({ ...prev, [postId]: false }));
+    setMediaProgress(prev => ({ ...prev, [postId]: 0 }));
+    setMediaTimers(prev => {
+      const newTimers = { ...prev };
+      delete newTimers[postId];
+      return newTimers;
+    });
   };
   
   // Handle post likes
@@ -1012,7 +1095,7 @@ function getRandomThankYou() {
   return THANK_YOU_MESSAGES[Math.floor(Math.random() * THANK_YOU_MESSAGES.length)];
 }
 
-function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0 }) {
+function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0, onComplete }) {
   const [progress, setProgress] = useState(0);
   const [isPressing, setIsPressing] = useState(false);
   const [showThanks, setShowThanks] = useState(false);
@@ -1024,28 +1107,35 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0 
   const timerRef = useRef(null);
 
   const handleMouseDown = () => {
+    if (showThanks) return; // Agar allaqachon belgilangan bo'lsa, qayta bosishni oldini olish
+    
     setIsPressing(true);
     setShowThanks(false);
     setProgress(0);
     let start = Date.now();
+    
     timerRef.current = setInterval(() => {
       const elapsed = Date.now() - start;
       const percent = Math.min((elapsed / 4000) * 100, 100);
       setProgress(percent);
+      
       if (percent === 100) {
         clearInterval(timerRef.current);
-        const inc = Math.floor(Math.random() * 3) + 1; // 1-3% o‘sish
+        const inc = Math.floor(Math.random() * 3) + 1;
         setNewPercent(oldPercent + inc);
         setThankYou(getRandomThankYou());
         setShowThanks(true);
         setIsPressing(false);
-        setLocalUsefulCount(localUsefulCount + 1);
-        setLocalTotalCount(localTotalCount + 1);
+        setLocalUsefulCount(prev => prev + 1);
+        setLocalTotalCount(prev => prev + 1);
+        if (onComplete) onComplete();
       }
     }, 20);
   };
 
   const handleMouseUp = () => {
+    if (!isPressing || showThanks) return;
+    
     clearInterval(timerRef.current);
     if (progress < 100) {
       setProgress(0);
@@ -1053,13 +1143,21 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0 
     }
   };
 
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
+
   const percent = localTotalCount > 0 ? Math.round((localUsefulCount / localTotalCount) * 100) : 0;
 
   return (
-    <div className="flex flex-col items-center justify-center w-full py-6">
+    <div className="flex flex-col items-center justify-center w-full py-4">
       <div
-        className={`relative w-72 h-36 bg-gradient-to-br from-blue-100 to-blue-300 rounded-2xl shadow-lg flex flex-col items-center justify-center cursor-pointer select-none transition-all duration-200 ${
-          isPressing ? "scale-95" : ""
+        className={`relative w-full h-32 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-sm flex flex-col items-center justify-center cursor-pointer select-none transition-all duration-200 ${
+          isPressing ? "scale-98" : ""
         }`}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
@@ -1067,31 +1165,30 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0 
         onTouchStart={handleMouseDown}
         onTouchEnd={handleMouseUp}
       >
-        <span className="text-lg font-semibold text-blue-800 mb-2">
+        <span className="text-base font-medium text-blue-800 mb-2">
           Ushbu kontent foydalimi?
         </span>
-        <div className="w-56 h-4 bg-blue-200 rounded-full overflow-hidden mb-2">
+        <div className="w-4/5 h-3 bg-blue-200 rounded-full overflow-hidden mb-2">
           <div
             className="h-full bg-blue-500 transition-all duration-100"
             style={{ width: `${progress}%` }}
           />
         </div>
-        <div className="flex justify-between w-56 text-xs text-blue-700">
+        <div className="flex justify-between w-4/5 text-xs text-blue-700">
           <span>Oldin: {oldPercent}%</span>
           <span>Endi: {progress === 100 ? newPercent : oldPercent}%</span>
         </div>
-        <div className="flex justify-between w-56 text-xs text-blue-700 mt-2">
-          <span>Foydali deb topganlar: <b>{localUsefulCount}</b></span>
-          <span>Umumiy ovoz: <b>{localTotalCount}</b></span>
+        <div className="flex justify-between w-4/5 text-xs text-blue-700 mt-2">
+          <span>Foydali topganlar: <b>{localUsefulCount}</b></span>
+          <span>Jami: <b>{localTotalCount}</b></span>
           <span>Foydali: <b>{percent}%</b></span>
         </div>
-        {!showThanks && (
-          <span className="mt-3 text-xs text-gray-500">
-            4 sekund bosib turing...
+        {!showThanks ? (
+          <span className="mt-2 text-xs text-gray-500">
+            4 sekund bosib turing
           </span>
-        )}
-        {showThanks && (
-          <span className="mt-4 text-lg font-bold text-green-600 animate-bounce">
+        ) : (
+          <span className="mt-2 text-sm font-medium text-green-600 animate-bounce">
             {thankYou}
           </span>
         )}
@@ -1324,7 +1421,7 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0 
               <div className="profile-avatar-container">
                 <div className="profile-avatar" style={{ width: "84px", height: "84px" }}>
                   <img 
-                    src={getSafeImageUrl(userData?.profile_picture, 'https://api.istan.uz/')} 
+                    src={getSafeImageUrl(userData?.profile_picture, 'https://api.istan.uz/') || "/placeholder.svg"} 
                     alt="Profile" 
                     className="avatar-img" 
                     onError={handleImageError}
@@ -1403,7 +1500,7 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0 
                       onClick={() => handleStoryClick(userStoryItem)}
                     >
                       <img
-                        src={getSafeImageUrl(userStoryItem.profile_picture, 'https://api.istan.uz/')}
+                        src={getSafeImageUrl(userStoryItem.profile_picture, 'https://api.istan.uz/') || "/placeholder.svg"}
                         alt={userStoryItem.name || 'Story User'}
                         className="story-img"
                         onError={handleImageError}
@@ -1451,7 +1548,7 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0 
               <div className="story-item" onClick={() => handleStoryClick(stories.find(s => s.is_own || (s.stories && s.stories.some(story => story.is_own))))}>  
                 <div className="story-circle">
                   <img 
-                    src={getSafeImageUrl(userInfo?.profile_picture, API_URL2)} 
+                    src={getSafeImageUrl(userInfo?.profile_picture, API_URL2) || "/placeholder.svg"} 
                     alt="Your Story" 
                     onError={handleImageError}
                   />
@@ -1513,17 +1610,17 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0 
         {/* Posts from API */}
         {posts.length > 0 ? (
           posts.map((post, index) => {
-            // Check if this is the last item
             const isLastItem = index === posts.length - 1;
+            const postStats = usefulStats[post.id] || {
+              usefulCount: 0,
+              totalCount: 0,
+              initialPercent: 23
+            };
             
             return (
               <div 
                 key={post.id}
                 className="post milliy-post"
-                style={{ 
-                  animation: `fadeIn 0.3s ease forwards ${index * 0.1}s`,
-                  background: 'linear-gradient(to bottom, #ffffff, #f8f8f8)'
-                }}
                 ref={isLastItem ? lastPostElementRef : null}
               >
                 {/* AI Status Badge */}
@@ -1657,7 +1754,7 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0 
                   height: '58px',
                 }}>
                   <img 
-                    src={getSafeImageUrl(post.user.profile_picture, API_URL2)} 
+                    src={getSafeImageUrl(post.user.profile_picture, API_URL2) || "/placeholder.svg"} 
                     alt={post.user.name} 
                     className="avatar-img"
                     onError={handleImageError}
@@ -1705,14 +1802,314 @@ function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0 
                       {/* Media display with touch/swipe handlers */}
                       <div 
                         className="media-container"
-                        onTouchStart={(e) => handleTouchStart(e, post.id)}
+                        style={{ position: 'relative' }}
+                        onTouchStart={(e) => {
+                          handleTouchStart(e, post.id);
+                          handleMediaLongPressStart(post.id);
+                        }}
                         onTouchMove={(e) => handleTouchMove(e, post.id)}
-                        onTouchEnd={() => handleTouchEnd(post.id)}
-                        onMouseDown={(e) => handleMouseDown(e, post.id)}
+                        onTouchEnd={() => {
+                          handleTouchEnd(post.id);
+                          handleMediaLongPressEnd(post.id);
+                        }}
+                        onMouseDown={(e) => {
+                          handleMouseDown(e, post.id);
+                          handleMediaLongPressStart(post.id);
+                        }}
                         onMouseMove={(e) => handleMouseMove(e, post.id)}
-                        onMouseUp={() => handleMouseUp(post.id)}
-                        onMouseLeave={() => handleMouseLeave(post.id)}
+                        onMouseUp={() => {
+                          handleMouseUp(post.id);
+                          handleMediaLongPressEnd(post.id);
+                        }}
+                        onMouseLeave={() => {
+                          handleMouseLeave(post.id);
+                          handleMediaLongPressEnd(post.id);
+                        }}
                       >
+                        {/* Long Press Progress Overlay - IMPROVED */}
+{mediaLongPress[post.id] && (
+  <div style={{
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    right: '0',
+    bottom: '0',
+    zIndex: 10,
+    background: 'rgba(0,0,0,0.75)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backdropFilter: 'blur(2px)'
+  }}>
+    <div style={{
+      background: 'rgba(255,255,255,0.95)',
+      borderRadius: '20px',
+      padding: '24px',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '16px',
+      minWidth: '160px',
+      boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+      transform: 'scale(1)',
+      animation: 'fadeInScale 0.3s ease-out'
+    }}>
+      {/* Progress Circle */}
+      <div style={{
+        width: '80px',
+        height: '80px',
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <svg style={{ 
+          width: '80px', 
+          height: '80px', 
+          transform: 'rotate(-90deg)', 
+          position: 'absolute' 
+        }}>
+          {/* Background circle */}
+          <circle
+            cx="40"
+            cy="40"
+            r="32"
+            stroke="rgba(79, 70, 229, 0.2)"
+            strokeWidth="6"
+            fill="none"
+          />
+          {/* Progress circle */}
+          <circle
+            cx="40"
+            cy="40"
+            r="32"
+            stroke={mediaProgress[post.id] <= 100 ? "#6366f1" : "#10b981"}
+            strokeWidth="6"
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray={201.06}
+            strokeDashoffset={201.06 - ((mediaProgress[post.id] <= 100 ? mediaProgress[post.id] : mediaProgress[post.id] - 100) / 100) * 201.06}
+            style={{ 
+              transition: 'stroke-dashoffset 0.1s ease, stroke 0.3s ease',
+              filter: 'drop-shadow(0 0 4px rgba(99, 102, 241, 0.4))'
+            }}
+          />
+        </svg>
+        <div style={{
+          color: mediaProgress[post.id] <= 100 ? '#4f46e5' : '#059669',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          textAlign: 'center'
+        }}>
+          {Math.round(mediaProgress[post.id] <= 100 ? mediaProgress[post.id] : mediaProgress[post.id] - 100)}%
+        </div>
+      </div>
+      
+      {/* Status Text */}
+      <div style={{
+        textAlign: 'center',
+        color: '#374151',
+        fontSize: '13px',
+        lineHeight: '1.4',
+        fontWeight: '500'
+      }}>
+        {mediaProgress[post.id] <= 100 ? (
+          <>
+            <div style={{ color: '#6366f1', fontWeight: '600', marginBottom: '4px' }}>
+              Kutilmoqda...
+            </div>
+            <div>Bosib turing</div>
+          </>
+        ) : (
+          <>
+            <div style={{ color: '#10b981', fontWeight: '600', marginBottom: '4px' }}>
+              Baholanmoqda...
+            </div>
+            <div>Foydali deb belgilanmoqda</div>
+          </>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
+                        {/* Enhanced Useful Rating Component */}
+{showMediaUseful[post.id] && (
+  <div style={{
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    right: '0',
+    bottom: '0',
+    zIndex: 15,
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '20px',
+    animation: 'slideInUp 0.5s ease-out'
+  }}>
+    <div style={{
+      background: 'rgba(255,255,255,0.95)',
+      borderRadius: '24px',
+      padding: '32px 24px',
+      textAlign: 'center',
+      maxWidth: '320px',
+      width: '100%',
+      boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+      backdropFilter: 'blur(10px)',
+      border: '1px solid rgba(255,255,255,0.2)',
+      animation: 'bounceIn 0.6s ease-out 0.2s both'
+    }}>
+      {/* Success Icon */}
+      <div style={{
+        width: '80px',
+        height: '80px',
+        background: 'linear-gradient(135deg, #10b981, #059669)',
+        borderRadius: '50%',
+        margin: '0 auto 20px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        animation: 'pulse 2s infinite'
+      }}>
+        <svg width="40" height="40" fill="white" viewBox="0 0 24 24">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+        </svg>
+      </div>
+      
+      {/* Title */}
+      <h3 style={{
+        color: '#1f2937',
+        fontSize: '20px',
+        fontWeight: '700',
+        margin: '0 0 16px 0',
+        animation: 'fadeInUp 0.6s ease-out 0.4s both'
+      }}>
+        Sizning fikringiz qabul qilindi!
+      </h3>
+      
+      {/* Progress Circle */}
+      <div style={{
+        width: '100px',
+        height: '100px',
+        margin: '0 auto 20px',
+        position: 'relative',
+        animation: 'fadeInUp 0.6s ease-out 0.6s both'
+      }}>
+        <svg style={{ width: '100px', height: '100px', transform: 'rotate(-90deg)' }}>
+          <circle
+            cx="50"
+            cy="50"
+            r="40"
+            stroke="rgba(16, 185, 129, 0.2)"
+            strokeWidth="8"
+            fill="none"
+          />
+          <circle
+            cx="50"
+            cy="50"
+            r="40"
+            stroke="#10b981"
+            strokeWidth="8"
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray={251.3}
+            strokeDashoffset={0}
+            style={{ 
+              animation: 'drawCircle 1s ease-out 0.8s both'
+            }}
+          />
+        </svg>
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          color: '#10b981',
+          fontSize: '24px',
+          fontWeight: 'bold'
+        }}>
+          100%
+        </div>
+      </div>
+      
+      {/* Stats */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginBottom: '16px',
+        animation: 'fadeInUp 0.6s ease-out 0.8s both'
+      }}>
+        <span style={{ color: '#6b7280', fontSize: '14px' }}>
+          Oldin: <strong style={{ color: '#374151' }}>{postStats.initialPercent}%</strong>
+        </span>
+        <span style={{ color: '#6b7280', fontSize: '14px' }}>
+          Endi: <strong style={{ color: '#10b981' }}>{postStats.initialPercent + 4}%</strong>
+        </span>
+      </div>
+      
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginBottom: '20px',
+        fontSize: '12px',
+        color: '#6b7280',
+        animation: 'fadeInUp 0.6s ease-out 1s both'
+      }}>
+        <span>Foydali: <strong>{postStats.usefulCount + 1}</strong></span>
+        <span>Jami: <strong>{postStats.totalCount + 1}</strong></span>
+        <span>Foiz: <strong>{Math.round(((postStats.usefulCount + 1) / (postStats.totalCount + 1)) * 100)}%</strong></span>
+      </div>
+      
+      {/* Thank you message */}
+      <div style={{
+        color: '#10b981',
+        fontSize: '18px',
+        fontWeight: '600',
+        animation: 'fadeInUp 0.6s ease-out 1.2s both'
+      }}>
+        Barakalla!
+      </div>
+    </div>
+    
+    {/* Close button */}
+    <button 
+      onClick={() => setShowMediaUseful(prev => ({ ...prev, [post.id]: false }))}
+      style={{
+        position: 'absolute',
+        top: '20px',
+        right: '20px',
+        background: 'rgba(255,255,255,0.2)',
+        border: 'none',
+        borderRadius: '50%',
+        width: '40px',
+        height: '40px',
+        color: 'white',
+        fontSize: '20px',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backdropFilter: 'blur(10px)',
+        transition: 'all 0.3s ease',
+        animation: 'fadeIn 0.6s ease-out 1.4s both'
+      }}
+      onMouseEnter={(e) => {
+        e.target.style.background = 'rgba(255,255,255,0.3)';
+        e.target.style.transform = 'scale(1.1)';
+      }}
+      onMouseLeave={(e) => {
+        e.target.style.background = 'rgba(255,255,255,0.2)';
+        e.target.style.transform = 'scale(1)';
+      }}
+    >
+      ×
+    </button>
+  </div>
+)}
+
+                        {/* Existing media content */}
                         {currentMedia.media_type === 'image' ? (
                           <img 
                             src={currentMedia.file_url.startsWith('http') 
