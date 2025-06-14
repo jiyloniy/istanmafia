@@ -150,49 +150,49 @@ const Home = () => {
       // ranglarni teskari rangga almashtirish kerak
       color: '#ffffff',
 
-      label: 'Qiziqarli',
+      label: 'qiziqarli',
       description: `Istan AI: Bu post qiziqarli va o‘quvchilar uchun foydali faktlarni o‘z ichiga oladi. Bunday postlar odatda yangi bilim va tushunchalarni taqdim etadi.`
     },
     funny: {
       color: '#ffffff',
       icon: '😄',
-      label: 'Kulgu',
+      label: 'kulgu',
       description: `Istan AI: Bu post ko‘pchilikni kuldiradigan va kayfiyatni ko‘taradigan mazmunda. Ijobiy emotsiyalar uchun tavsiya etiladi!`
     },
     verified: {
       color: '#ffffff',
       icon: '✓',
-      label: 'Aniq',
+      label: 'aniq',
       description: `Istan AI: Bu postdagi ma’lumotlar ishonchli manbalardan olingan va tekshirilgan. Siz bu ma’lumotlarga ishonishingiz mumkin.`
     },
     fake: {
       color: '#ffffff',
       icon: '⚠️',
-      label: 'Yolg‘on',
+      label: 'yolg‘on',
       description: `Istan AI: Bu postdagi ma’lumotlar noto‘g‘ri yoki chalg‘ituvchi. Iltimos, tanqidiy fikrlang va tekshirib ko‘ring.`
     },
     useful: {
       color: '#ffffff',
       icon: '💡',
-      label: 'Foydali',
+      label: 'foydali',
       description: `Istan AI: Bu post amaliy ahamiyatga ega va kundalik hayotda qo‘llash mumkin bo‘lgan ma’lumotlarni o‘z ichiga oladi.`
     },
     debatable: {
       color: '#ffffff',
       icon: '🤔',
-      label: 'Bahs',
+      label: 'bahs',
       description: `Istan AI: Bu mavzu bo‘yicha turli fikrlar mavjud. Siz ham o‘z fikringizni bildiring va boshqalar bilan muhokama qiling.`
     },
     educational: {
       color: '#ffffff',
       // icon: '📚',
-      label: 'Talim',
+      label: 'talim',
       description: `Istan AI: Bu post taʼlim va o‘qitish maqsadida yaratilgan. O‘quvchilar uchun foydali maʼlumotlar mavjud.`
     },
     trending: {
       color: '#ffffff',
       icon: '📈',
-      label: 'Trend',
+      label: 'trend',
       description: `Istan AI: Bu post hozirda eng ko‘p muhokama qilinayotgan mavzulardan biri. Dolzarb yangiliklar va tendentsiyalar haqida.`
     },
     inspirational: {
@@ -204,37 +204,37 @@ const Home = () => {
     breaking_news: {
       color: '#ffffff',
       icon: '🔥',
-      label: 'Muhim',
+      label: 'muhim',
       description: `Istan AI: Bu post muhim va shoshilinch yangilik. Tezkor xabar berish maqsadida joylangan.`
     },
     opinion: {
       color: '#ffffff',
       icon: '💭',
-      label: 'Fikr',
+      label: 'fikr',
       description: `Istan AI: Bu post muallifning shaxsiy fikr-mulohazalari. Boshqalar bilan o‘z nuqtai nazaringizni ulashing.`
     },
     research: {
       color: '#ffffff',
       icon: '🔬',
-      label: 'Tadqiqot',
+      label: 'tadqiqot',
       description: `Istan AI: Bu post ilmiy tadqiqot va izlanishlar natijalarini o‘z ichiga oladi. Chuqur tahlil va xulosalar mavjud.`
     },
     cultural: {
       color: '#ffffff',
       icon: '🎭',
-      label: 'Madaniy',
+      label: 'madaniy',
       description: `Istan AI: Bu post madaniyat, sanʼat va milliy qadriyatlar haqida. O‘zbek madaniyatining boy merosi aks etgan.`
     },
     historical: {
       color: '#ffffff',
       icon: '📜',
-      label: 'Tarixiy',
+      label: 'tarixiy',
       description: `Istan AI: Bu post tarixiy voqealar va shaxslar haqida. O‘tmishdan saboq olish va kelajakka yo‘l ochish uchun.`
     },
     innovative: {
       color: '#ffffff',
       icon: '🚀',
-      label: 'Innovatsion',
+      label: 'innovatsion',
       description: `Istan AI: Bu post yangi g‘oyalar va innovatsion yechimlar haqida. Zamonaviy texnologiyalar va kashfiyotlar.`
     }
   };
@@ -1000,6 +1000,107 @@ const Home = () => {
     return () => clearInterval(timer);
   }, [showStory, activeUserStory, activeStoryIndex, isPaused, isMediaLoaded]);
 
+  // --- FOYDALI LONG PRESS KOMPONENTI ---
+const THANK_YOU_MESSAGES = [
+  "Rahmat!",
+  "Sizning fikringiz biz uchun muhim!",
+  "Bahoyingiz uchun tashakkur!",
+  "Sizga minnatdormiz!",
+];
+
+function getRandomThankYou() {
+  return THANK_YOU_MESSAGES[Math.floor(Math.random() * THANK_YOU_MESSAGES.length)];
+}
+
+function UsefulLongPress({ initialPercent = 23, usefulCount = 0, totalCount = 0 }) {
+  const [progress, setProgress] = useState(0);
+  const [isPressing, setIsPressing] = useState(false);
+  const [showThanks, setShowThanks] = useState(false);
+  const [oldPercent, setOldPercent] = useState(initialPercent);
+  const [newPercent, setNewPercent] = useState(initialPercent);
+  const [thankYou, setThankYou] = useState("");
+  const [localUsefulCount, setLocalUsefulCount] = useState(usefulCount);
+  const [localTotalCount, setLocalTotalCount] = useState(totalCount);
+  const timerRef = useRef(null);
+
+  const handleMouseDown = () => {
+    setIsPressing(true);
+    setShowThanks(false);
+    setProgress(0);
+    let start = Date.now();
+    timerRef.current = setInterval(() => {
+      const elapsed = Date.now() - start;
+      const percent = Math.min((elapsed / 4000) * 100, 100);
+      setProgress(percent);
+      if (percent === 100) {
+        clearInterval(timerRef.current);
+        const inc = Math.floor(Math.random() * 3) + 1; // 1-3% o‘sish
+        setNewPercent(oldPercent + inc);
+        setThankYou(getRandomThankYou());
+        setShowThanks(true);
+        setIsPressing(false);
+        setLocalUsefulCount(localUsefulCount + 1);
+        setLocalTotalCount(localTotalCount + 1);
+      }
+    }, 20);
+  };
+
+  const handleMouseUp = () => {
+    clearInterval(timerRef.current);
+    if (progress < 100) {
+      setProgress(0);
+      setIsPressing(false);
+    }
+  };
+
+  const percent = localTotalCount > 0 ? Math.round((localUsefulCount / localTotalCount) * 100) : 0;
+
+  return (
+    <div className="flex flex-col items-center justify-center w-full py-6">
+      <div
+        className={`relative w-72 h-36 bg-gradient-to-br from-blue-100 to-blue-300 rounded-2xl shadow-lg flex flex-col items-center justify-center cursor-pointer select-none transition-all duration-200 ${
+          isPressing ? "scale-95" : ""
+        }`}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onTouchStart={handleMouseDown}
+        onTouchEnd={handleMouseUp}
+      >
+        <span className="text-lg font-semibold text-blue-800 mb-2">
+          Ushbu kontent foydalimi?
+        </span>
+        <div className="w-56 h-4 bg-blue-200 rounded-full overflow-hidden mb-2">
+          <div
+            className="h-full bg-blue-500 transition-all duration-100"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <div className="flex justify-between w-56 text-xs text-blue-700">
+          <span>Oldin: {oldPercent}%</span>
+          <span>Endi: {progress === 100 ? newPercent : oldPercent}%</span>
+        </div>
+        <div className="flex justify-between w-56 text-xs text-blue-700 mt-2">
+          <span>Foydali deb topganlar: <b>{localUsefulCount}</b></span>
+          <span>Umumiy ovoz: <b>{localTotalCount}</b></span>
+          <span>Foydali: <b>{percent}%</b></span>
+        </div>
+        {!showThanks && (
+          <span className="mt-3 text-xs text-gray-500">
+            4 sekund bosib turing...
+          </span>
+        )}
+        {showThanks && (
+          <span className="mt-4 text-lg font-bold text-green-600 animate-bounce">
+            {thankYou}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+// --- KOMPONENTNI KARTAGA QO'SHISH UCHUN MISOL ---
+<UsefulLongPress initialPercent={23} usefulCount={12} totalCount={20} />
   return (
     <div className="app-container">
       {/* {showSettings && <Settings onClose={() => setShowSettings(false)} />} */}
@@ -1432,14 +1533,14 @@ const Home = () => {
                   style={{
                     cursor: 'pointer',
                     position: 'absolute',
-                    top: '30px',
+                    top: '35px',
                     right: '16px',
                     left: 'auto',
                     padding: '4px 12px',
-                    borderRadius: '10px',
-                    background: 'none',
+                    // borderRadius: '10px',
+                    // background: 'none',
                     color: '#222',
-                    border: '1.5px solid #222',
+                    // border: '1.5px solid #222',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
@@ -1451,9 +1552,21 @@ const Home = () => {
                     flexWrap: 'nowrap',
                     letterSpacing: '0.01em',
                     boxShadow: 'none',
+                    // add italic font style
+                    fontStyle: 'italic',
                   }}
                 >
-                  <span style={{ fontSize: '15px', fontWeight: 700 }}>{AI_STATUS_CONFIG[getAIStatus(post)].label}</span>
+                  
+                  <span style={{ fontSize: '14px', fontWeight: 700 }}>
+                    <span style={{
+                      fontSize:'15px',
+                      fontStyle:'normal',
+                    }}>
+                      AI tekshirgan:{' '}  
+                    </span>
+                    {AI_STATUS_CONFIG[getAIStatus(post)].label}
+                    
+                    </span>
                   
                 </div>
                   
@@ -1496,9 +1609,7 @@ const Home = () => {
 
                         // backgroundColor: AI_STATUS_CONFIG[selectedStatus].color + '18'
                       }}>
-                        {/* <span style={{ fontSize: '22px' }}>{AI_STATUS_CONFIG[selectedStatus].icon}</span> */}
-                        <span style={{ fontSize: '15px', fontWeight: 700, color: AI_STATUS_CONFIG[selectedStatus].color }}>{AI_STATUS_CONFIG[selectedStatus].label}</span>
-                        {/* <span style={{ fontSize: '15px', marginLeft: '2px' }}>🤖</span> */}
+                        
                       </div>
                       <p style={{
                         margin: '0',
