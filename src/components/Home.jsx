@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import './home.css';
-import { API, API_HOST, API_PORT, getTokens, likePost, savePost, addComment, getComments, deleteComment, getStoryFeed, viewStory, getMe, API_URL2, ENDPOINTS, API_URL } from '../config/api';
-
+import { API, API_HOST, API_PORT, getTokens, likePost, savePost, addComment, getComments, getStoryFeed, viewStory, getMe, API_URL2, ENDPOINTS, API_URL } from '../config/api';
+import {deleteComment} from '../config/api';
 // Import image assets
 // Note: In a real project, you would import actual image files
 // These are placeholders for demonstration
@@ -147,94 +147,95 @@ const Home = () => {
   // AI status styles, icons and descriptions
   const AI_STATUS_CONFIG = {
     interesting_fact: {
-      color: '#4285F4',
+      // ranglarni teskari rangga almashtirish kerak
+      color: '#ffffff',
       icon: '🌟',
       label: 'Qiziqarli',
-      description: 'Istan AI: Bu post qiziqarli va o\'quvchilar uchun foydali faktlarni o\'z ichiga oladi. Bunday postlar odatda yangi bilim va tushunchalarni taqdim etadi.'
+      description: `Istan AI: Bu post qiziqarli va o‘quvchilar uchun foydali faktlarni o‘z ichiga oladi. Bunday postlar odatda yangi bilim va tushunchalarni taqdim etadi.`
     },
     funny: {
-      color: '#FBBC05',
+      color: '#ffffff',
       icon: '😄',
       label: 'Kulgu',
-      description: 'Istan AI: Bu post ko\'pchilikni kuldiradigan va kayfiyatni ko\'taradigan mazmunda. Ijobiy emotsiyalar uchun tavsiya etiladi!'
+      description: `Istan AI: Bu post ko‘pchilikni kuldiradigan va kayfiyatni ko‘taradigan mazmunda. Ijobiy emotsiyalar uchun tavsiya etiladi!`
     },
     verified: {
-      color: '#34A853',
+      color: '#ffffff',
       icon: '✓',
       label: 'Aniq',
-      description: 'Istan AI: Bu postdagi ma\'lumotlar ishonchli manbalardan olingan va tekshirilgan. Siz bu ma\'lumotlarga ishonishingiz mumkin.'
+      description: `Istan AI: Bu postdagi ma’lumotlar ishonchli manbalardan olingan va tekshirilgan. Siz bu ma’lumotlarga ishonishingiz mumkin.`
     },
     fake: {
-      color: '#EA4335',
+      color: '#ffffff',
       icon: '⚠️',
-      label: 'Yolg\'on',
-      description: 'Istan AI: Bu postdagi ma\'lumotlar noto\'g\'ri yoki chalg\'ituvchi. Iltimos, tanqidiy fikrlang va tekshirib ko\'ring.'
+      label: 'Yolg‘on',
+      description: `Istan AI: Bu postdagi ma’lumotlar noto‘g‘ri yoki chalg‘ituvchi. Iltimos, tanqidiy fikrlang va tekshirib ko‘ring.`
     },
     useful: {
-      color: '#1DA1F2',
+      color: '#ffffff',
       icon: '💡',
       label: 'Foydali',
-      description: 'Istan AI: Bu post amaliy ahamiyatga ega va kundalik hayotda qo\'llash mumkin bo\'lgan ma\'lumotlarni o\'z ichiga oladi.'
+      description: `Istan AI: Bu post amaliy ahamiyatga ega va kundalik hayotda qo‘llash mumkin bo‘lgan ma’lumotlarni o‘z ichiga oladi.`
     },
     debatable: {
-      color: '#9AA0A6',
+      color: '#ffffff',
       icon: '🤔',
       label: 'Bahs',
-      description: 'Istan AI: Bu mavzu bo\'yicha turli fikrlar mavjud. Siz ham o\'z fikringizni bildiring va boshqalar bilan muhokama qiling.'
+      description: `Istan AI: Bu mavzu bo‘yicha turli fikrlar mavjud. Siz ham o‘z fikringizni bildiring va boshqalar bilan muhokama qiling.`
     },
     educational: {
-      color: '#8E44AD',
+      color: '#ffffff',
       icon: '📚',
-      label: 'Ta\'lim',
-      description: 'Istan AI: Bu post ta\'lim va o\'qitish maqsadida yaratilgan. O\'quvchilar uchun foydali ma\'lumotlar mavjud.'
+      label: 'Talim',
+      description: `Istan AI: Bu post taʼlim va o‘qitish maqsadida yaratilgan. O‘quvchilar uchun foydali maʼlumotlar mavjud.`
     },
     trending: {
-      color: '#E91E63',
+      color: '#ffffff',
       icon: '📈',
       label: 'Trend',
-      description: 'Istan AI: Bu post hozirda eng ko\'p muhokama qilinayotgan mavzulardan biri. Dolzarb yangiliklar va tendentsiyalar haqida.'
+      description: `Istan AI: Bu post hozirda eng ko‘p muhokama qilinayotgan mavzulardan biri. Dolzarb yangiliklar va tendentsiyalar haqida.`
     },
     inspirational: {
-      color: '#FF9800',
+      color: '#ffffff',
       icon: '✨',
       label: 'Ilhom',
-      description: 'Istan AI: Bu post ilhomlantiruvchi va ruhlantiruvchi mazmunda. Hayotiy motivatsiya va ijobiy o\'zgarishlar haqida.'
+      description: `Istan AI: Bu post ilhomlantiruvchi va ruhlantiruvchi mazmunda. Hayotiy motivatsiya va ijobiy o‘zgarishlar haqida.`
     },
     breaking_news: {
-      color: '#F44336',
+      color: '#ffffff',
       icon: '🔥',
       label: 'Muhim',
-      description: 'Istan AI: Bu post muhim va shoshilinch yangilik. Tezkor xabar berish maqsadida joylangan.'
+      description: `Istan AI: Bu post muhim va shoshilinch yangilik. Tezkor xabar berish maqsadida joylangan.`
     },
     opinion: {
-      color: '#795548',
+      color: '#ffffff',
       icon: '💭',
       label: 'Fikr',
-      description: 'Istan AI: Bu post muallifning shaxsiy fikr-mulohazalari. Boshqalar bilan o\'z nuqtai nazaringizni ulashing.'
+      description: `Istan AI: Bu post muallifning shaxsiy fikr-mulohazalari. Boshqalar bilan o‘z nuqtai nazaringizni ulashing.`
     },
     research: {
-      color: '#607D8B',
+      color: '#ffffff',
       icon: '🔬',
       label: 'Tadqiqot',
-      description: 'Istan AI: Bu post ilmiy tadqiqot va izlanishlar natijalarini o\'z ichiga oladi. Chuqur tahlil va xulosalar mavjud.'
+      description: `Istan AI: Bu post ilmiy tadqiqot va izlanishlar natijalarini o‘z ichiga oladi. Chuqur tahlil va xulosalar mavjud.`
     },
     cultural: {
-      color: '#009688',
+      color: '#ffffff',
       icon: '🎭',
       label: 'Madaniy',
-      description: 'Istan AI: Bu post madaniyat, san\'at va milliy qadriyatlar haqida. O\'zbek madaniyatining boy merosi aks etgan.'
+      description: `Istan AI: Bu post madaniyat, sanʼat va milliy qadriyatlar haqida. O‘zbek madaniyatining boy merosi aks etgan.`
     },
     historical: {
-      color: '#827717',
+      color: '#ffffff',
       icon: '📜',
       label: 'Tarixiy',
-      description: 'Istan AI: Bu post tarixiy voqealar va shaxslar haqida. O\'tmishdan saboq olish va kelajakka yo\'l ochish uchun.'
+      description: `Istan AI: Bu post tarixiy voqealar va shaxslar haqida. O‘tmishdan saboq olish va kelajakka yo‘l ochish uchun.`
     },
     innovative: {
-      color: '#00BCD4',
+      color: '#ffffff',
       icon: '🚀',
       label: 'Innovatsion',
-      description: 'Istan AI: Bu post yangi g\'oyalar va innovatsion yechimlar haqida. Zamonaviy texnologiyalar va kashfiyotlar.'
+      description: `Istan AI: Bu post yangi g‘oyalar va innovatsion yechimlar haqida. Zamonaviy texnologiyalar va kashfiyotlar.`
     }
   };
 
@@ -1011,9 +1012,6 @@ const Home = () => {
           className="story-viewer"
           onTouchStart={() => setIsPaused(true)}
           onTouchEnd={() => setIsPaused(false)}
-          onMouseDown={() => setIsPaused(true)}
-          onMouseUp={() => setIsPaused(false)}
-          onMouseLeave={() => setIsPaused(false)}
         >
           {/* Progress bars */}
           <div className="story-progress-container">
@@ -1427,39 +1425,38 @@ const Home = () => {
                 }}
                 ref={isLastItem ? lastPostElementRef : null}
               >
-                {/* Status color bar */}
-                <div className={`status-bar status-bar-${getAIStatus(post)}`}></div>
                 {/* AI Status Badge */}
-                <div 
+                <div
                   className={`ai-status-badge ai-status-${getAIStatus(post)}`}
                   onClick={() => showAIStatusDescription(getAIStatus(post))}
                   style={{
                     cursor: 'pointer',
                     position: 'absolute',
-                    top: '10px',
-                    right: '10px',
-                    padding: '6px 12px',
-                    borderRadius: '16px',
-                    backdropFilter: 'blur(4px)',
-                    color: '#fff',
+                    top: '16px',
+                    left: '16px',
+                    padding: '6px 14px 6px 10px',
+                    borderRadius: '18px',
+                    background: AI_STATUS_CONFIG[getAIStatus(post)].color + '22',
+                    color: AI_STATUS_CONFIG[getAIStatus(post)].color,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
-                    fontSize: '13px',
-                    fontWeight: '600',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                    zIndex: 1,
-                    transition: 'all 0.2s ease',
-                    animation: 'pulse 2s infinite'
+                    gap: '7px',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+                    zIndex: 2,
+                    border: '1.5px solid ' + AI_STATUS_CONFIG[getAIStatus(post)].color,
+                    transition: 'all 0.2s',
                   }}
                 >
-                  <span style={{ fontSize: '16px' }}>{AI_STATUS_CONFIG[getAIStatus(post)].icon}</span>
-                  <span>{AI_STATUS_CONFIG[getAIStatus(post)].label}</span>
+                  <span style={{ fontSize: '17px' }}>{AI_STATUS_CONFIG[getAIStatus(post)].icon}</span>
+                  <span style={{ fontSize: '15px', fontWeight: 700 }}>{AI_STATUS_CONFIG[getAIStatus(post)].label}</span>
+                  <span style={{ fontSize: '15px', marginLeft: '2px' }}>🤖</span>
                 </div>
 
                 {/* AI Status Description Modal */}
                 {showStatusModal && selectedStatus === getAIStatus(post) && (
-                  <div 
+                  <div
                     className="ai-status-modal"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -1471,7 +1468,7 @@ const Home = () => {
                       left: 0,
                       right: 0,
                       bottom: 0,
-                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      backgroundColor: 'rgba(0,0,0,0.35)',
                       display: 'flex',
                       justifyContent: 'center',
                       alignItems: 'center',
@@ -1479,45 +1476,41 @@ const Home = () => {
                       padding: '20px'
                     }}
                   >
-                    <div 
+                    <div
                       className="modal-content"
                       onClick={(e) => e.stopPropagation()}
                       style={{
                         backgroundColor: '#fff',
-                        borderRadius: '20px',
-                        padding: '20px',
-                        maxWidth: '90%',
+                        borderRadius: '18px',
+                        padding: '22px',
+                        maxWidth: '95%',
                         width: '340px',
                         position: 'relative',
-                        animation: 'slideUp 0.3s ease'
+                        boxShadow: '0 4px 24px rgba(0,0,0,0.10)'
                       }}
                     >
                       <div style={{
                         display: 'flex',
                         alignItems: 'center',
-                        marginBottom: '15px',
+                        marginBottom: '13px',
                         gap: '10px',
-                        padding: '8px 12px',
+                        padding: '7px 12px',
                         borderRadius: '12px',
-                        backgroundColor: `${AI_STATUS_CONFIG[selectedStatus].color}22`
+                        backgroundColor: AI_STATUS_CONFIG[selectedStatus].color + '18'
                       }}>
-                        <span style={{ fontSize: '24px' }}>{AI_STATUS_CONFIG[selectedStatus].icon}</span>
-                        <span style={{ 
-                          fontSize: '16px',
-                          fontWeight: '600',
-                          color: AI_STATUS_CONFIG[selectedStatus].color
-                        }}>{AI_STATUS_CONFIG[selectedStatus].label}</span>
+                        <span style={{ fontSize: '22px' }}>{AI_STATUS_CONFIG[selectedStatus].icon}</span>
+                        <span style={{ fontSize: '15px', fontWeight: 700, color: AI_STATUS_CONFIG[selectedStatus].color }}>{AI_STATUS_CONFIG[selectedStatus].label}</span>
+                        <span style={{ fontSize: '15px', marginLeft: '2px' }}>🤖</span>
                       </div>
-                      
                       <p style={{
                         margin: '0',
                         fontSize: '14px',
-                        lineHeight: '1.5',
-                        color: '#333'
+                        lineHeight: '1.6',
+                        color: '#333',
+                        textAlign: 'left'
                       }}>
                         {AI_STATUS_CONFIG[selectedStatus].description}
                       </p>
-
                       <button
                         onClick={() => setShowStatusModal(false)}
                         style={{
@@ -1543,17 +1536,39 @@ const Home = () => {
                   </div>
                 )}
               <div className="post-header">
-                <div className="post-avatar">
+                <div className="post-avatar" style={{
+                  // background: 'linear-gradient(135deg, #e0e7ff 0%, #fbc2eb 100%)', // Yangi rangli fon
+                  borderRadius: '50%',
+                  padding: '3px',
+                  boxShadow: '0 2px 8px rgba(80,80,180,0.10)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '58px',
+                  height: '58px',
+                }}>
                   <img 
                     src={getSafeImageUrl(post.user.profile_picture, API_URL2)} 
                     alt={post.user.name} 
                     className="avatar-img"
                     onError={handleImageError}
+                    style={{
+                      borderRadius: '50%',
+                      width: '52px',
+                      height: '52px',
+                      objectFit: 'cover',
+                      border: '2px solid #fff',
+                    }}
                   />
                 </div>
                 <div className="post-user-info">
                   <div className="user-name-container">
-                    <div className="user-name">{post.user.name}</div>
+                    <div className="user-name" style={{
+                      color: '#4F46E5', // Indigo rang
+                      fontWeight: 700,
+                      fontSize: '16px',
+                      letterSpacing: '0.01em',
+                    }}>{post.user.name}</div>
                     {post.is_own_post && (
                       <div className="verification-badge">
                         <svg className="verification-icon-small" fill="currentColor" viewBox="0 0 24 24">
@@ -1803,7 +1818,6 @@ const Home = () => {
         )}
         </div>
       </main>
-
       {/* Bottom Navigation */}
       <div className="bottom-nav">
         <div className="bottom-nav-container">
@@ -1838,12 +1852,12 @@ const Home = () => {
             >
               <img src={email || Default} alt="Email" className="tab-icon" onError={handleImageError} />
             </button>
-            <button 
+                       <button 
               className={`nav-tab ${activeTab === 'apps' ? 'active-tab' : ''}`} 
               onClick={() => {
                 setActiveTab('apps');
                 navigate('/more-apps');
-                           }}
+              }}
             >
               <img src={apps || Default} alt="Apps" className="tab-icon" onError={handleImageError} />
             </button>
