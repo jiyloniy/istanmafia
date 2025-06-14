@@ -1427,9 +1427,11 @@ const Home = () => {
                 }}
                 ref={isLastItem ? lastPostElementRef : null}
               >
+                {/* Status color bar */}
+                <div className={`status-bar status-bar-${getAIStatus(post)}`}></div>
                 {/* AI Status Badge */}
                 <div 
-                  className="ai-status-badge"
+                  className={`ai-status-badge ai-status-${getAIStatus(post)}`}
                   onClick={() => showAIStatusDescription(getAIStatus(post))}
                   style={{
                     cursor: 'pointer',
@@ -1438,7 +1440,6 @@ const Home = () => {
                     right: '10px',
                     padding: '6px 12px',
                     borderRadius: '16px',
-                    backgroundColor: `${AI_STATUS_CONFIG[getAIStatus(post)].color}dd`,
                     backdropFilter: 'blur(4px)',
                     color: '#fff',
                     display: 'flex',
@@ -1842,7 +1843,7 @@ const Home = () => {
               onClick={() => {
                 setActiveTab('apps');
                 navigate('/more-apps');
-              }}
+                           }}
             >
               <img src={apps || Default} alt="Apps" className="tab-icon" onError={handleImageError} />
             </button>

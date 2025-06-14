@@ -712,11 +712,6 @@
     justify-content: center;
   }
   
-  .badge-count {
-    color: white;
-    font-size: 12px;
-  }
-  
   /* Full-screen Story Viewer */
   .story-viewer {
     position: fixed;
@@ -2135,3 +2130,48 @@
     background-color: #3897f0;
     transform: scale(1.2);
   }
+  
+  /* AI status color classes */
+.ai-status-badge { /* ...existing code... */ }
+.ai-status-interesting_fact { background-color: #4285F4dd !important; }
+.ai-status-funny { background-color: #FBBC05dd !important; }
+.ai-status-verified { background-color: #34A853dd !important; }
+.ai-status-fake { background-color: #EA4335dd !important; }
+.ai-status-useful { background-color: #1DA1F2dd !important; }
+.ai-status-debatable { background-color: #9AA0A6dd !important; }
+.ai-status-educational { background-color: #8E44ADdd !important; }
+.ai-status-trending { background-color: #E91E63dd !important; }
+.ai-status-inspirational { background-color: #FF9800dd !important; }
+.ai-status-breaking_news { background-color: #F44336dd !important; }
+.ai-status-opinion { background-color: #795548dd !important; }
+.ai-status-research { background-color: #607D8Bdd !important; }
+.ai-status-cultural { background-color: #009688dd !important; }
+.ai-status-historical { background-color: #827717dd !important; }
+.ai-status-innovative { background-color: #00BCD4dd !important; }
+
+/* Card top bar for status */
+.status-bar-interesting_fact { background: #4285F4; }
+.status-bar-funny { background: #FBBC05; }
+.status-bar-verified { background: #34A853; }
+.status-bar-fake { background: #EA4335; }
+.status-bar-useful { background: #1DA1F2; }
+.status-bar-debatable { background: #9AA0A6; }
+.status-bar-educational { background: #8E44AD; }
+.status-bar-trending { background: #E91E63; }
+.status-bar-inspirational { background: #FF9800; }
+.status-bar-breaking_news { background: #F44336; }
+.status-bar-opinion { background: #795548; }
+.status-bar-research { background: #607D8B; }
+.status-bar-cultural { background: #009688; }
+.status-bar-historical { background: #827717; }
+.status-bar-innovative { background: #00BCD4; }
+
+.milliy-post .status-bar {
+  content: '';
+  display: block;
+  height: 4px;
+  width: 100%;
+  border-radius: 12px 12px 0 0;
+  margin-bottom: 2px;
+  transition: background 0.3s;
+}
