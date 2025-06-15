@@ -19,6 +19,8 @@ import {
   API_URL,
 } from "../config/api"
 import { deleteComment } from "../config/api"
+// impoer human icon from lucide
+import {  UsersRound } from "lucide-react"
 // Import image assets
 import arxiv from "../assets/arxiv.png"
 import notfikation from "../assets/notfikation.png"
@@ -1560,7 +1562,7 @@ const Home = () => {
                           <div
                             className="user-name"
                             style={{
-                              color: "#4F46E5",
+                              color: "#262626",
                               fontWeight: 700,
                               fontSize: "16px",
                               letterSpacing: "0.01em",
@@ -1891,7 +1893,7 @@ const Home = () => {
                     </div>
 
                     <div className="post-actions">
-                      <div className="action-buttons" style={{ paddingLeft: "0px" }}>
+                      <div className="action-buttons" style={{ }}>
                         <div className="action-buttons-left">
                           <button
                             className={`action-button ${likedPosts[post.id] ? "liked" : ""}`}
@@ -1967,6 +1969,38 @@ const Home = () => {
                             </svg>
                           </button>
                         </div>
+                        <div className="useful-stats-row">
+                        <div className="useful-people">
+                          <span className="useful-people-icon" role="img" aria-label="useful"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-from-line-icon lucide-arrow-up-from-line"><path d="m18 9-6-6-6 6"/><path d="M12 3v14"/><path d="M5 21h14"/></svg></span>
+                          <span className="useful-people-count">{usefulStats[post.id]?.usefulCount || 0}</span>
+                        </div>
+                        <div className="useful-percentage-circle">
+                          <svg width="34" height="34" viewBox="0 0 34 34">
+                            <circle
+                              cx="17"
+                              cy="17"
+                              r="14"
+                              stroke="#e6f4fa"
+                              strokeWidth="4"
+                              fill="none"
+                            />
+                            <circle
+                              cx="17"
+                              cy="17"
+                              r="14"
+                              stroke="#1da1f2"
+                              strokeWidth="4"
+                              fill="none"
+                              strokeDasharray={2 * Math.PI * 14}
+                              strokeDashoffset={2 * Math.PI * 14 * (1 - (usefulStats[post.id]?.initialPercent || 0) / 100)}
+                              style={{ transition: 'stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1)' }}
+                            />
+                          </svg>
+                          <span className="useful-percentage-label">
+                            {usefulStats[post.id]?.initialPercent || 0}%
+                          </span>
+                        </div>
+                      </div>
                         <button
                           className={`action-button ${savedPosts[post.id] ? "saved" : ""}`}
                           onClick={() => handleSave(post.id)}
@@ -2009,6 +2043,7 @@ const Home = () => {
                             </svg>
                           )}
                         </button>
+                        
                       </div>
 
                       <div className="likes-container">
@@ -2036,6 +2071,9 @@ const Home = () => {
                           )}
                         </div>
                       </div>
+
+                      {/* Foydalilik statistikasi: odamlar soni va foiz dumaloq bar */}
+                     
 
                       {post.comments_count > 0 && (
                         <div className="comments-count" onClick={() => handleComment(post.id)}>
@@ -2192,3 +2230,4 @@ const Home = () => {
 }
 
 export default Home
+  
