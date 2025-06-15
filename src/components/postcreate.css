@@ -1,4 +1,4 @@
-/* Post Create Styles */
+Post Create Styles
 
 /* Upload Progress Styles */
 
@@ -137,7 +137,7 @@
   z-index: 1000;
 }
 
-.post-create-content .upload-progress-container {
+/* .post-create-content .upload-progress-container {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -149,40 +149,48 @@
   justify-content: center;
   align-items: center;
   z-index: 10;
-}
+} */
 
+/* Modern, centered, beautiful progress bar */
 .upload-progress-container {
-  width: 80%;
-  max-width: 400px;
-  height: 20px;
-  background-color: #f0f0f0;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 340px;
+  height: 22px;
+  background: #f6fafd;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0,168,132,0.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .upload-progress-bar {
   height: 100%;
-  background-color: #00a884;
-  border-radius: 10px;
-  transition: width 0.3s ease;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #00a884 0%, #1da1f2 100%);
+  box-shadow: 0 2px 8px rgba(29,161,242,0.10);
+  transition: width 0.4s cubic-bezier(.4,2,.6,1);
 }
 
 .upload-progress-text {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  left: 0; right: 0; top: 0; bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #333;
-  font-weight: bold;
-  font-size: 12px;
-  margin-top: 10px;
+  color: #00a884;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  text-shadow: 0 1px 4px #fff, 0 0px 2px #1da1f2;
+  pointer-events: none;
 }
 
 /* Success overlay styles */
@@ -738,6 +746,43 @@
   align-items: center;
   justify-content: center;
 }
+.post-fields {
+  padding: 16px;
+  margin-bottom: 10px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.post-fields textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  resize: none;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.post-fields textarea:focus {
+  outline: none;
+  border-color: #00a884;
+}
+
+.post-fields .image-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.post-fields .image-preview img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
 
 .header-title {
   font-size: 18px;
@@ -786,8 +831,8 @@
 }
 
 .tab-button.active {
-  border-bottom-color: #00a884;
-  color: #00a884;
+  border-bottom-color: white;
+  color: white;
   font-weight: 600;
 }
 
@@ -818,6 +863,7 @@
   flex-direction: column;
 }
 
+
 .media-preview {
   flex: 1;
   background-color: #fafafa;
@@ -841,7 +887,7 @@
   justify-content: center;
   color: #8e8e8e;
   text-align: center;
-  padding: 40px;
+  padding: 50px;
 }
 
 .placeholder-icon {
@@ -1116,3 +1162,31 @@
     font-size: 20px;
   }
 }
+
+/* PostEdit modal overlay */
+.post-edit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(255,255,255,0.98); /* yoki rgba(0,0,0,0.15) agar yarim shaffof fon xohlasangiz */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+}
+
+/* Vertical media thumbnails */
+.media-thumbnails-row-vertical {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: 350px;
+  min-width: 64px;
+  margin-right: 16px;
+  background: #fff;
+  padding: 2px 0;
+  box-shadow: 0 2px 8px rgba(29,161,242,0.04);
+  border-radius: 12px;
+}
+
+/* Remove global button and input/textarea overrides */

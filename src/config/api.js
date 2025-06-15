@@ -27,7 +27,8 @@ export const ENDPOINTS = {
     GET_COMMENTS: 'user/posts/:postId/comments/',
     DELETE_COMMENT: 'user/comments/:commentId/',
     POST_SAVE: 'user/posts/:postId/save/',
-    GET_SAVED_POSTS: 'user/posts/saved/'
+    GET_SAVED_POSTS: 'user/posts/saved/',
+    ARTICLE: 'user/create/article/'
 };
 
 // Full API paths
@@ -47,7 +48,8 @@ export const API = {
     GET_COMMENTS: API_URL + ENDPOINTS.GET_COMMENTS,
     DELETE_COMMENT: API_URL + ENDPOINTS.DELETE_COMMENT,
     POST_SAVE: API_URL + ENDPOINTS.POST_SAVE,
-    GET_SAVED_POSTS: API_URL + ENDPOINTS.GET_SAVED_POSTS
+    GET_SAVED_POSTS: API_URL + ENDPOINTS.GET_SAVED_POSTS,
+    ARTICLE: API_URL + ENDPOINTS.ARTICLE
 };
 
 // application/json
@@ -237,5 +239,8 @@ export const viewStory = async (storyId) => {
         throw error;
     }
 };
+
+// bu yerga maqola saqlash uchun fuctioni yozamiz
+
 
 export default API;

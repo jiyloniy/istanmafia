@@ -35,6 +35,11 @@ const CreatePost = ({ onClose }) => {
   const streamRef = useRef(null)
   const [userInfo, setUserInfo] = useState(null)
 
+  // New state for caption and location
+  const [caption, setCaption] = useState("")
+  const [location, setLocation] = useState("")
+  const [tags, setTags] = useState([])
+
   useEffect(() => {
     console.log("CreatePost component rendered")
     console.log("fileInputRef initialized:", fileInputRef.current)
@@ -589,15 +594,134 @@ const CreatePost = ({ onClose }) => {
             <div className="upload-progress-text">{uploadProgress}% Uploading...</div>
           </div>
         ) : mediaFiles.length > 0 ? (
-          mediaFiles[selectedMediaIndex].type === "image" ? (
-            <img
-              src={mediaFiles[selectedMediaIndex].url || "/placeholder.svg"}
-              alt="Preview"
-              className="media-preview-image"
-            />
-          ) : (
-            <video src={mediaFiles[selectedMediaIndex].url} controls className="media-preview-image" />
-          )
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+            <div
+              className="media-thumbnails-row-vertical"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                overflowY: 'auto',
+                maxHeight: '350px',
+                minWidth: '64px',
+                marginRight: '16px',
+                background: '#fff',
+                padding: '2px 0',
+                boxShadow: '0 2px 8px rgba(29,161,242,0.04)',
+                borderRadius: '12px',
+              }}
+            >
+              {mediaFiles.map((media, index) => (
+                <div
+                  key={index}
+                  className={`media-thumbnail ${selectedMediaIndex === index ? "active" : ""}`}
+                  onClick={() => setSelectedMediaIndex(index)}
+                  style={{
+                    width: '54px',
+                    height: '54px',
+                    borderRadius: '10px',
+                    overflow: 'hidden',
+                    border: selectedMediaIndex === index ? '2px solid #1da1f2' : '1px solid #e6f4fa',
+                    marginBottom: '10px',
+                    cursor: 'pointer',
+                    background: '#f6fafd',
+                    boxShadow: selectedMediaIndex === index ? '0 2px 8px rgba(29,161,242,0.10)' : 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    transition: 'border 0.18s',
+                  }}
+                >
+                  {media.type === "image" ? (
+                    <img src={media.url || "/placeholder.svg"} alt={`Thumbnail ${index}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <video src={media.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  )}
+                  <div
+                    className="remove-thumbnail"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      removeMedia(index)
+                    }}
+                    style={{
+                      position: 'absolute',
+                      top: '2px',
+                      right: '2px',
+                      width: '18px',
+                      height: '18px',
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      color: 'white',
+                      border: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      padding: 0,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    ×
+                  </div>
+                </div>
+              ))}
+              <div
+                className="media-thumbnail add-more"
+                onClick={() => fileInputRef.current?.click()}
+                style={{
+                  width: '54px',
+                  height: '54px',
+                  borderRadius: '10px',
+                  border: '1px dashed #1da1f2',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  fontSize: '24px',
+                  color: '#1da1f2',
+                  background: '#f6fafd',
+                  marginBottom: '10px',
+                }}
+              >
+                +
+              </div>
+            </div>
+            <div className="media-preview-box">
+              {mediaFiles[selectedMediaIndex].type === "image" ? (
+                <img
+                  src={mediaFiles[selectedMediaIndex].url || "/placeholder.svg"}
+                  alt="Preview"
+                  className="media-preview-image"
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '340px',
+                    borderRadius: '16px',
+                    boxShadow: '0 4px 24px rgba(29,161,242,0.10)',
+                    objectFit: 'contain',
+                    margin: '0 auto',
+                    display: 'block',
+                    background: '#f6fafd',
+                  }}
+                />
+              ) : (
+                <video
+                  src={mediaFiles[selectedMediaIndex].url}
+                  controls
+                  className="media-preview-image"
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '340px',
+                    borderRadius: '16px',
+                    boxShadow: '0 4px 24px rgba(29,161,242,0.10)',
+                    objectFit: 'contain',
+                    margin: '0 auto',
+                    display: 'block',
+                    background: '#f6fafd',
+                  }}
+                />
+              )}
+            </div>
+          </div>
         ) : (
           <div className="media-preview-placeholder">
             <div className="placeholder-icon">📷</div>
@@ -623,67 +747,64 @@ const CreatePost = ({ onClose }) => {
         )}
       </div>
 
-      <div className="media-controls">
-        {mediaFiles.length > 0 ? (
-          <>
-            <div className="media-thumbnails">
-              {mediaFiles.map((media, index) => (
-                <div
-                  key={index}
-                  className={`media-thumbnail ${selectedMediaIndex === index ? "active" : ""}`}
-                  onClick={() => setSelectedMediaIndex(index)}
-                >
-                  {media.type === "image" ? (
-                    <img src={media.url || "/placeholder.svg"} alt={`Thumbnail ${index}`} />
-                  ) : (
-                    <video src={media.url} />
-                  )}
-                  <div
-                    className="remove-thumbnail"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      removeMedia(index)
-                    }}
-                  >
-                    ×
-                  </div>
-                </div>
-              ))}
-              <div
-                className="media-thumbnail"
-                onClick={() => fileInputRef.current?.click()}
-                style={{ display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f0f0f0" }}
-              >
-                +
-              </div>
+      {mediaFiles.length > 0 && (
+        <>
+          <div className="post-fields">
+            <textarea
+              className="post-caption-input"
+              placeholder="Post matni (caption)..."q
+              maxLength={2000}
+              rows={3}
+              style={{ resize: 'vertical', borderRadius: '10px', border: '1px solid #e6f4fa', padding: '5px', fontSize: '1rem', marginBottom: '12px', width: '100%' }}
+              value={caption || ''}
+              onChange={e => setCaption(e.target.value)}
+            />
+            <input
+              className="post-location-input"
+              placeholder="Joylashuv (location)..."
+              maxLength={100}
+              style={{ borderRadius: '10px', border: '1px solid #e6f4fa', padding: '10px', fontSize: '1rem', marginBottom: '12px', width: '100%' }}
+              value={location || ''}
+              onChange={e => setLocation(e.target.value)}
+            />
+            <div className="post-tags-input-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <input
+                className="post-tags-input"
+                placeholder="Teg qo'shish..."
+                maxLength={30}
+                style={{ borderRadius: '10px', border: '1px solid #e6f4fa', padding: '10px', fontSize: '1rem', flex: 1 }}
+                value={currentTag || ''}
+                onChange={e => setCurrentTag(e.target.value)}
+                onKeyPress={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
+              />
+              <button
+                className="add-tag-btn"
+                style={{ borderRadius: '8px', background: '#00a884', color: '#fff', border: 'none', padding: '8px 14px', fontWeight: 600, fontSize: '1rem', cursor: 'pointer' }}
+                onClick={addTag}
+                disabled={!currentTag || tags.length >= 10}
+              >Qo'shish</button>
             </div>
-            <button className="upload-button" onClick={() => setShowEditPage(true)}>
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-              Yangi post yaratish
+            {tags.length > 0 && (
+              <div className="post-tags-list" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+                {tags.map((tag, i) => (
+                  <span key={i} className="post-tag-item" style={{ background: '#e6f4fa', color: '#1da1f2', borderRadius: '8px', padding: '4px 10px', fontWeight: 500, fontSize: '0.98rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    #{tag}
+                    <button style={{ background: 'none', border: 'none', color: '#1da1f2', fontWeight: 700, cursor: 'pointer', fontSize: '1rem' }} onClick={() => removeTag(tag)}>×</button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <button
+              className="post-submit-btn"
+              style={{ width: '100%', background: '#00a884', color: '#fff', border: 'none', borderRadius: '10px', padding: '14\px', fontWeight: 700, fontSize: '1.1rem', marginTop: 'px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(29,161,242,0.10)', transition: 'background 0.18s' }}
+              onClick={handlePostSubmit}
+              disabled={isUploading || isSubmitting || !mediaFiles.length}
+            >
+              {isUploading || isSubmitting ? 'Yuborilmoqda...' : 'Yuborish'}
             </button>
-          </>
-        ) : (
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="file-input"
-            accept="image/*,video/*"
-            multiple
-            onChange={handleFileSelect}
-          />
-        )}
-      </div>
+          </div>
+        </>
+      )}
     </div>
   )
 
@@ -1169,7 +1290,7 @@ const CreatePost = ({ onClose }) => {
         }
       }
 
-      formData.append("is_public", postData.privacy === "private" ? "false" : "true")
+      formData.append("is_public", postData.privacy === "private" ? "true" : "true")
       formData.append("allow_comments", postData.allowComments !== false ? "true" : "false")
       formData.append("allow_likes", postData.allowLikes !== false ? "true" : "false")
 
@@ -1347,14 +1468,77 @@ const CreatePost = ({ onClose }) => {
     }
   }
 
+  // AddTag: add a tag to the tags array if not empty and not already present
+  const addTag = () => {
+    if (currentTag && !tags.includes(currentTag) && tags.length < 10) {
+      setTags([...tags, currentTag.trim()])
+      setCurrentTag("")
+    }
+  }
+  // RemoveTag: remove a tag from the tags array
+  const removeTag = (tagToRemove) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove))
+  }
+  // HandlePostSubmit: submit the post with all fields
+  const handlePostSubmit = async () => {
+    if (!mediaFiles.length) {
+      alert("Iltimos, post uchun rasm yoki video tanlang")
+      return
+    }
+    setIsSubmitting(true)
+    setIsUploading(true)
+    setUploadProgress(0)
+    try {
+      const formData = new FormData()
+      if (caption) formData.append("caption", caption)
+      if (location) formData.append("location_name", location)
+      if (tags.length > 0) formData.append("tags", tags.join(","))
+      const progressInterval = startProgressSimulation()
+      if (mediaFiles.length > 0) {
+        formData.append("media", mediaFiles[0].file)
+        formData.append("media_type", mediaFiles[0].type === "image" ? "image" : "video")
+      }
+      if (mediaFiles.length > 1) {
+        for (let i = 1; i < mediaFiles.length; i++) {
+          formData.append("additional_media", mediaFiles[i].file)
+          formData.append("additional_media_types", mediaFiles[i].type === "image" ? "image" : "video")
+        }
+      }
+      formData.append("is_public", "true")
+      formData.append("allow_comments", "true")
+      formData.append("allow_likes", "true")
+      try {
+        await sendDataToAPI(API.POST, formData, "Post muvaffaqiyatli joylandi!")
+        clearInterval(progressInterval)
+        setUploadProgress(100)
+        setTimeout(() => {
+          setIsUploading(false)
+          setIsSubmitting(false)
+          if (onClose) onClose()
+          window.location.href = "/"
+        }, 1200)
+      } catch (apiError) {
+        clearInterval(progressInterval)
+        setUploadProgress(0)
+        throw apiError
+      }
+    } catch (error) {
+      setIsUploading(false)
+      setIsSubmitting(false)
+      alert("Xatolik yuz berdi: " + error.message)
+    }
+  }
+
   if (showEditPage) {
     return (
-      <PostEdit
-        mediaFiles={mediaFiles}
-        onClose={() => setShowEditPage(false)}
-        onSave={handleSavePost}
-        selectedMediaIndex={selectedMediaIndex}
-      />
+      <div className="post-edit-modal-overlay">
+        <PostEdit
+          mediaFiles={mediaFiles}
+          onClose={() => setShowEditPage(false)}
+          onSave={handleSavePost}
+          selectedMediaIndex={selectedMediaIndex}
+        />
+      </div>
     )
   }
 
@@ -1397,7 +1581,7 @@ const CreatePost = ({ onClose }) => {
           </button>
           <h1 className="header-title">
             {activeTab === "post"
-              ? "Yangi post"
+              ? ""
               : activeTab === "story"
                 ? "Yangi story"
                 : activeTab === "article"
@@ -1426,8 +1610,9 @@ const CreatePost = ({ onClose }) => {
           Story
         </button>
         <button
-          className={`tab-button ${activeTab === "article" ? "active" : ""}`}
+          className={`tab-button ${activeTab === "article" ? "active" : ""} ${(isUploading || isSubmitting) ? "disabled" : ""}`}
           onClick={() => handleTabChange("article")}
+          disabled={isUploading || isSubmitting}
           style={activeTab === "article" ? { color: "#00a884", borderBottom: "2px solid #00a884" } : {}}
         >
           Maqola

@@ -116,6 +116,9 @@ const Home = () => {
   const [profileVisible, setProfileVisible] = useState(true)
   const [storyCount, setStoryCount] = useState(0)
 
+  // State for expanded articles
+  const [expandedArticles, setExpandedArticles] = useState({})
+
   // Handle scroll to hide stories when scrolling up or down and show profile
   useEffect(() => {
     const handleScroll = () => {
@@ -986,6 +989,13 @@ const Home = () => {
     return () => clearInterval(timer)
   }, [showStory, activeUserStory, activeStoryIndex, isPaused, isMediaLoaded])
 
+  // Font size state for articles
+  const [articleFontSize, setArticleFontSize] = useState(17)
+
+  // Filter articles and posts
+  const articles = posts.filter((p) => p.type === 'article')
+  const normalPosts = posts.filter((p) => p.type !== 'article')
+
   return (
     <div className="app-container">
       {showNotifications && <Notifications onClose={() => setShowNotifications(false)} />}
@@ -1396,6 +1406,98 @@ const Home = () => {
           </div>
         )}
 
+        {/* Articles Section */}
+        {articles.length > 0 && (
+          <section className="articles-section">
+            {/* <div className="articles-header">
+              <h2>Maqolalar</h2>
+              <div className="font-size-controls">
+                <button onClick={() => setArticleFontSize((s) => Math.max(13, s - 2))} className="font-size-btn">A-</button>
+                <button onClick={() => setArticleFontSize((s) => Math.min(28, s + 2))} className="font-size-btn">A+</button>
+              </div>
+            </div> */}
+            <div className="articles-list">
+              {articles.map((article) => {
+                const isExpanded = expandedArticles[article.id]
+                const words = (article.content || '').split(' ')
+                const shortContent = words.slice(0, 10).join(' ')
+                return (
+                  <div key={article.id} className="article-card">
+                    <div className="article-header">
+                      <div className="article-profile">
+                        <img
+                          src={getSafeImageUrl(article.user.profile_picture, API_URL2) || Default}
+                          alt={article.user.name}
+                          className="article-avatar"
+                          onError={handleImageError}
+                        />
+                        <span className="article-author">{article.user.name}</span>
+                      </div>
+                      <span className="article-date">{new Date(article.created_at).toLocaleDateString()}</span>
+                    </div>
+                    <div className="article-title">{article.caption}</div>
+                    <div className={`article-content${isExpanded ? ' expanded' : ''}`} style={{ fontSize: articleFontSize }}>
+                      {isExpanded || words.length <= 10 ? article.content : shortContent + (words.length > 10 ? '...' : '')}
+                    </div>
+                    {words.length > 10 && (
+                      <button
+                        className="article-readmore-btn"
+                        onClick={() => setExpandedArticles((prev) => ({ ...prev, [article.id]: !isExpanded }))}
+                      >
+                        {isExpanded ? 'Yopish' : '...batafsil'}
+                      </button>
+                    )}
+                    {article.tags && article.tags.length > 0 && (
+                      <div className="article-tags">
+                        {article.tags.map((tag, i) => (
+                          <span key={i} className="article-tag">#{tag}</span>
+                        ))}
+                      </div>
+                    )}
+                    {/* Article actions and useful stats */}
+                    <div className="article-actions-row">
+                      <button
+                        className={`action-button ${likedPosts[article.id] ? "liked" : ""}`}
+                        onClick={() => handleLike(article.id)}
+                      >
+                        {likedPosts[article.id] ? (
+                          <svg aria-label="Unlike" className="action-icon" fill="#ed4956" height="24" role="img" viewBox="0 0 48 48" width="24"><path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path></svg>
+                        ) : (
+                          <svg aria-label="Like" className="action-icon" fill="none" height="24" role="img" viewBox="0 0 24 24" width="24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="black" strokeWidth="2"></path></svg>
+                        )}
+                      </button>
+                      <button className="action-button" onClick={() => handleComment(article.id)}>
+                        <svg aria-label="Comment" className="action-icon" fill="none" height="24" role="img" viewBox="0 0 24 24" width="24"><path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z" fill="none" stroke="#000" strokeLinejoin="round" strokeWidth="2"></path></svg>
+                      </button>
+                      <button className="action-button" onClick={() => handleShare(article.id)}>
+                        <svg aria-label="Share post" className="action-icon" fill="#000" height="24" role="img" viewBox="0 0 24 24" width="24"><path d="M22 3 9.218 10.083M11.698 20.334 22 3.001 2 3.001 9.218 10.084l2.48 10.25z" fill="none" stroke="#000" strokeLinejoin="round" strokeWidth="2"></path></svg>
+                      </button>
+                      <div className="useful-people">
+                        <span className="useful-people-icon" role="img" aria-label="useful"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 9-6-6-6 6"/><path d="M12 3v14"/><path d="M5 21h14"/></svg></span>
+                        <span className="useful-people-count">{usefulStats[article.id]?.usefulCount || 0}</span>
+                      </div>
+                      <div className="useful-percentage-circle">
+                        <svg width="34" height="34" viewBox="0 0 34 34">
+                          <circle cx="17" cy="17" r="14" stroke="#e6f4fa" strokeWidth="4" fill="none" />
+                          <circle cx="17" cy="17" r="14" stroke="#1da1f2" strokeWidth="4" fill="none" strokeDasharray={2 * Math.PI * 14} strokeDashoffset={2 * Math.PI * 14 * (1 - (usefulStats[article.id]?.initialPercent || 0) / 100)} style={{ transition: 'stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1)' }} />
+                        </svg>
+                        <span className="useful-percentage-label">{usefulStats[article.id]?.initialPercent || 0}%</span>
+                      </div>
+                      <button className={`action-button ${savedPosts[article.id] ? "saved" : ""}`} onClick={() => handleSave(article.id)} style={{ marginLeft: "auto", marginRight: "8px" }}>
+                        {savedPosts[article.id] ? (
+                          <svg aria-label="Remove" className="action-icon" fill="#000000" height="26" role="img" viewBox="0 0 24 24" width="26"><polygon fill="#000000" points="20 21 12 13.44 4 21 4 3 20 3 20 21" stroke="none"></polygon></svg>
+                        ) : (
+                          <svg aria-label="Save" className="action-icon" fill="none" height="26" role="img" viewBox="0 0 24 24" width="26"><polygon fill="none" points="20 21 12 13.44 4 21 4 3 20 3 20 21" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></polygon></svg>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </section>
+        )}
+
         {/* Posts content */}
         <div className="posts-container">
           {error && (
@@ -1413,9 +1515,9 @@ const Home = () => {
             </div>
           )}
 
-          {posts.length > 0
-            ? posts.map((post, index) => {
-                const isLastItem = index === posts.length - 1
+          {normalPosts.length > 0
+            ? normalPosts.map((post, index) => {
+                const isLastItem = index === normalPosts.length - 1
 
                 return (
                   <div key={post.id} className="post milliy-post" ref={isLastItem ? lastPostElementRef : null}>
@@ -1968,9 +2070,7 @@ const Home = () => {
                               ></path>
                             </svg>
                           </button>
-                        </div>
-                        <div className="useful-stats-row">
-                        <div className="useful-people">
+                          <div className="useful-people">
                           <span className="useful-people-icon" role="img" aria-label="useful"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-from-line-icon lucide-arrow-up-from-line"><path d="m18 9-6-6-6 6"/><path d="M12 3v14"/><path d="M5 21h14"/></svg></span>
                           <span className="useful-people-count">{usefulStats[post.id]?.usefulCount || 0}</span>
                         </div>
@@ -2000,6 +2100,9 @@ const Home = () => {
                             {usefulStats[post.id]?.initialPercent || 0}%
                           </span>
                         </div>
+                        </div>
+                        <div className="useful-stats-row">
+                        
                       </div>
                         <button
                           className={`action-button ${savedPosts[post.id] ? "saved" : ""}`}
@@ -2147,9 +2250,9 @@ const Home = () => {
             </>
           )}
 
-          {isLoading && posts.length > 0 && <div className="loading-text">Loading more posts...</div>}
+          {isLoading && normalPosts.length > 0 && <div className="loading-text">Loading more posts...</div>}
 
-          {!isLoading && !hasMore && posts.length > 0 && <div className="loading-text">No more posts to load</div>}
+          {!isLoading && !hasMore && normalPosts.length > 0 && <div className="loading-text">No more posts to load</div>}
         </div>
       </main>
 
