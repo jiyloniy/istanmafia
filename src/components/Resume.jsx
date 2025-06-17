@@ -421,7 +421,7 @@ export default function MobileResume() {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
+        background: "#D9D9D9",
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       }}
     >
