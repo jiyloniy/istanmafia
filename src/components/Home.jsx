@@ -41,8 +41,9 @@ import profile6 from "../assets/night-mode_3838496 (1).png"
 import profile7 from "../assets/letter-i_9215114.png"
 import profile8 from "../assets/user_3161848.png"
 import profile1 from "../assets/credit-card_12689973.png"
+import profile9 from "../assets/suitcase_1166144.png"
+import profile10 from "../assets/resume_1069182.png"
 import Notifications from "./Notifications"
-
 const defaultImageUrl = "../assets/default.png"
 const preloadedDefaultImage = new Image()
 preloadedDefaultImage.src = defaultImageUrl
@@ -431,8 +432,12 @@ const Home = () => {
     }
   }, [isDrawerOpen])
 
+
+  
   const menuItems = [
     { icon: profile8, label: "Profilim", onClick: () => navigate("/profile") },
+   
+    { icon: profile10, label: "Resume", onClick: () => navigate("/resume") },
     { icon: profile1, label: "To'lovlar" },
     { icon: profile2, label: "Kontaktlar" },
     { icon: profile3, label: "Sozlamalar", onClick: () => navigate("/settings") },

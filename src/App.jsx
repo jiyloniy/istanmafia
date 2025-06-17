@@ -17,6 +17,8 @@ import Profile from './components/Profile';
 import Settings from './components/Settings';
 import CreatePost from './components/CreatePost.jsx';
 import MoreApps from './components/MoreApps';
+import Portfolio from './components/Portfolio';
+import Resume from './components/Resume';
 
 // Public route wrapper
 const PublicRoute = ({ children }) => {
@@ -131,6 +133,18 @@ function App() {
         <Route path="/more-apps" element={
           <PrivateRoute>
             <MoreApps />
+          </PrivateRoute>
+        } />
+
+        <Route path="/portifel" element={
+          <PrivateRoute>
+            <Portfolio />
+          </PrivateRoute>
+        } />
+
+        <Route path="/resume" element={
+          <PrivateRoute>
+            <Resume />
           </PrivateRoute>
         } />
 
