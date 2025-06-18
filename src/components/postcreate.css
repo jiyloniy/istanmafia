@@ -157,7 +157,7 @@ Post Create Styles
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 90%;
+  width: 100%;
   max-width: 340px;
   height: 22px;
   background: #f6fafd;
@@ -787,7 +787,9 @@ Post Create Styles
 .header-title {
   font-size: 18px;
   font-weight: 600;
-  margin-left: 12px;
+  margin-left: 18px;
+  padding-left: 18px;
+  padding-bottom: 5px;
 }
 
 .action-button2 {
@@ -986,7 +988,7 @@ Post Create Styles
 
 .story-preview {
   flex: 1;
-  display: flex;
+  /* display: flex; */
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -1187,6 +1189,111 @@ Post Create Styles
   padding: 2px 0;
   box-shadow: 0 2px 8px rgba(29,161,242,0.04);
   border-radius: 12px;
+}
+
+/* Article Image Upload Styles */
+.article-image-upload {
+  border: 2px dashed #e0e0e0;
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  margin: 16px 0;
+  background: #fafafa;
+  transition: all 0.3s ease;
+}
+
+.article-image-upload.dragging {
+  border-color: #00a884;
+  background: rgba(0, 168, 132, 0.05);
+}
+
+.upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.upload-icon {
+  width: 48px;
+  height: 48px;
+  color: #00a884;
+}
+
+.upload-text {
+  color: #333;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.upload-button {
+  background: #00a884;
+  color: white;
+  border: none;
+  padding: 8px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.upload-button:hover {
+  background: #008f6f;
+}
+
+.upload-info {
+  color: #666;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.article-image-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+@media (min-width: 768px) {
+  .article-image-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.image-preview {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 1;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-image {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.remove-image:hover {
+  background: white;
+  transform: scale(1.1);
 }
 
 /* Remove global button and input/textarea overrides */

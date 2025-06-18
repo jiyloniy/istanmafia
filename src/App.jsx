@@ -19,6 +19,7 @@ import CreatePost from './components/CreatePost.jsx';
 import MoreApps from './components/MoreApps';
 import Portfolio from './components/Portfolio';
 import Resume from './components/Resume';
+import ArchivePage from './archive/ArchivePage';
 
 // Public route wrapper
 const PublicRoute = ({ children }) => {
@@ -148,6 +149,13 @@ function App() {
           </PrivateRoute>
         } />
 
+        {/* Archive Standalone Auth & Page */}
+        <Route path="/archive" element={
+          <PrivateRoute>
+            <ArchivePage />
+          </PrivateRoute>
+        } />
+        
         {/* Catch all route - redirect to login or home based on auth status */}
         <Route path="*" element={
           isAuthenticated() ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />

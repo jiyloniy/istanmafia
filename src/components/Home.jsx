@@ -19,8 +19,6 @@ import {
   API_URL,
 } from "../config/api"
 import { deleteComment } from "../config/api"
-// impoer human icon from lucide
-import {  UsersRound } from "lucide-react"
 // Import image assets
 import arxiv from "../assets/arxiv.png"
 import notfikation from "../assets/notfikation.png"
@@ -41,8 +39,8 @@ import profile6 from "../assets/night-mode_3838496 (1).png"
 import profile7 from "../assets/letter-i_9215114.png"
 import profile8 from "../assets/user_3161848.png"
 import profile1 from "../assets/credit-card_12689973.png"
-import profile9 from "../assets/suitcase_1166144.png"
 import profile10 from "../assets/resume_1069182.png"
+import profile11 from "../assets/download-file_7693316.png"
 import Notifications from "./Notifications"
 const defaultImageUrl = "../assets/default.png"
 const preloadedDefaultImage = new Image()
@@ -432,12 +430,11 @@ const Home = () => {
     }
   }, [isDrawerOpen])
 
-
-  
   const menuItems = [
     { icon: profile8, label: "Profilim", onClick: () => navigate("/profile") },
-   
+
     { icon: profile10, label: "Resume", onClick: () => navigate("/resume") },
+    { icon: profile11, label: "Arxiv", onClick: () => navigate("/archive") },
     { icon: profile1, label: "To'lovlar" },
     { icon: profile2, label: "Kontaktlar" },
     { icon: profile3, label: "Sozlamalar", onClick: () => navigate("/settings") },
@@ -997,9 +994,9 @@ const Home = () => {
   // Font size state for articles
   const [articleFontSize, setArticleFontSize] = useState(17)
 
-  // Filter articles and posts
-  const articles = posts.filter((p) => p.type === 'article')
-  const normalPosts = posts.filter((p) => p.type !== 'article')
+  // Remove the separate filtering of articles and posts.
+  // const articles = posts.filter((p) => p.type === 'article')
+  // const normalPosts = posts.filter((p) => p.type !== 'article')
 
   return (
     <div className="app-container">
@@ -1411,98 +1408,6 @@ const Home = () => {
           </div>
         )}
 
-        {/* Articles Section */}
-        {articles.length > 0 && (
-          <section className="articles-section">
-            {/* <div className="articles-header">
-              <h2>Maqolalar</h2>
-              <div className="font-size-controls">
-                <button onClick={() => setArticleFontSize((s) => Math.max(13, s - 2))} className="font-size-btn">A-</button>
-                <button onClick={() => setArticleFontSize((s) => Math.min(28, s + 2))} className="font-size-btn">A+</button>
-              </div>
-            </div> */}
-            <div className="articles-list">
-              {articles.map((article) => {
-                const isExpanded = expandedArticles[article.id]
-                const words = (article.content || '').split(' ')
-                const shortContent = words.slice(0, 10).join(' ')
-                return (
-                  <div key={article.id} className="article-card">
-                    <div className="article-header">
-                      <div className="article-profile">
-                        <img
-                          src={getSafeImageUrl(article.user.profile_picture, API_URL2) || Default}
-                          alt={article.user.name}
-                          className="article-avatar"
-                          onError={handleImageError}
-                        />
-                        <span className="article-author">{article.user.name}</span>
-                      </div>
-                      <span className="article-date">{new Date(article.created_at).toLocaleDateString()}</span>
-                    </div>
-                    <div className="article-title">{article.caption}</div>
-                    <div className={`article-content${isExpanded ? ' expanded' : ''}`} style={{ fontSize: articleFontSize }}>
-                      {isExpanded || words.length <= 10 ? article.content : shortContent + (words.length > 10 ? '...' : '')}
-                    </div>
-                    {words.length > 10 && (
-                      <button
-                        className="article-readmore-btn"
-                        onClick={() => setExpandedArticles((prev) => ({ ...prev, [article.id]: !isExpanded }))}
-                      >
-                        {isExpanded ? 'Yopish' : '...batafsil'}
-                      </button>
-                    )}
-                    {article.tags && article.tags.length > 0 && (
-                      <div className="article-tags">
-                        {article.tags.map((tag, i) => (
-                          <span key={i} className="article-tag">#{tag}</span>
-                        ))}
-                      </div>
-                    )}
-                    {/* Article actions and useful stats */}
-                    <div className="article-actions-row">
-                      <button
-                        className={`action-button ${likedPosts[article.id] ? "liked" : ""}`}
-                        onClick={() => handleLike(article.id)}
-                      >
-                        {likedPosts[article.id] ? (
-                          <svg aria-label="Unlike" className="action-icon" fill="#ed4956" height="24" role="img" viewBox="0 0 48 48" width="24"><path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path></svg>
-                        ) : (
-                          <svg aria-label="Like" className="action-icon" fill="none" height="24" role="img" viewBox="0 0 24 24" width="24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="black" strokeWidth="2"></path></svg>
-                        )}
-                      </button>
-                      <button className="action-button" onClick={() => handleComment(article.id)}>
-                        <svg aria-label="Comment" className="action-icon" fill="none" height="24" role="img" viewBox="0 0 24 24" width="24"><path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z" fill="none" stroke="#000" strokeLinejoin="round" strokeWidth="2"></path></svg>
-                      </button>
-                      <button className="action-button" onClick={() => handleShare(article.id)}>
-                        <svg aria-label="Share post" className="action-icon" fill="#000" height="24" role="img" viewBox="0 0 24 24" width="24"><path d="M22 3 9.218 10.083M11.698 20.334 22 3.001 2 3.001 9.218 10.084l2.48 10.25z" fill="none" stroke="#000" strokeLinejoin="round" strokeWidth="2"></path></svg>
-                      </button>
-                      <div className="useful-people">
-                        <span className="useful-people-icon" role="img" aria-label="useful"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 9-6-6-6 6"/><path d="M12 3v14"/><path d="M5 21h14"/></svg></span>
-                        <span className="useful-people-count">{usefulStats[article.id]?.usefulCount || 0}</span>
-                      </div>
-                      <div className="useful-percentage-circle">
-                        <svg width="34" height="34" viewBox="0 0 34 34">
-                          <circle cx="17" cy="17" r="14" stroke="#e6f4fa" strokeWidth="4" fill="none" />
-                          <circle cx="17" cy="17" r="14" stroke="#1da1f2" strokeWidth="4" fill="none" strokeDasharray={2 * Math.PI * 14} strokeDashoffset={2 * Math.PI * 14 * (1 - (usefulStats[article.id]?.initialPercent || 0) / 100)} style={{ transition: 'stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1)' }} />
-                        </svg>
-                        <span className="useful-percentage-label">{usefulStats[article.id]?.initialPercent || 0}%</span>
-                      </div>
-                      <button className={`action-button ${savedPosts[article.id] ? "saved" : ""}`} onClick={() => handleSave(article.id)} style={{ marginLeft: "auto", marginRight: "8px" }}>
-                        {savedPosts[article.id] ? (
-                          <svg aria-label="Remove" className="action-icon" fill="#000000" height="26" role="img" viewBox="0 0 24 24" width="26"><polygon fill="#000000" points="20 21 12 13.44 4 21 4 3 20 3 20 21" stroke="none"></polygon></svg>
-                        ) : (
-                          <svg aria-label="Save" className="action-icon" fill="none" height="26" role="img" viewBox="0 0 24 24" width="26"><polygon fill="none" points="20 21 12 13.44 4 21 4 3 20 3 20 21" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></polygon></svg>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-        )}
-
         {/* Posts content */}
         <div className="posts-container">
           {error && (
@@ -1520,526 +1425,78 @@ const Home = () => {
             </div>
           )}
 
-          {normalPosts.length > 0
-            ? normalPosts.map((post, index) => {
-                const isLastItem = index === normalPosts.length - 1
+          {posts.length > 0
+            ? posts.map((post, index) => {
+                const isLastItem = index === posts.length - 1
 
-                return (
-                  <div key={post.id} className="post milliy-post" ref={isLastItem ? lastPostElementRef : null}>
-                    {/* AI Status Badge */}
-                    <div
-                      className={`ai-status-badge ai-status-${getAIStatus(post)}`}
-                      onClick={() => showAIStatusDescription(getAIStatus(post))}
-                      style={{
-                        cursor: "pointer",
-                        position: "absolute",
-                        top: "35px",
-                        right: "16px",
-                        left: "auto",
-                        padding: "4px 12px",
-                        color: "#222",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        fontSize: "13px",
-                        fontWeight: 700,
-                        zIndex: 2,
-                        minWidth: "unset",
-                        maxWidth: "60vw",
-                        flexWrap: "nowrap",
-                        letterSpacing: "0.01em",
-                        boxShadow: "none",
-                        fontStyle: "italic",
-                      }}
-                    >
-                      <span style={{ fontSize: "14px", fontWeight: 700 }}>
-                        <span
-                          style={{
-                            fontSize: "15px",
-                            fontStyle: "normal",
-                          }}
-                        >
-                          AI tekshirgan:{" "}
-                        </span>
-                        {AI_STATUS_CONFIG[getAIStatus(post)].label}
-                      </span>
-                    </div>
+                // Render different UI based on post type
+                if (post.type === "article") {
+                  // Article rendering
+                  const isExpanded = expandedArticles[post.id]
+                  const words = (post.content || "").split(" ")
+                  const shortContent = words.slice(0, 10).join(" ")
 
-                    {/* AI Status Description Modal */}
-                    {showStatusModal && selectedStatus === getAIStatus(post) && (
-                      <div
-                        className="ai-status-modal"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setShowStatusModal(false)
-                        }}
-                        style={{
-                          position: "fixed",
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          backgroundColor: "rgba(0,0,0,0.35)",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          zIndex: 1000,
-                          padding: "20px",
-                        }}
-                      >
-                        <div
-                          className="modal-content"
-                          onClick={(e) => e.stopPropagation()}
-                          style={{
-                            backgroundColor: "#fff",
-                            borderRadius: "18px",
-                            padding: "22px",
-                            maxWidth: "95%",
-                            width: "340px",
-                            position: "relative",
-                            boxShadow: "0 4px 24px rgba(0,0,0,0.10)",
-                          }}
-                        >
-                          <p
-                            style={{
-                              margin: "0",
-                              fontSize: "14px",
-                              lineHeight: "1.6",
-                              color: "#333",
-                              textAlign: "left",
-                            }}
-                          >
-                            {AI_STATUS_CONFIG[selectedStatus].description}
-                          </p>
-                          <button
-                            onClick={() => setShowStatusModal(false)}
-                            style={{
-                              position: "absolute",
-                              top: "-12px",
-                              right: "-12px",
-                              width: "30px",
-                              height: "30px",
-                              borderRadius: "50%",
-                              border: "none",
-                              backgroundColor: "#fff",
-                              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "18px",
-                            }}
-                          >
-                            ×
-                          </button>
+                  return (
+                    <div key={post.id} className="post article-card" ref={isLastItem ? lastPostElementRef : null}>
+                      <div className="article-header">
+                        <div className="article-profile">
+                          <img
+                            src={getSafeImageUrl(post.user.profile_picture, API_URL2) || Default}
+                            alt={post.user.name}
+                            className="article-avatar"
+                            onError={handleImageError}
+                          />
+                          <span className="article-author">{post.user.name}</span>
                         </div>
+                        <span className="article-date">{new Date(post.created_at).toLocaleDateString()}</span>
                       </div>
-                    )}
-
-                    <div className="post-header">
+                      <div className="article-title">{post.caption}</div>
                       <div
-                        className="post-avatar"
-                        style={{
-                          borderRadius: "50%",
-                          padding: "3px",
-                          boxShadow: "0 2px 8px rgba(80,80,180,0.10)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          width: "58px",
-                          height: "58px",
-                        }}
+                        className={`article-content${isExpanded ? " expanded" : ""}`}
+                        style={{ fontSize: articleFontSize }}
                       >
-                        <img
-                          src={getSafeImageUrl(post.user.profile_picture, API_URL2) || "/placeholder.svg"}
-                          alt={post.user.name}
-                          className="avatar-img"
-                          onError={handleImageError}
-                          style={{
-                            borderRadius: "50%",
-                            width: "52px",
-                            height: "52px",
-                            objectFit: "cover",
-                            border: "2px solid #fff",
-                          }}
-                        />
+                        {isExpanded || words.length <= 10
+                          ? post.content
+                          : shortContent + (words.length > 10 ? "..." : "")}
                       </div>
-                      <div className="post-user-info">
-                        <div className="user-name-container">
-                          <div
-                            className="user-name"
-                            style={{
-                              color: "#262626",
-                              fontWeight: 700,
-                              fontSize: "16px",
-                              letterSpacing: "0.01em",
-                            }}
-                          >
-                            {post.user.name}
-                          </div>
-                          {post.is_own_post && (
-                            <div className="verification-badge">
-                              <svg className="verification-icon-small" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                              </svg>
-                            </div>
-                          )}
+                      {words.length > 10 && (
+                        <button
+                          className="article-readmore-btn"
+                          onClick={() => setExpandedArticles((prev) => ({ ...prev, [post.id]: !isExpanded }))}
+                        >
+                          {isExpanded ? "Yopish" : "...batafsil"}
+                        </button>
+                      )}
+                      {post.tags && post.tags.length > 0 && (
+                        <div className="article-tags">
+                          {post.tags.map((tag, i) => (
+                            <span key={i} className="article-tag">
+                              #{tag}
+                            </span>
+                          ))}
                         </div>
-                        {post.location_name && <div className="user-location">{post.location_name}</div>}
-                      </div>
-                    </div>
-
-                    <div className="post-image">
-                      {(() => {
-                        const allMedia = [post.main_media, ...post.additional_media]
-                        const currentIndex = activeMediaIndices[post.id] || 0
-                        const currentMedia = allMedia[currentIndex]
-
-                        return (
-                          <div className="carousel-container">
-                            <div
-                              className="media-container"
-                              style={{ position: "relative" }}
-                              onTouchStart={(e) => {
-                                handleTouchStart(e, post.id)
-                                handleMediaLongPressStart(post.id)
-                              }}
-                              onTouchMove={(e) => handleTouchMove(e, post.id)}
-                              onTouchEnd={() => {
-                                handleTouchEnd(post.id)
-                                handleMediaLongPressEnd(post.id)
-                              }}
-                              onMouseDown={(e) => {
-                                handleMouseDown(e, post.id)
-                                handleMediaLongPressStart(post.id)
-                              }}
-                              onMouseMove={(e) => handleMouseMove(e, post.id)}
-                              onMouseUp={() => {
-                                handleMouseUp(post.id)
-                                handleMediaLongPressEnd(post.id)
-                              }}
-                              onMouseLeave={() => {
-                                handleMouseLeave(post.id)
-                                handleMediaLongPressEnd(post.id)
-                              }}
-                            >
-                              {/* Phase 1: Holding (no visual feedback) */}
-                              {mediaHolding[post.id] && (
-                                <div
-                                  style={{
-                                    position: "absolute",
-                                    top: "0",
-                                    left: "0",
-                                    right: "0",
-                                    bottom: "0",
-                                    zIndex: 5,
-                                    // background: "rgba(0,0,0,0.1)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      color: "white",
-                                      fontSize: "16px",
-                                      fontWeight: "600",
-                                      // textShadow: "0 2px 4px rgba(0,0,0,0.5)",
-                                    }}
-                                  >
-                                    {/* Bosib turing... */}
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Phase 2: Progress Bar */}
-                              {showProgressBar[post.id] && (
-                                <div
-                                  style={{
-                                    position: "absolute",
-                                    top: "0",
-                                    left: "0",
-                                    right: "0",
-                                    bottom: "0",
-                                    zIndex: 10,
-                                    background: "rgba(0,0,0,0.7)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    backdropFilter: "blur(2px)",
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      background: "rgba(255,255,255,0.95)",
-                                      borderRadius: "20px",
-                                      padding: "24px",
-                                      display: "flex",
-                                      flexDirection: "column",
-                                      alignItems: "center",
-                                      gap: "16px",
-                                      minWidth: "160px",
-                                      boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
-                                    }}
-                                  >
-                                    {/* Progress Circle */}
-                                    <div
-                                      style={{
-                                        width: "80px",
-                                        height: "80px",
-                                        position: "relative",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                      }}
-                                    >
-                                      <svg
-                                        style={{
-                                          width: "80px",
-                                          height: "80px",
-                                          transform: "rotate(-90deg)",
-                                          position: "absolute",
-                                        }}
-                                      >
-                                        <circle
-                                          cx="40"
-                                          cy="40"
-                                          r="32"
-                                          stroke="rgba(59, 130, 246, 0.2)"
-                                          strokeWidth="6"
-                                          fill="none"
-                                        />
-                                        <circle
-                                          cx="40"
-                                          cy="40"
-                                          r="32"
-                                          stroke="#3b82f6"
-                                          strokeWidth="6"
-                                          fill="none"
-                                          strokeLinecap="round"
-                                          strokeDasharray={201.06}
-                                          strokeDashoffset={201.06 - (mediaProgress[post.id] / 100) * 201.06}
-                                          style={{
-                                            transition: "stroke-dashoffset 0.1s ease",
-                                          }}
-                                        />
-                                      </svg>
-                                      <div
-                                        style={{
-                                          color: "#3b82f6",
-                                          fontSize: "18px",
-                                          fontWeight: "bold",
-                                          textAlign: "center",
-                                        }}
-                                      >
-                                        {Math.round(mediaProgress[post.id])}%
-                                      </div>
-                                    </div>
-
-                                    <div
-                                      style={{
-                                        textAlign: "center",
-                                        color: "#374151",
-                                        fontSize: "14px",
-                                        fontWeight: "600",
-                                      }}
-                                    >
-                                      Baholanmoqda...
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Phase 3: Success with Confetti */}
-                              {showSuccess[post.id] && (
-                                <div
-                                  className="super-ai-success"
-                                  style={{
-                                    position: "absolute",
-                                    top: "0",
-                                    left: "0",
-                                    right: "0",
-                                    bottom: "0",
-                                    zIndex: 15,
-                                    background: "rgba(16, 185, 129, 0.15)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    backdropFilter: "blur(3px)",
-                                    animation: "superAiFadeIn 0.4s ease-out",
-                                  }}
-                                >
-                                  {/* Confetti particles */}
-                                  <div className="confetti-container">
-                                    {[...Array(12)].map((_, i) => (
-                                      <div
-                                        key={i}
-                                        className="confetti-particle"
-                                        style={{
-                                          position: "absolute",
-                                          width: "8px",
-                                          height: "8px",
-                                          background: ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"][i % 5],
-                                          borderRadius: "50%",
-                                          animation: `confettiFall 2s ease-out ${i * 0.1}s infinite`,
-                                          left: `${20 + (i * 60) / 12}%`,
-                                          top: "20%",
-                                        }}
-                                      />
-                                    ))}
-                                  </div>
-
-                                  <div
-                                    style={{
-                                      background: "rgba(255,255,255,0.95)",
-                                      borderRadius: "24px",
-                                      padding: "32px 24px",
-                                      textAlign: "center",
-                                      maxWidth: "280px",
-                                      width: "90%",
-                                      boxShadow: "0 16px 64px rgba(0,0,0,0.2)",
-                                      animation: "superAiBounceIn 0.6s ease-out 0.2s both",
-                                    }}
-                                  >
-                                    {/* Success Icon */}
-                                    <div
-                                      style={{
-                                        width: "64px",
-                                        height: "64px",
-                                        background: "linear-gradient(135deg, #10b981, #059669)",
-                                        borderRadius: "50%",
-                                        margin: "0 auto 20px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        animation: "superAiPulse 1.5s infinite",
-                                      }}
-                                    >
-                                      <svg width="32" height="32" fill="white" viewBox="0 0 24 24">
-                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-                                      </svg>
-                                    </div>
-
-                                    {/* Success Message */}
-                                    <h3
-                                      style={{
-                                        color: "#1f2937",
-                                        fontSize: "20px",
-                                        fontWeight: "700",
-                                        margin: "0 0 8px 0",
-                                      }}
-                                    >
-                                      Qabul qilindi!
-                                    </h3>
-
-                                    <p
-                                      style={{
-                                        color: "#6b7280",
-                                        fontSize: "14px",
-                                        margin: "0",
-                                      }}
-                                    >
-                                      Sizning fikringiz muhim
-                                    </p>
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Media content */}
-                              {currentMedia.media_type === "image" ? (
-                                <img
-                                  src={
-                                    currentMedia.file_url.startsWith("http")
-                                      ? currentMedia.file_url
-                                      : `https://${API_HOST}${currentMedia.file_url}`
-                                  }
-                                  alt="Post content"
-                                  className="post-img"
-                                  loading="lazy"
-                                  onError={handleImageError}
-                                  draggable="false"
-                                />
-                              ) : (
-                                <video
-                                  src={
-                                    currentMedia.file_url.startsWith("http")
-                                      ? currentMedia.file_url
-                                      : `https://${API_HOST}${currentMedia.file_url}`
-                                  }
-                                  controls
-                                  className="post-video"
-                                  preload="metadata"
-                                  onError={(e) => {
-                                    e.target.onerror = null
-                                    e.target.poster = Default
-                                  }}
-                                />
-                              )}
-                            </div>
-
-                            {allMedia.length > 1 && (
-                              <div className="carousel-indicators">
-                                {allMedia.map((_, index) => (
-                                  <span
-                                    key={index}
-                                    className={`carousel-dot ${index === currentIndex ? "active" : ""}`}
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setActiveMediaIndices((prev) => ({
-                                        ...prev,
-                                        [post.id]: index,
-                                      }))
-                                    }}
-                                  />
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        )
-                      })()}
-                    </div>
-
-                    <div className="post-actions">
-                      <div className="action-buttons" style={{ }}>
-                        <div className="action-buttons-left">
-                          <button
-                            className={`action-button ${likedPosts[post.id] ? "liked" : ""}`}
-                            onClick={() => handleLike(post.id)}
-                          >
-                            {likedPosts[post.id] ? (
-                              <svg
-                                aria-label="Unlike"
-                                className="action-icon"
-                                fill="#ed4956"
-                                height="24"
-                                role="img"
-                                viewBox="0 0 48 48"
-                                width="24"
-                              >
-                                <path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path>
-                              </svg>
-                            ) : (
-                              <svg
-                                aria-label="Like"
-                                className="action-icon"
-                                fill="none"
-                                height="24"
-                                role="img"
-                                viewBox="0 0 24 24"
-                                width="24"
-                              >
-                                <path
-                                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                                  fill="none"
-                                  stroke="black"
-                                  strokeWidth="2"
-                                ></path>
-                              </svg>
-                            )}
-                          </button>
-                          <button className="action-button" onClick={() => handleComment(post.id)}>
+                      )}
+                      {/* Article actions and useful stats */}
+                      <div className="article-actions-row">
+                        <button
+                          className={`action-button ${likedPosts[post.id] ? "liked" : ""}`}
+                          onClick={() => handleLike(post.id)}
+                        >
+                          {likedPosts[post.id] ? (
                             <svg
-                              aria-label="Comment"
+                              aria-label="Unlike"
+                              className="action-icon"
+                              fill="#ed4956"
+                              height="24"
+                              role="img"
+                              viewBox="0 0 48 48"
+                              width="24"
+                            >
+                              <path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path>
+                            </svg>
+                          ) : (
+                            <svg
+                              aria-label="Like"
                               className="action-icon"
                               fill="none"
                               height="24"
@@ -2048,47 +1505,75 @@ const Home = () => {
                               width="24"
                             >
                               <path
-                                d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z"
+                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
                                 fill="none"
-                                stroke="#000"
-                                strokeLinejoin="round"
+                                stroke="black"
                                 strokeWidth="2"
                               ></path>
                             </svg>
-                          </button>
-                          <button className="action-button" onClick={() => handleShare(post.id)}>
+                          )}
+                        </button>
+                        <button className="action-button" onClick={() => handleComment(post.id)}>
+                          <svg
+                            aria-label="Comment"
+                            className="action-icon"
+                            fill="none"
+                            height="24"
+                            role="img"
+                            viewBox="0 0 24 24"
+                            width="24"
+                          >
+                            <path
+                              d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z"
+                              fill="none"
+                              stroke="#000"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                            ></path>
+                          </svg>
+                        </button>
+                        <button className="action-button" onClick={() => handleShare(post.id)}>
+                          <svg
+                            aria-label="Share post"
+                            className="action-icon"
+                            fill="#000"
+                            height="24"
+                            role="img"
+                            viewBox="0 0 24 24"
+                            width="24"
+                          >
+                            <path
+                              d="M22 3 9.218 10.083M11.698 20.334 22 3.001 2 3.001 9.218 10.084l2.48 10.25z"
+                              fill="none"
+                              stroke="#000"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                            ></path>
+                          </svg>
+                        </button>
+                        <div className="useful-people">
+                          <span className="useful-people-icon" role="img" aria-label="useful">
                             <svg
-                              aria-label="Share post"
-                              className="action-icon"
-                              fill="#000"
-                              height="24"
-                              role="img"
-                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
                               width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             >
-                              <path
-                                d="M22 3 9.218 10.083M11.698 20.334 22 3.001 2 3.001 9.218 10.084l2.48 10.25z"
-                                fill="none"
-                                stroke="#000"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                              ></path>
+                              <path d="m18 9-6-6-6 6" />
+                              <path d="M12 3v14" />
+                              <path d="M5 21h14" />
                             </svg>
-                          </button>
-                          <div className="useful-people">
-                          <span className="useful-people-icon" role="img" aria-label="useful"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-from-line-icon lucide-arrow-up-from-line"><path d="m18 9-6-6-6 6"/><path d="M12 3v14"/><path d="M5 21h14"/></svg></span>
+                          </span>
                           <span className="useful-people-count">{usefulStats[post.id]?.usefulCount || 0}</span>
                         </div>
                         <div className="useful-percentage-circle">
                           <svg width="34" height="34" viewBox="0 0 34 34">
-                            <circle
-                              cx="17"
-                              cy="17"
-                              r="14"
-                              stroke="#e6f4fa"
-                              strokeWidth="4"
-                              fill="none"
-                            />
+                            <circle cx="17" cy="17" r="14" stroke="#e6f4fa" strokeWidth="4" fill="none" />
                             <circle
                               cx="17"
                               cy="17"
@@ -2097,18 +1582,14 @@ const Home = () => {
                               strokeWidth="4"
                               fill="none"
                               strokeDasharray={2 * Math.PI * 14}
-                              strokeDashoffset={2 * Math.PI * 14 * (1 - (usefulStats[post.id]?.initialPercent || 0) / 100)}
-                              style={{ transition: 'stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1)' }}
+                              strokeDashoffset={
+                                2 * Math.PI * 14 * (1 - (usefulStats[post.id]?.initialPercent || 0) / 100)
+                              }
+                              style={{ transition: "stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1)" }}
                             />
                           </svg>
-                          <span className="useful-percentage-label">
-                            {usefulStats[post.id]?.initialPercent || 0}%
-                          </span>
+                          <span className="useful-percentage-label">{usefulStats[post.id]?.initialPercent || 0}%</span>
                         </div>
-                        </div>
-                        <div className="useful-stats-row">
-                        
-                      </div>
                         <button
                           className={`action-button ${savedPosts[post.id] ? "saved" : ""}`}
                           onClick={() => handleSave(post.id)}
@@ -2151,73 +1632,713 @@ const Home = () => {
                             </svg>
                           )}
                         </button>
-                        
-                      </div>
-
-                      <div className="likes-container">
-                        {post.likes_count > 0 && (
-                          <div className="likes-avatars">
-                            <div className="like-avatar">
-                              <img
-                                src={instaImg || Default}
-                                alt="Liker"
-                                className="like-avatar-img"
-                                onError={handleImageError}
-                              />
-                            </div>
-                          </div>
-                        )}
-                        <div className="likes-text">
-                          {post.likes_count > 0 ? (
-                            <>
-                              <span className="bold-text">
-                                {post.likes_count} {post.likes_count === 1 ? "like" : "likes"}
-                              </span>
-                            </>
-                          ) : (
-                            <>Be the first to like this</>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Foydalilik statistikasi: odamlar soni va foiz dumaloq bar */}
-                     
-
-                      {post.comments_count > 0 && (
-                        <div className="comments-count" onClick={() => handleComment(post.id)}>
-                          View all {post.comments_count} {post.comments_count === 1 ? "comment" : "comments"}
-                        </div>
-                      )}
-
-                      {post.caption && (
-                        <div className="post-caption">
-                          <span className="bold-text">{post.user.name}</span>{" "}
-                          {expandedCaptions[post.id] || post.caption.length <= 100 ? (
-                            <span>{post.caption}</span>
-                          ) : (
-                            <>
-                              <span>{post.caption.substring(0, 100)}...</span>
-                              <button
-                                className="more-button"
-                                onClick={() => setExpandedCaptions({ ...expandedCaptions, [post.id]: true })}
-                              >
-                                more
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      )}
-
-                      <div className="post-date">
-                        {new Date(post.created_at).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
                       </div>
                     </div>
-                  </div>
-                )
+                  )
+                } else {
+                  // Regular post rendering
+                  return (
+                    <div key={post.id} className="post milliy-post" ref={isLastItem ? lastPostElementRef : null}>
+                      {/* AI Status Badge */}
+                      <div
+                        className={`ai-status-badge ai-status-${getAIStatus(post)}`}
+                        onClick={() => showAIStatusDescription(getAIStatus(post))}
+                        style={{
+                          cursor: "pointer",
+                          position: "absolute",
+                          top: "35px",
+                          right: "16px",
+                          left: "auto",
+                          padding: "4px 12px",
+                          color: "#222",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          fontSize: "13px",
+                          fontWeight: 700,
+                          zIndex: 2,
+                          minWidth: "unset",
+                          maxWidth: "60vw",
+                          flexWrap: "nowrap",
+                          letterSpacing: "0.01em",
+                          boxShadow: "none",
+                          fontStyle: "italic",
+                        }}
+                      >
+                        <span style={{ fontSize: "14px", fontWeight: 700 }}>
+                          <span
+                            style={{
+                              fontSize: "15px",
+                              fontStyle: "normal",
+                            }}
+                          >
+                            AI tekshirgan:{" "}
+                          </span>
+                          {AI_STATUS_CONFIG[getAIStatus(post)].label}
+                        </span>
+                      </div>
+
+                      {/* AI Status Description Modal */}
+                      {showStatusModal && selectedStatus === getAIStatus(post) && (
+                        <div
+                          className="ai-status-modal"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setShowStatusModal(false)
+                          }}
+                          style={{
+                            position: "fixed",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: "rgba(0,0,0,0.35)",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            zIndex: 1000,
+                            padding: "20px",
+                          }}
+                        >
+                          <div
+                            className="modal-content"
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                              backgroundColor: "#fff",
+                              borderRadius: "18px",
+                              padding: "22px",
+                              maxWidth: "95%",
+                              width: "340px",
+                              position: "relative",
+                              boxShadow: "0 4px 24px rgba(0,0,0,0.10)",
+                            }}
+                          >
+                            <p
+                              style={{
+                                margin: "0",
+                                fontSize: "14px",
+                                lineHeight: "1.6",
+                                color: "#333",
+                                textAlign: "left",
+                              }}
+                            >
+                              {AI_STATUS_CONFIG[selectedStatus].description}
+                            </p>
+                            <button
+                              onClick={() => setShowStatusModal(false)}
+                              style={{
+                                position: "absolute",
+                                top: "-12px",
+                                right: "-12px",
+                                width: "30px",
+                                height: "30px",
+                                borderRadius: "50%",
+                                border: "none",
+                                backgroundColor: "#fff",
+                                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: "18px",
+                              }}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="post-header">
+                        <div
+                          className="post-avatar"
+                          style={{
+                            borderRadius: "50%",
+                            padding: "3px",
+                            boxShadow: "0 2px 8px rgba(80,80,180,0.10)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: "58px",
+                            height: "58px",
+                          }}
+                        >
+                          <img
+                            src={getSafeImageUrl(post.user.profile_picture, API_URL2) || "/placeholder.svg"}
+                            alt={post.user.name}
+                            className="avatar-img"
+                            onError={handleImageError}
+                            style={{
+                              borderRadius: "50%",
+                              width: "52px",
+                              height: "52px",
+                              objectFit: "cover",
+                              border: "2px solid #fff",
+                            }}
+                          />
+                        </div>
+                        <div className="post-user-info">
+                          <div className="user-name-container">
+                            <div
+                              className="user-name"
+                              style={{
+                                color: "#262626",
+                                fontWeight: 700,
+                                fontSize: "16px",
+                                letterSpacing: "0.01em",
+                              }}
+                            >
+                              {post.user.name}
+                            </div>
+                            {post.is_own_post && (
+                              <div className="verification-badge">
+                                <svg className="verification-icon-small" fill="currentColor" viewBox="0 0 24 24">
+                                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                          {post.location_name && <div className="user-location">{post.location_name}</div>}
+                        </div>
+                      </div>
+
+                      <div className="post-image">
+                        {(() => {
+                          const allMedia = post.main_media ? [post.main_media, ...post.additional_media] : []
+                          const currentIndex = activeMediaIndices[post.id] || 0
+                          const currentMedia = allMedia[currentIndex]
+
+                          return allMedia.length > 0 ? (
+                            <div className="carousel-container">
+                              <div
+                                className="media-container"
+                                style={{ position: "relative" }}
+                                onTouchStart={(e) => {
+                                  handleTouchStart(e, post.id)
+                                  handleMediaLongPressStart(post.id)
+                                }}
+                                onTouchMove={(e) => handleTouchMove(e, post.id)}
+                                onTouchEnd={() => {
+                                  handleTouchEnd(post.id)
+                                  handleMediaLongPressEnd(post.id)
+                                }}
+                                onMouseDown={(e) => {
+                                  handleMouseDown(e, post.id)
+                                  handleMediaLongPressStart(post.id)
+                                }}
+                                onMouseMove={(e) => handleMouseMove(e, post.id)}
+                                onMouseUp={() => {
+                                  handleMouseUp(post.id)
+                                  handleMediaLongPressEnd(post.id)
+                                }}
+                                onMouseLeave={() => {
+                                  handleMouseLeave(post.id)
+                                  handleMediaLongPressEnd(post.id)
+                                }}
+                              >
+                                {/* Phase 1: Holding (no visual feedback) */}
+                                {mediaHolding[post.id] && (
+                                  <div
+                                    style={{
+                                      position: "absolute",
+                                      top: "0",
+                                      left: "0",
+                                      right: "0",
+                                      bottom: "0",
+                                      zIndex: 5,
+                                      // background: "rgba(0,0,0,0.1)",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        color: "white",
+                                        fontSize: "16px",
+                                        fontWeight: "600",
+                                        // textShadow: "0 2px 4px rgba(0,0,0,0.5)",
+                                      }}
+                                    >
+                                      {/* Bosib turing... */}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Phase 2: Progress Bar */}
+                                {showProgressBar[post.id] && (
+                                  <div
+                                    style={{
+                                      position: "absolute",
+                                      top: "0",
+                                      left: "0",
+                                      right: "0",
+                                      bottom: "0",
+                                      zIndex: 10,
+                                      background: "rgba(0,0,0,0.7)",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      backdropFilter: "blur(2px)",
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        background: "rgba(255,255,255,0.95)",
+                                        borderRadius: "20px",
+                                        padding: "24px",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        gap: "16px",
+                                        minWidth: "160px",
+                                        boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+                                      }}
+                                    >
+                                      {/* Progress Circle */}
+                                      <div
+                                        style={{
+                                          width: "80px",
+                                          height: "80px",
+                                          position: "relative",
+                                          display: "flex",
+                                          alignItems: "center",
+                                          justifyContent: "center",
+                                        }}
+                                      >
+                                        <svg
+                                          style={{
+                                            width: "80px",
+                                            height: "80px",
+                                            transform: "rotate(-90deg)",
+                                            position: "absolute",
+                                          }}
+                                        >
+                                          <circle
+                                            cx="40"
+                                            cy="40"
+                                            r="32"
+                                            stroke="rgba(59, 130, 246, 0.2)"
+                                            strokeWidth="6"
+                                            fill="none"
+                                          />
+                                          <circle
+                                            cx="40"
+                                            cy="40"
+                                            r="32"
+                                            stroke="#3b82f6"
+                                            strokeWidth="6"
+                                            fill="none"
+                                            strokeLinecap="round"
+                                            strokeDasharray={201.06}
+                                            strokeDashoffset={201.06 - (mediaProgress[post.id] / 100) * 201.06}
+                                            style={{
+                                              transition: "stroke-dashoffset 0.1s ease",
+                                            }}
+                                          />
+                                        </svg>
+                                        <div
+                                          style={{
+                                            color: "#3b82f6",
+                                            fontSize: "18px",
+                                            fontWeight: "bold",
+                                            textAlign: "center",
+                                          }}
+                                        >
+                                          {Math.round(mediaProgress[post.id])}%
+                                        </div>
+                                      </div>
+
+                                      <div
+                                        style={{
+                                          textAlign: "center",
+                                          color: "#374151",
+                                          fontSize: "14px",
+                                          fontWeight: "600",
+                                        }}
+                                      >
+                                        Baholanmoqda...
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Phase 3: Success with Confetti */}
+                                {showSuccess[post.id] && (
+                                  <div
+                                    className="super-ai-success"
+                                    style={{
+                                      position: "absolute",
+                                      top: "0",
+                                      left: "0",
+                                      right: "0",
+                                      bottom: "0",
+                                      zIndex: 15,
+                                      background: "rgba(16, 185, 129, 0.15)",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      backdropFilter: "blur(3px)",
+                                      animation: "superAiFadeIn 0.4s ease-out",
+                                    }}
+                                  >
+                                    {/* Confetti particles */}
+                                    <div className="confetti-container">
+                                      {[...Array(12)].map((_, i) => (
+                                        <div
+                                          key={i}
+                                          className="confetti-particle"
+                                          style={{
+                                            position: "absolute",
+                                            width: "8px",
+                                            height: "8px",
+                                            background: ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"][i % 5],
+                                            borderRadius: "50%",
+                                            animation: `confettiFall 2s ease-out ${i * 0.1}s infinite`,
+                                            left: `${20 + (i * 60) / 12}%`,
+                                            top: "20%",
+                                          }}
+                                        />
+                                      ))}
+                                    </div>
+
+                                    <div
+                                      style={{
+                                        background: "rgba(255,255,255,0.95)",
+                                        borderRadius: "24px",
+                                        padding: "32px 24px",
+                                        textAlign: "center",
+                                        maxWidth: "280px",
+                                        width: "90%",
+                                        boxShadow: "0 16px 64px rgba(0,0,0,0.2)",
+                                        animation: "superAiBounceIn 0.6s ease-out 0.2s both",
+                                      }}
+                                    >
+                                      {/* Success Icon */}
+                                      <div
+                                        style={{
+                                          width: "64px",
+                                          height: "64px",
+                                          background: "linear-gradient(135deg, #10b981, #059669)",
+                                          borderRadius: "50%",
+                                          margin: "0 auto 20px",
+                                          display: "flex",
+                                          alignItems: "center",
+                                          justifyContent: "center",
+                                          animation: "superAiPulse 1.5s infinite",
+                                        }}
+                                      >
+                                        <svg width="32" height="32" fill="white" viewBox="0 0 24 24">
+                                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                                        </svg>
+                                      </div>
+
+                                      {/* Success Message */}
+                                      <h3
+                                        style={{
+                                          color: "#1f2937",
+                                          fontSize: "20px",
+                                          fontWeight: "700",
+                                          margin: "0 0 8px 0",
+                                        }}
+                                      >
+                                        Qabul qilindi!
+                                      </h3>
+
+                                      <p
+                                        style={{
+                                          color: "#6b7280",
+                                          fontSize: "14px",
+                                          margin: "0",
+                                        }}
+                                      >
+                                        Sizning fikringiz muhim
+                                      </p>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Media content */}
+                                {currentMedia && currentMedia.media_type === "image" ? (
+                                  <img
+                                    src={
+                                      currentMedia.file_url.startsWith("http")
+                                        ? currentMedia.file_url
+                                        : `https://${API_HOST}${currentMedia.file_url}`
+                                    }
+                                    alt="Post content"
+                                    className="post-img"
+                                    loading="lazy"
+                                    onError={handleImageError}
+                                    draggable="false"
+                                  />
+                                ) : (
+                                  currentMedia && (
+                                    <video
+                                      src={
+                                        currentMedia.file_url.startsWith("http")
+                                          ? currentMedia.file_url
+                                          : `https://${API_HOST}${currentMedia.file_url}`
+                                      }
+                                      controls
+                                      className="post-video"
+                                      preload="metadata"
+                                      onError={(e) => {
+                                        e.target.onerror = null
+                                        e.target.poster = Default
+                                      }}
+                                    />
+                                  )
+                                )}
+                              </div>
+
+                              {allMedia.length > 1 && (
+                                <div className="carousel-indicators">
+                                  {allMedia.map((_, index) => (
+                                    <span
+                                      key={index}
+                                      className={`carousel-dot ${index === currentIndex ? "active" : ""}`}
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        setActiveMediaIndices((prev) => ({
+                                          ...prev,
+                                          [post.id]: index,
+                                        }))
+                                      }}
+                                    />
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ) : null
+                        })()}
+                      </div>
+
+                      <div className="post-actions">
+                        <div className="action-buttons" style={{}}>
+                          <div className="action-buttons-left">
+                            <button
+                              className={`action-button ${likedPosts[post.id] ? "liked" : ""}`}
+                              onClick={() => handleLike(post.id)}
+                            >
+                              {likedPosts[post.id] ? (
+                                <svg
+                                  aria-label="Unlike"
+                                  className="action-icon"
+                                  fill="#ed4956"
+                                  height="24"
+                                  role="img"
+                                  viewBox="0 0 48 48"
+                                  width="24"
+                                >
+                                  <path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path>
+                                </svg>
+                              ) : (
+                                <svg
+                                  aria-label="Like"
+                                  className="action-icon"
+                                  fill="none"
+                                  height="24"
+                                  role="img"
+                                  viewBox="0 0 24 24"
+                                  width="24"
+                                >
+                                  <path
+                                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                                    fill="none"
+                                    stroke="black"
+                                    strokeWidth="2"
+                                  ></path>
+                                </svg>
+                              )}
+                            </button>
+                            <button className="action-button" onClick={() => handleComment(post.id)}>
+                              <svg
+                                aria-label="Comment"
+                                className="action-icon"
+                                fill="none"
+                                height="24"
+                                role="img"
+                                viewBox="0 0 24 24"
+                                width="24"
+                              >
+                                <path
+                                  d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z"
+                                  fill="none"
+                                  stroke="#000"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                ></path>
+                              </svg>
+                            </button>
+                            <button className="action-button" onClick={() => handleShare(post.id)}>
+                              <svg
+                                aria-label="Share post"
+                                className="action-icon"
+                                fill="#000"
+                                height="24"
+                                role="img"
+                                viewBox="0 0 24 24"
+                                width="24"
+                              >
+                                <path
+                                  d="M22 3 9.218 10.083M11.698 20.334 22 3.001 2 3.001 9.218 10.084l2.48 10.25z"
+                                  fill="none"
+                                  stroke="#000"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                ></path>
+                              </svg>
+                            </button>
+                            <div className="useful-people">
+                              <span className="useful-people-icon" role="img" aria-label="useful">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="m18 9-6-6-6 6" />
+                                  <path d="M12 3v14" />
+                                  <path d="M5 21h14" />
+                                </svg>
+                              </span>
+                              <span className="useful-people-count">{usefulStats[post.id]?.usefulCount || 0}</span>
+                            </div>
+                            <div className="useful-percentage-circle">
+                              <svg width="34" height="34" viewBox="0 0 34 34">
+                                <circle cx="17" cy="17" r="14" stroke="#e6f4fa" strokeWidth="4" fill="none" />
+                                <circle
+                                  cx="17"
+                                  cy="17"
+                                  r="14"
+                                  stroke="#1da1f2"
+                                  strokeWidth="4"
+                                  fill="none"
+                                  strokeDasharray={2 * Math.PI * 14}
+                                  strokeDashoffset={
+                                    2 * Math.PI * 14 * (1 - (usefulStats[post.id]?.initialPercent || 0) / 100)
+                                  }
+                                  style={{ transition: "stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1)" }}
+                                />
+                              </svg>
+                              <span className="useful-percentage-label">
+                                {usefulStats[post.id]?.initialPercent || 0}%
+                              </span>
+                            </div>
+                          </div>
+                          <div className="useful-stats-row"></div>
+                          <button
+                            className={`action-button ${savedPosts[post.id] ? "saved" : ""}`}
+                            onClick={() => handleSave(post.id)}
+                            style={{ marginLeft: "auto", marginRight: "8px" }}
+                          >
+                            {savedPosts[post.id] ? (
+                              <svg
+                                aria-label="Remove"
+                                className="action-icon"
+                                fill="#000000"
+                                height="26"
+                                role="img"
+                                viewBox="0 0 24 24"
+                                width="26"
+                              >
+                                <polygon
+                                  fill="#000000"
+                                  points="20 21 12 13.44 4 21 4 3 20 3 20 21"
+                                  stroke="none"
+                                ></polygon>
+                              </svg>
+                            ) : (
+                              <svg
+                                aria-label="Save"
+                                className="action-icon"
+                                fill="none"
+                                height="26"
+                                role="img"
+                                viewBox="0 0 24 24"
+                                width="26"
+                              >
+                                <polygon
+                                  fill="none"
+                                  points="20 21 12 13.44 4 21 4 3 20 3 20 21"
+                                  stroke="black"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                ></polygon>
+                              </svg>
+                            )}
+                          </button>
+                        </div>
+
+                        <div className="likes-container">
+                          {post.likes_count > 0 && (
+                            <div className="likes-avatars">
+                              <div className="like-avatar">
+                                <img
+                                  src={instaImg || Default}
+                                  alt="Liker"
+                                  className="like-avatar-img"
+                                  onError={handleImageError}
+                                />
+                              </div>
+                            </div>
+                          )}
+                          <div className="likes-text">
+                            {post.likes_count > 0 ? (
+                              <>
+                                <span className="bold-text">
+                                  {post.likes_count} {post.likes_count === 1 ? "like" : "likes"}
+                                </span>
+                              </>
+                            ) : (
+                              <>Be the first to like this</>
+                            )}
+                          </div>
+                        </div>
+
+                        {post.comments_count > 0 && (
+                          <div className="comments-count" onClick={() => handleComment(post.id)}>
+                            View all {post.comments_count} {post.comments_count === 1 ? "comment" : "comments"}
+                          </div>
+                        )}
+
+                        {post.caption && (
+                          <div className="post-caption">
+                            <span className="bold-text">{post.user.name}</span>{" "}
+                            {expandedCaptions[post.id] || post.caption.length <= 100 ? (
+                              <span>{post.caption}</span>
+                            ) : (
+                              <>
+                                <span>{post.caption.substring(0, 100)}...</span>
+                                <button
+                                  className="more-button"
+                                  onClick={() => setExpandedCaptions({ ...expandedCaptions, [post.id]: true })}
+                                >
+                                  more
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="post-date">
+                          {new Date(post.created_at).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                }
               })
             : !isLoading && (
                 <div className="no-posts-message">
@@ -2255,9 +2376,9 @@ const Home = () => {
             </>
           )}
 
-          {isLoading && normalPosts.length > 0 && <div className="loading-text">Loading more posts...</div>}
+          {isLoading && posts.length > 0 && <div className="loading-text">Loading more posts...</div>}
 
-          {!isLoading && !hasMore && normalPosts.length > 0 && <div className="loading-text">No more posts to load</div>}
+          {!isLoading && !hasMore && posts.length > 0 && <div className="loading-text">No more posts to load</div>}
         </div>
       </main>
 
@@ -2338,4 +2459,3 @@ const Home = () => {
 }
 
 export default Home
-  

@@ -2491,6 +2491,8 @@
   border-radius: 14px;
   box-shadow: 0 2px 12px rgba(29,161,242,0.07);
   padding: 20px 18px 16px 18px;
+  padding-bottom: 20px;
+  margin-bottom: 10px;
   transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
   border: 1.5px solid #d0e7fa;
   position: relative;
