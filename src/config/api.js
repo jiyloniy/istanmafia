@@ -28,7 +28,10 @@ export const ENDPOINTS = {
     DELETE_COMMENT: 'user/comments/:commentId/',
     POST_SAVE: 'user/posts/:postId/save/',
     GET_SAVED_POSTS: 'user/posts/saved/',
-    ARTICLE: 'user/create/article/'
+    ARTICLE: 'user/article/create/',
+    // Article interaction endpoints
+    ARTICLE_LIKE: 'user/article/like/',
+    ARTICLE_SAVE: 'user/article/saved/',
 };
 
 // Full API paths
@@ -49,7 +52,10 @@ export const API = {
     DELETE_COMMENT: API_URL + ENDPOINTS.DELETE_COMMENT,
     POST_SAVE: API_URL + ENDPOINTS.POST_SAVE,
     GET_SAVED_POSTS: API_URL + ENDPOINTS.GET_SAVED_POSTS,
-    ARTICLE: API_URL + ENDPOINTS.ARTICLE
+    ARTICLE: API_URL + ENDPOINTS.ARTICLE,
+    // Article interaction endpoints
+    ARTICLE_LIKE: API_URL + ENDPOINTS.ARTICLE_LIKE,
+    ARTICLE_SAVE: API_URL + ENDPOINTS.ARTICLE_SAVE,
 };
 
 // application/json
@@ -240,7 +246,34 @@ export const viewStory = async (storyId) => {
     }
 };
 
-// bu yerga maqola saqlash uchun fuctioni yozamiz
+// Like/Unlike an article
+export const likeArticle = async (articleId) => {
+  try {
+    const response = await fetch(API.ARTICLE_LIKE, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ article_id: articleId })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error liking article:', error);
+    throw error;
+  }
+};
 
+// Save/Unsave an article
+export const saveArticle = async (articleId) => {
+  try {
+    const response = await fetch(API.ARTICLE_SAVE, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ article_id: articleId })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error saving article:', error);
+    throw error;
+  }
+};
 
 export default API;

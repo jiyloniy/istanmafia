@@ -248,6 +248,7 @@
     font-size: 16px;
     font-weight: 600;
     margin-left: 30px;
+    padding-left: 30px;
   }
   
   /* User Profile Section */
@@ -433,6 +434,7 @@
     transform: translateX(0);
   }
   
+  
   .drawer-closed {
     transform: translateX(-100%);
   }
@@ -486,7 +488,7 @@
   
   .profile-badge {
     position: absolute;
-    right: -100px;
+    right: -90px;
     top: -15px;
     /* background-color: #002C9D; */
     /* border-radius: 9999px; */
@@ -669,7 +671,7 @@
   }
   
   .stories-count {
-    margin-left: 8px;
+    margin-left: 30px;
     font-weight: 600;
     font-size: 16px;
   }
@@ -2389,7 +2391,7 @@
   padding: 7px 20px 7px 12px;
   font-size: 18px;
   font-weight: 700;
-  color: #1da1f2;
+  color: #008c8c;
   box-shadow: 0 2px 8px rgba(29,161,242,0.10);
   min-width: 60px;
   min-height: 38px;
@@ -2399,7 +2401,7 @@
 .useful-people-icon {
   font-size: 22px;
   margin-right: 8px;
-  color: #1da1f2;
+  color: #008c8c;
   filter: drop-shadow(0 1px 2px #b2e0f7);
   display: flex;
   align-items: center;
@@ -2408,7 +2410,7 @@
 .useful-people-count {
   font-size: 18px;
   font-weight: 700;
-  color: #1da1f2;
+  color: #008c8c;
 }
 
 .useful-percentage-circle {
@@ -2550,7 +2552,7 @@
 }
 .article-tag {
   background: #e6f4fa;
-  color: #1da1f2;
+  color: #008c8c;
   border-radius: 8px;
   padding: 2px 10px;
   font-size: 0.98rem;

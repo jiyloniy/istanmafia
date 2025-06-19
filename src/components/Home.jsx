@@ -22,6 +22,8 @@ import {
   API_URL2,
   ENDPOINTS,
   API_URL,
+  likeArticle,
+  saveArticle,
 } from "../config/api"
 import { deleteComment } from "../config/api"
 
@@ -78,7 +80,7 @@ const defaultImageUrl = "../assets/default.png"
 const preloadedDefaultImage = new Image()
 preloadedDefaultImage.src = defaultImageUrl
 
-const statuses = ["Sulton", "Amir", "Bey", "Mirzo", "Xon", "Beg", "Tolib"]
+const statuses = ["Sulton", "Amir", "Bey", "Mirzo", "Xon", "Bek", "Tolib"]
 
 const getRandomStatus = () => {
   const randomIndex = Math.floor(Math.random() * statuses.length)
@@ -162,6 +164,9 @@ const Home = () => {
   const [touchEnd, setTouchEnd] = useState({})
   const [likedPosts, setLikedPosts] = useState({})
   const [savedPosts, setSavedPosts] = useState({})
+  // Article like/save state
+  const [likedArticles, setLikedArticles] = useState({})
+  const [savedArticles, setSavedArticles] = useState({})
   const [showComments, setShowComments] = useState(false)
   const [activeCommentPost, setActiveCommentPost] = useState(null)
   const [comments, setComments] = useState({})
@@ -344,14 +349,16 @@ const Home = () => {
           if (response && response.status === "success" && response.data && response.data.user_stories) {
             setStories(response.data.user_stories)
 
-            const storyCount = response.data.user_stories.reduce((count, userStory) => {
-              const unviewedStories = userStory.stories.filter((story) => !story.viewed)
-              return count + unviewedStories.length
+            const unviewedCount = response.data.user_stories.reduce((count, userStory) => {
+              if (userStory.stories && Array.isArray(userStory.stories)) {
+                return count + userStory.stories.filter((story) => !story.viewed).length
+              }
+              return count
             }, 0)
 
-            setStoryCount(storyCount)
+            setStoryCount(unviewedCount)
           } else {
-            setStoryCount(4)
+            setStoryCount(0)
           }
         } catch (error) {
           console.error("Error fetching stories:", error)
@@ -689,6 +696,8 @@ const Home = () => {
     })
   }
 
+
+
   // Handle post likes
   const handleLike = async (postId) => {
     try {
@@ -741,6 +750,26 @@ const Home = () => {
       console.error("Error liking post:", error)
     }
   }
+  
+  // Handle article likes
+  const handleArticleLike = (articleId) => {
+    const previousState = likedArticles[articleId];
+    setLikedArticles((prev) => ({
+      ...prev,
+      [articleId]: !prev[articleId],
+    }));
+    setPosts((prev) => prev.map((post) => {
+      if (post.id === articleId && !post.main_media) {
+        return {
+          ...post,
+          likes_count: previousState ? post.likes_count - 1 : post.likes_count + 1,
+        };
+      }
+      return post;
+    }));
+  }
+
+
 
   // Handle post saves
   const handleSave = async (postId) => {
@@ -767,6 +796,38 @@ const Home = () => {
         [postId]: !prev[postId],
       }))
       console.error("Error saving post:", error)
+    }
+  }
+
+  // Handle article saves
+  const handleArticleSave = async (articleId) => {
+    try {
+      const previousState = savedArticles[articleId]
+      setSavedArticles((prev) => ({
+        ...prev,
+        [articleId]: !prev[articleId],
+      }))
+      const response = await saveArticle(articleId)
+      if (response.status !== "success") {
+        setSavedArticles((prev) => ({ ...prev, [articleId]: previousState }))
+        console.error("Error saving article:", response.message)
+      } else {
+        console.log(response.message || "Maqola saqlandi!")
+        setSavedArticles((prev) => ({ ...prev, [articleId]: response.data.has_saved }))
+        setPosts((prev) => prev.map((post) => {
+          if (post.id === articleId && !post.main_media) {
+            return {
+              ...post,
+              saved_count: response.data.saved_count,
+              has_saved: response.data.has_saved,
+            }
+          }
+          return post
+        }))
+      }
+    } catch (error) {
+      setSavedArticles((prev) => ({ ...prev, [articleId]: !prev[articleId] }))
+      console.error("Error saving article:", error)
     }
   }
 
@@ -895,7 +956,7 @@ const Home = () => {
 
   // Handle share
   const handleShare = (postId) => {
-    alert(`Share post ${postId}`)
+    console.log(`Share post ${postId}`)
   }
 
   // Handle story click
@@ -1061,6 +1122,146 @@ const Home = () => {
 
   // Font size state for articles
   const [articleFontSize, setArticleFontSize] = useState(17)
+
+  // Stories states and animations
+  const [storiesExpanded, setStoriesExpanded] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
+
+  // Handle scroll behavior for stories
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScroll = window.pageYOffset;
+      setScrollPosition(currentScroll);
+      
+      if (currentScroll > 100 && storiesExpanded) {
+        setStoriesExpanded(false);
+      } else if (currentScroll < 50 && !storiesExpanded) {
+        setStoriesExpanded(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [storiesExpanded]);
+
+  // Stories section styles
+  const storiesStyles = {
+    container: {
+      position: 'sticky',
+      top: 0,
+      width: '100%',
+      backgroundColor: '#f7f7f7',
+      zIndex: 100,
+      transition: 'all 0.3s ease-in-out',
+      height: storiesExpanded ? '240px' : '72px',
+      boxShadow: storiesExpanded ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
+      overflow: 'hidden'
+    },
+    scrollArea: {
+      overflowX: 'auto',
+      overflowY: storiesExpanded ? 'auto' : 'hidden',
+      WebkitOverflowScrolling: 'touch',
+      display: 'flex',
+      flexWrap: storiesExpanded ? 'wrap' : 'nowrap',
+      padding: '8px',
+      gap: '12px',
+      height: '100%'
+    },
+    storyItem: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      cursor: 'pointer',
+      minWidth: storiesExpanded ? '100px' : '64px',
+      transition: 'all 0.3s ease'
+    },
+    storyAvatar: {
+      width: '64px',
+      height: '64px',
+      borderRadius: '50%',
+      overflow: 'hidden',
+      border: '2px solid #008c8c',
+      padding: '2px',
+      backgroundColor: 'white'
+    },
+    storyImage: {
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      objectFit: 'cover'
+    },
+    storyUsername: {
+      fontSize: '12px',
+      marginTop: '4px',
+      color: '#333',
+      maxWidth: '80px',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      textAlign: 'center'
+    }
+  };
+
+  // Stories Section Component
+  const StoriesSection = () => (
+    <div 
+      style={storiesStyles.container}
+      onClick={() => !storiesExpanded && setStoriesExpanded(true)}
+    >
+      <div style={storiesStyles.scrollArea}>
+        {/* Add Story Item */}
+        <div style={storiesStyles.storyItem}>
+          <div style={{...storiesStyles.storyAvatar, border: '2px dashed #008c8c'}}>
+            <div style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#f0f7f7'
+            }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#008c8c" strokeWidth="2">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </div>
+          </div>
+          <span style={storiesStyles.storyUsername}>Add Story</span>
+        </div>
+
+        {/* Story Items */}
+        {stories.map((userStory, index) => {
+          const hasUnviewedStories = userStory.stories && userStory.stories.some(story => !story.viewed);
+          
+          return (
+            <div 
+              key={userStory.user_id || index}
+              style={storiesStyles.storyItem}
+              onClick={() => handleStoryClick(userStory)}
+            >
+              <div style={{
+                ...storiesStyles.storyAvatar,
+                border: hasUnviewedStories ? '2px solid #008c8c' : '2px solid #ddd'
+              }}>
+                <img
+                  src={getSafeImageUrl(userStory.profile_picture, API_URL2) || Default}
+                  alt={userStory.name || 'Story'}
+                  style={storiesStyles.storyImage}
+                  onError={handleImageError}
+                />
+              </div>
+              <span style={storiesStyles.storyUsername}>
+                {userStory.name || `User ${index + 1}`}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  // In the return statement, replace the existing stories row with:
+  {/* Stories Section */}
+  // <StoriesSection />
 
   // Remove the separate filtering of articles and posts.
   // const articles = posts.filter((p) => p.type === 'article')
@@ -1313,7 +1514,7 @@ const Home = () => {
                     <span className="badge-rating">{userData?.rating || "5.5"}</span> */}
                   
                   <div className="profile-status" style={{
-                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    background:'#008c8c',
                     padding: "4px 12px",
                     borderRadius: "20px",
                     color: "white",
@@ -1387,26 +1588,58 @@ const Home = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
-              <div className="stories-preview">
-                <div className="stories-avatars">
-                  {stories.slice(0, 3).map((userStoryItem) => (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  position: 'relative',
+                  alignItems: 'center'
+                }}>
+                  {stories.slice(0, 3).map((userStoryItem, index) => (
                     <div
                       key={userStoryItem.user_id}
-                      className="story-avatar"
                       onClick={() => handleStoryClick(userStoryItem)}
+                      style={{
+                        marginLeft: index === 0 ? '0' : '-8px',
+                        position: 'relative',
+                        cursor: 'pointer',
+                        zIndex: 3 - index
+                      }}
                     >
-                      <img
-                        src={
-                          getSafeImageUrl(userStoryItem.profile_picture, "https://api.istan.uz/") || "/placeholder.svg"
-                        }
-                        alt={userStoryItem.name || "Story User"}
-                        className="story-img"
-                        onError={handleImageError}
-                      />
+                      <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        background:   'linear-gradient(45deg, #e0f7f7 0%, #b2eaea 100%)',
+                        padding: '2px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>
+                        <img
+                          src={getSafeImageUrl(userStoryItem.profile_picture, "https://api.istan.uz/") || "/placeholder.svg"}
+                          alt={userStoryItem.name || "Story User"}
+                          onError={handleImageError}
+                          style={{
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            border: '2px solid white',
+                            objectFit: 'cover'
+                          }}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
-                {storyCount > 0 && <span className="stories-count">{`${storyCount} Hikayalar`}</span>}
+                {stories.length > 0 && <span style={{
+                  fontSize: '18px',
+                  color: '#262626',
+                  fontWeight: '500'
+                }}>{` ${stories.length === 1 ? 'Hikoya' : 'Hikoyalar'}`}</span>}
               </div>
             </div>
 
@@ -1432,71 +1665,7 @@ const Home = () => {
       {/* Main Content Area */}
       <main className="main-content">
         {/* Stories Section */}
-        {showStoryRow && (
-          <div className="stories-row">
-            <div className="stories-container">
-              <div
-                className="story-item"
-                onClick={() =>
-                  handleStoryClick(
-                    stories.find((s) => s.is_own || (s.stories && s.stories.some((story) => story.is_own))),
-                  )
-                }
-              >
-                <div className="story-circle">
-                  <img
-                    src={getSafeImageUrl(userInfo?.profile_picture, API_URL2) || "/placeholder.svg"}
-                    alt="Your Story"
-                    onError={handleImageError}
-                  />
-                </div>
-                <span className="story-username">Your story</span>
-              </div>
-
-              {stories
-                .filter(
-                  (userStory) =>
-                    !userStory.is_own && (!userStory.stories || !userStory.stories.some((story) => story.is_own)),
-                )
-                .map((userStory, index) => {
-                  const hasUnviewedStories = userStory.stories && userStory.stories.some((story) => !story.viewed)
-                  const borderClass = hasUnviewedStories
-                    ? index % 3 === 0
-                      ? "pink-border"
-                      : index % 3 === 1
-                        ? "yellow-border"
-                        : "blue-border"
-                    : ""
-
-                  return (
-                    <div key={userStory.user_id} className="story-item" onClick={() => handleStoryClick(userStory)}>
-                      <div className={`story-circle ${borderClass}`}>
-                        <img
-                          src={
-                            API_URL2 + userStory.profile_picture ||
-                            (index % 4 === 0
-                              ? profile1
-                              : index % 4 === 1
-                                ? profile2
-                                : index % 4 === 2
-                                  ? profile3
-                                  : profile4) ||
-                            API_URL2 + userStory.profile_picture ||
-                            Default
-                          }
-                          alt={userStory.name || userStory.username || `User ${index + 1}`}
-                        />
-                      </div>
-                      <span className="story-username">
-                        {userStory.name || `User ${index + 1}`}
-                        <span style={{...statusStyles.statusLabel, background: 'rgba(255, 255, 255, 0.2)', color: '#fff'}}>{getUserStatus(userStory.id)}</span>
-                      </span>
-                    </div>
-                  )
-                })}
-            </div>
-          </div>
-        )}
+        {/* <StoriesSection /> */}
 
         {/* Posts content */}
         <div className="posts-container">
@@ -1520,7 +1689,7 @@ const Home = () => {
                 const isLastItem = index === posts.length - 1
 
                 // Render different UI based on post type
-                if (post.type === "article") {
+                if (!post.main_media) {
                   // Article rendering
                   const isExpanded = expandedArticles[post.id]
                   const words = (post.content || "").split(" ")
@@ -1587,16 +1756,68 @@ const Home = () => {
                         className={`article-content${isExpanded ? " expanded" : ""}`}
                         style={{ fontSize: articleFontSize }}
                       >
-                        {isExpanded || words.length <= 10
-                          ? post.content
-                          : shortContent + (words.length > 10 ? "..." : "")}
+                        {isExpanded ? post.content : shortContent + (words.length > 10 ? "..." : "")}
                       </div>
-                      {words.length > 10 && (
+                      
+                      {/* Additional Media Section */}
+                      {post.additional_media && post.additional_media.length > 0 && (
+                        <div style={{
+                          marginTop: '16px',
+                          display: isExpanded ? 'grid' : 'none',
+                          gridTemplateColumns: post.additional_media.length === 1 ? '1fr' : 
+                                             post.additional_media.length === 2 ? '1fr 1fr' : 
+                                             'repeat(auto-fill, minmax(200px, 1fr))',
+                          gap: '8px',
+                          borderRadius: '8px',
+                          overflow: 'hidden'
+                        }}>
+                          {post.additional_media.map((media, index) => (
+                            <div key={media.id} style={{
+                              position: 'relative',
+                              paddingBottom: post.additional_media.length === 1 ? '56.25%' : '100%',
+                              height: 0,
+                              borderRadius: '8px',
+                              overflow: 'hidden'
+                            }}>
+                              {media.media_type === 'image' && (
+                                <img
+                                  src={media.file_url}
+                                  alt={media.filename}
+                                  onError={handleImageError}
+                                  style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover'
+                                  }}
+                                />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {(words.length > 10 || (post.additional_media && post.additional_media.length > 0)) && (
                         <button
                           className="article-readmore-btn"
                           onClick={() => setExpandedArticles((prev) => ({ ...prev, [post.id]: !isExpanded }))}
+                          style={{
+                            marginTop: '12px',
+                            background: 'none',
+                            border: 'none',
+                            color: '#008c8c',
+                            fontWeight: '500',
+                            cursor: 'pointer',
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            transition: 'background 0.2s ease'
+                          }}
                         >
-                          {isExpanded ? "Yopish" : "...batafsil"}
+                          {isExpanded ? "Yopish" : (post.additional_media && post.additional_media.length > 0 ? 
+                            `${words.length > 10 ? '...batafsil' : 'Rasmlarni ko\'rish'} (${post.additional_media.length} ta rasm)` : 
+                            "...batafsil")}
                         </button>
                       )}
                       {post.tags && post.tags.length > 0 && (
@@ -1611,10 +1832,10 @@ const Home = () => {
                       {/* Article actions and useful stats */}
                       <div className="article-actions-row">
                         <button
-                          className={`action-button ${likedPosts[post.id] ? "liked" : ""}`}
-                          onClick={() => handleLike(post.id)}
+                          className={`action-button ${likedArticles[post.id] ? "liked" : ""}`}
+                          onClick={() => handleArticleLike(post.id)}
                         >
-                          {likedPosts[post.id] ? (
+                          {likedArticles[post.id] ? (
                             <svg
                               aria-label="Unlike"
                               className="action-icon"
@@ -1956,7 +2177,7 @@ const Home = () => {
                                   handleTouchEnd(post.id)
                                   handleMediaLongPressEnd(post.id)
                                 }}
-                                onMouseDown={(e) => {
+                                                               onMouseDown={(e) => {
                                   handleMouseDown(e, post.id)
                                   handleMediaLongPressStart(post.id)
                                 }}
