@@ -1561,7 +1561,7 @@ const CreatePost = ({ onClose }) => {
           <button
             onClick={() => {
               if (onClose) onClose()
-              navigate(-1)
+              navigate('/')
             }}
             className="back-button"
           >
