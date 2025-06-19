@@ -263,12 +263,19 @@ const CreatePost = ({ onClose }) => {
     setIsUploading(true)
     setUploadProgress(0)
 
-    try {
-      const formData = new FormData()
-
+    try {      const formData = new FormData()
       formData.append("title", articleTitle.trim())
       formData.append("content", articleContent.trim())
       formData.append("article_type", "text")
+
+      // Add images to form data if they exist
+      if (mediaFiles.length > 0) {
+        mediaFiles.forEach(media => {
+          if (media.type === "image" && media.file) {
+            formData.append("images", media.file)
+          }
+        })
+      }
 
       if (articleTags.length > 0) {
         formData.append("tags", articleTags.join(","))
@@ -469,19 +476,155 @@ const CreatePost = ({ onClose }) => {
               />
               <div className="input-counter">{articleContent.length}/5000</div>
             </div>
+            {/* Multi-image select and preview for article */}
+                  <div className="article-input-group">
+                    <label className="article-media-label" style={{ fontWeight: 500, marginBottom: 6 }}>
+                    Rasmlar (bir nechta tanlash mumkin)
+                    </label>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap",paddingBottom: 10,paddingTop: 10 }}>
+                    {mediaFiles.length > 0 &&
+                      mediaFiles.map((media, idx) => (
+                      <div
+                        key={media.id || idx}
+                        style={{
+                        width: 64,
+                        height: 64,
+                        borderRadius: 8,
+                        overflow: "hidden",
+                        border: "1px solid #e6f4fa",
+                        position: "relative",
+                        background: "#f6fafd",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        }}
+                      >
+                        {media.type === "image" ? (
+                        <img
+                          src={media.url}
+                          alt={`img-${idx}`}
+                          style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          borderRadius: 8,
+                          }}
+                        />
+                        ) : (
+                        <video
+                          src={media.url}
+                          style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          borderRadius: 8,
+                          }}
+                        />
+                        )}
+                        <button
+                        type="button"
+                        onClick={() => removeMedia(idx)}
+                        style={{
+                          position: "absolute",
+                          top: 2,
+                          right: 2,
+                          width: 18,
+                          height: 18,
+                          borderRadius: "50%",
+                          background: "rgba(0,0,0,0.6)",
+                          color: "#fff",
+                          border: "none",
+                          fontSize: 12,
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: 0,
+                        }}
+                        title="O'chirish"
+                        >
+                        ×
+                        </button>
+                      </div>
+                      ))}
+                    <label
+                      htmlFor="article-media-input"
+                      style={{
+                      width: 64,
+                      height: 64,
+                      borderRadius: 8,
+                      border: "1px dashed #1da1f2",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      fontSize: 28,
+                      color: "#1da1f2",
+                      background: "#f6fafd",
+                      }}
+                      title="Rasm yoki video tanlash"
+                    >
+                      +
+                      <input
+                      id="article-media-input"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      style={{ display: "none" }}
+                      onChange={e => {
+                        // faqat article tab uchun images arrayga joylash
+                        const files = Array.from(e.target.files);
+                        if (files.length === 0) return;
+                        const validFiles = files.filter(file => file.type.startsWith("image/"));
+                        if (validFiles.length === 0) {
+                        alert("Faqat rasm fayllarini tanlang");
+                        return;
+                        }
+                        // preview uchun mediaFiles ni update qilamiz
+                        const newMediaFiles = validFiles.map(file => ({
+                        file,
+                        url: URL.createObjectURL(file),
+                        type: "image",
+                        id: Date.now() + Math.random().toString(36).substr(2, 9),
+                        }));
+                        setMediaFiles(prev => [...prev, ...newMediaFiles]);
+                      }}
+                      />
+                    </label>
+                    </div>
+                    {mediaFiles.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={clearAllMedia}
+                      style={{
+                      marginTop: 8,
+                      background: "#f44336",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: 6,
+                      padding: "4px 14px",
+                      fontWeight: 500,
+                      cursor: "pointer",
+                      fontSize: "0.98rem",
+                      }}
+                    >
+                      Barchasini o'chirish
+                    </button>
+                    )}
+                  </div>
 
-            <div className="article-input-group">
-              <div className="tags-input-container">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z" />
-                </svg>
-                <input
-                  type="text"
-                  className="tags-input"
-                  placeholder="Teglar qo'shing (maksimum 10 ta)..."
-                  value={currentTag}
-                  onChange={(e) => setCurrentTag(e.target.value)}
-                  onKeyPress={(e) => {
+                  <div className="article-input-group">
+                    <div className="tags-input-container">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z" />
+                    </svg>
+                    <input
+                      type="text"
+                      className="tags-input"
+                      placeholder="Teglar qo'shing (maksimum 10 ta)..."
+                      value={currentTag}
+                      onChange={(e) => setCurrentTag(e.target.value)}
+                      onKeyPress={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault()
                       addArticleTag()
@@ -546,19 +689,7 @@ const CreatePost = ({ onClose }) => {
       )}
 
       <div className="article-bottom-actions">
-        {!showArticlePreview && (
-          <button
-            className="article-preview-button"
-            onClick={() => setShowArticlePreview(true)}
-            disabled={!articleTitle.trim() || !articleContent.trim()}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
-            Ko'rib chiqish
-          </button>
-        )}
+        
 
         <button
           className="article-submit-button"

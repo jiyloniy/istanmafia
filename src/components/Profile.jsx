@@ -31,7 +31,7 @@ const Profile = () => {
         headers: getAuthHeaders()
       });
       if (!response.ok) {
-        throw new Error('Failed to fetch posts');
+        // throw new Error('Failed to fetch posts');
       }
       const data = await response.json();
       if (data.status === 'success' && data.data && data.data.posts) {
@@ -51,7 +51,7 @@ const Profile = () => {
         headers: getAuthHeaders()
       });
       if (!response.ok) {
-        throw new Error('Failed to fetch compact user info');
+        // throw new Error('Failed to fetch compact user info');
       }
       const data = await response.json();
       if (data.status === 'success' && data.data) {

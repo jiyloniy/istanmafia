@@ -2493,6 +2493,8 @@
   padding: 20px 18px 16px 18px;
   padding-bottom: 20px;
   margin-bottom: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
   transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
   border: 1.5px solid #d0e7fa;
   position: relative;
@@ -2558,6 +2560,8 @@
 @media (max-width: 600px) {
   .article-card {
     padding: 14px 7px 12px 10px;
+    margin-left: 5px;
+  margin-right: 5px;
   }
   .articles-header h2 {
     font-size: 1.1rem;

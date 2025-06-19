@@ -1,8 +1,13 @@
 "use client"
 
+// React and routing imports
 import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
+
+// Styles
 import "./home.css"
+
+// API imports
 import {
   API,
   API_HOST,
@@ -19,18 +24,23 @@ import {
   API_URL,
 } from "../config/api"
 import { deleteComment } from "../config/api"
-// Import image assets
+
+// Component imports
+import CreatePost from "./CreatePost"
+import Notifications from "./Notifications"
+
+// Asset imports
 import arxiv from "../assets/arxiv.png"
 import notfikation from "../assets/notfikation.png"
 import message from "../assets/message.png"
 import instaImg from "../assets/insta-img.png"
-import CreatePost from "./CreatePost"
 import Default from "../assets/default.png"
 import home from "../assets/home.png"
 import search from "../assets/search.png"
 import addContent from "../assets/add-content.png"
 import email from "../assets/email.png"
 import apps from "../assets/apps.png"
+import profile1 from "../assets/credit-card_12689973.png"
 import profile2 from "../assets/business_10412163.png"
 import profile3 from "../assets/settings_12280787.png"
 import profile4 from "../assets/worldwide_811544.png"
@@ -38,16 +48,58 @@ import profile5 from "../assets/customer-support_3193153.png"
 import profile6 from "../assets/night-mode_3838496 (1).png"
 import profile7 from "../assets/letter-i_9215114.png"
 import profile8 from "../assets/user_3161848.png"
-import profile1 from "../assets/credit-card_12689973.png"
 import profile10 from "../assets/resume_1069182.png"
 import profile11 from "../assets/download-file_7693316.png"
-import Notifications from "./Notifications"
+
+// Styles object
+const statusStyles = {
+  statusLabel: {
+    display: "inline-block",
+    fontSize: "0.75rem",
+    padding: "2px 6px",
+    borderRadius: "4px",
+    marginLeft: "6px",
+    background: "rgba(15, 14, 14, 0.05)",
+    color: "#666",
+    fontWeight: "500",
+  },
+  statusPostAndArticle:{
+    display: "inline-block",
+    fontSize: "0.9rem",
+    padding: "2px 6px",
+    borderRadius: "4px",
+    marginLeft: "6px",
+    background: "rgba(15, 14, 14, 0.05)",
+    color: "#666",
+    fontWeight: "500",
+  }
+};
 const defaultImageUrl = "../assets/default.png"
 const preloadedDefaultImage = new Image()
 preloadedDefaultImage.src = defaultImageUrl
 
+const statuses = ["Sulton", "Amir", "Bey", "Mirzo", "Xon", "Beg", "Tolib"]
+
+const getRandomStatus = () => {
+  const randomIndex = Math.floor(Math.random() * statuses.length)
+  return statuses[randomIndex]
+}
+
 const Home = () => {
   const navigate = useNavigate()
+  
+  // Add state for storing user statuses
+  const [userStatuses, setUserStatuses] = useState(new Map())
+
+  // Function to get or create status for a user
+  const getUserStatus = (userId) => {
+    if (!userStatuses.has(userId)) {
+      const newStatuses = new Map(userStatuses)
+      newStatuses.set(userId, getRandomStatus())
+      setUserStatuses(newStatuses)
+    }
+    return userStatuses.get(userId) || getRandomStatus()
+  }
 
   // Foydali funksiyasi uchun state
   const [usefulStats, setUsefulStats] = useState({})
@@ -1029,7 +1081,10 @@ const Home = () => {
                 />
               </div>
               <div className="story-info">
-                <div className="story-username">{activeUserStory.name}</div>
+                <div className="story-username">
+                  {activeUserStory.name}
+                  <span style={{...statusStyles.statusLabel, background: 'rgba(255, 255, 255, 0.2)', color: '#fff'}}>{getRandomStatus()}</span>
+                </div>
                 <div className="story-time">
                   {activeUserStory.stories[activeStoryIndex] &&
                     new Date(activeUserStory.stories[activeStoryIndex].created_at).toLocaleTimeString([], {
@@ -1161,7 +1216,10 @@ const Home = () => {
                       />
                     </div>
                     <div className="comment-content">
-                      <div className="comment-username">{comment.user?.username || "User"}</div>
+                      <div className="comment-username">
+                        {comment.user?.username || "User"}
+                        <span style={statusStyles.statusLabel}>{getUserStatus(comment.user?.id)}</span>
+                      </div>
                       <div className="comment-text">{comment.text}</div>
                       <div className="comment-time">
                         {new Date(comment.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
@@ -1322,9 +1380,7 @@ const Home = () => {
             </div>
 
             <div className="nav-right">
-              <button className="nav-icon-button">
-                <img src={arxiv || Default} alt="arxiv" className="nav-icon" onError={handleImageError} />
-              </button>
+             
               <button className="nav-icon-button" onClick={() => setShowNotifications(true)}>
                 <img src={notfikation || Default} alt="notfikation" className="nav-icon" onError={handleImageError} />
                 <div className="notification-badge">
@@ -1400,7 +1456,10 @@ const Home = () => {
                           alt={userStory.name || userStory.username || `User ${index + 1}`}
                         />
                       </div>
-                      <span className="story-username">{userStory.name || `User ${index + 1}`}</span>
+                      <span className="story-username">
+                        {userStory.name || `User ${index + 1}`}
+                        <span style={{...statusStyles.statusLabel, background: 'rgba(255, 255, 255, 0.2)', color: '#fff'}}>{getUserStatus(userStory.id)}</span>
+                      </span>
                     </div>
                   )
                 })}
@@ -1410,7 +1469,7 @@ const Home = () => {
 
         {/* Posts content */}
         <div className="posts-container">
-          {error && (
+          {/* {error && (
             <div className="error-message">
               <p>Error: {error}</p>
               <button
@@ -1423,7 +1482,7 @@ const Home = () => {
                 Try Again
               </button>
             </div>
-          )}
+          )} */}
 
           {posts.length > 0
             ? posts.map((post, index) => {
@@ -1442,11 +1501,11 @@ const Home = () => {
                         <div className="article-profile">
                           <img
                             src={getSafeImageUrl(post.user.profile_picture, API_URL2) || Default}
-                            alt={post.user.name}
+                            alt={post.user.name} 
                             className="article-avatar"
                             onError={handleImageError}
                           />
-                          <span className="article-author">{post.user.name}</span>
+                          <span className="article-author">{post.user.name}  <span style={statusStyles.statusPostAndArticle}>{getUserStatus(post.user.id)}</span></span>
                         </div>
                         <span className="article-date">{new Date(post.created_at).toLocaleDateString()}</span>
                       </div>
@@ -1588,7 +1647,9 @@ const Home = () => {
                               style={{ transition: "stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1)" }}
                             />
                           </svg>
-                          <span className="useful-percentage-label">{usefulStats[post.id]?.initialPercent || 0}%</span>
+                          <span className="useful-percentage-label">
+                            {usefulStats[post.id]?.initialPercent || 0}%
+                          </span>
                         </div>
                         <button
                           className={`action-button ${savedPosts[post.id] ? "saved" : ""}`}
@@ -1788,7 +1849,7 @@ const Home = () => {
                                 letterSpacing: "0.01em",
                               }}
                             >
-                              {post.user.name}
+                              {post.user.name}  <span style={statusStyles.statusPostAndArticle}>{getUserStatus(post.user.id)}</span>
                             </div>
                             {post.is_own_post && (
                               <div className="verification-badge">
@@ -2247,13 +2308,13 @@ const Home = () => {
                                 role="img"
                                 viewBox="0 0 24 24"
                                 width="26"
-                              >
-                                <polygon
-                                  fill="#000000"
-                                  points="20 21 12 13.44 4 21 4 3 20 3 20 21"
-                                  stroke="none"
-                                ></polygon>
-                              </svg>
+                            >
+                              <polygon
+                                fill="#000000"
+                                points="20 21 12 13.44 4 21 4 3 20 3 20 21"
+                                stroke="none"
+                              ></polygon>
+                            </svg>
                             ) : (
                               <svg
                                 aria-label="Save"
@@ -2264,15 +2325,15 @@ const Home = () => {
                                 viewBox="0 0 24 24"
                                 width="26"
                               >
-                                <polygon
-                                  fill="none"
-                                  points="20 21 12 13.44 4 21 4 3 20 3 20 21"
-                                  stroke="black"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                ></polygon>
-                              </svg>
+                              <polygon
+                                fill="none"
+                                points="20 21 12 13.44 4 21 4 3 20 3 20 21"
+                                stroke="black"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                              ></polygon>
+                            </svg>
                             )}
                           </button>
                         </div>
