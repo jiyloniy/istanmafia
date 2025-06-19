@@ -486,14 +486,14 @@
   
   .profile-badge {
     position: absolute;
-    right: -120px;
-    top: -5px;
-    background-color: #002C9D;
-    border-radius: 9999px;
+    right: -100px;
+    top: -15px;
+    /* background-color: #002C9D; */
+    /* border-radius: 9999px; */
     padding: 2px 12px;
     display: flex;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* align-items: center; */
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
     margin-top: 12px;
   }
   

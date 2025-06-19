@@ -64,7 +64,7 @@ const statusStyles = {
     fontWeight: "500",
   },
   statusPostAndArticle:{
-    display: "inline-block",
+     display: "inline-block",
     fontSize: "0.9rem",
     padding: "2px 6px",
     borderRadius: "4px",
@@ -87,7 +87,23 @@ const getRandomStatus = () => {
 
 const Home = () => {
   const navigate = useNavigate()
-  
+
+  // AI Status Modal state
+  const [showAIStatusModal, setShowAIStatusModal] = useState(false)
+  const [selectedAIStatus, setSelectedAIStatus] = useState(null)
+
+  const aiStatuses = {
+    "Bahs 🤔": "Foydalanuvchi bahs-munozaralarda faol ishtirok etadi",
+    "Yolg'on 🚫": "Bu post haqiqatga to'g'ri kelmasligi mumkin",
+    "Shubhali ❓": "Bu kontentning ishonchliligi tekshirilmoqda",
+    "Tasdiqlangan ✅": "Bu kontent moderatorlar tomonidan tasdiqlangan"
+  }
+
+  const handleAIStatusClick = (status) => {
+    setSelectedAIStatus(status)
+    setShowAIStatusModal(true)
+  }
+
   // Add state for storing user statuses
   const [userStatuses, setUserStatuses] = useState(new Map())
 
@@ -1289,12 +1305,27 @@ const Home = () => {
                     onError={handleImageError}
                   />
                 </div>
-                <div className="profile-badge">
-                  <span className="badge-text">
-                    {Array.isArray(userData?.profession) ? userData.profession[0] : userData?.profession || "Dasturchi"}
-                  </span>
-                  <span className="badge-star">★</span>
-                  <span className="badge-rating">{userData?.rating || "5.5"}</span>
+                <div className="profile-badges-container">
+                  <div className="profile-badge">
+                    {/* <span className="badge-text">
+                      {Array.isArray(userData?.profession) ? userData.profession[0] : userData?.profession || "Dasturchi"}
+                    </span>
+                    <span className="badge-rating">{userData?.rating || "5.5"}</span> */}
+                  
+                  <div className="profile-status" style={{
+                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    padding: "4px 12px",
+                    borderRadius: "20px",
+                    color: "white",
+                    fontSize: "0.9rem",
+                    fontWeight: "500",
+                    marginTop: "8px",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                    display: "inline-block"
+                  }}>
+                    {getUserStatus(userData?.id)}
+                  </div>
+                  </div>
                 </div>
               </div>
 
@@ -1505,7 +1536,49 @@ const Home = () => {
                             className="article-avatar"
                             onError={handleImageError}
                           />
-                          <span className="article-author">{post.user.name}  <span style={statusStyles.statusPostAndArticle}>{getUserStatus(post.user.id)}</span></span>
+                          <div className="article-user-info"
+                            style={
+                              { display: "flex", alignItems: "center", cursor: "pointer" }
+                            }
+                          >
+                            <span className="article-author">{post.user.name}</span>
+                            <div className="article-ai-badges">
+                              <span style={{
+                                display: "inline-block",
+                                fontSize: "0.9rem",
+                                padding: "2px 6px",
+                                
+                                borderRadius: "4.5px",
+                                marginLeft: "12px",
+                                marginRight: "6px",
+                                background: "rgba(2, 2, 2, 0.05)",
+                                color: "#666",
+                                fontWeight: "500",
+                              }}>
+                                {getUserStatus(post.user.id)}
+                              </span>
+                              <span 
+                                onClick={() => handleAIStatusClick("Bahs 🤔")}
+                                style={{
+                                  display: "inline-block",
+                                  background: "#2D3748",
+                                  padding: "3px 8px",
+                                  borderRadius: "12px",
+                                  color: "white",
+                                  fontSize: "0.8rem",
+                                  fontWeight: "500",
+                                  opacity: "0.9",
+                                  cursor: "pointer",
+                                  transition: "all 0.2s ease",
+                                  ':hover': {
+                                    opacity: "1",
+                                    transform: "scale(1.05)"
+                                  }
+                                }}>
+                                Bahs 🤔
+                              </span>
+                            </div>
+                          </div>
                         </div>
                         <span className="article-date">{new Date(post.created_at).toLocaleDateString()}</span>
                       </div>
@@ -2490,31 +2563,7 @@ const Home = () => {
         </div>
       </div>
 
-      {showStatusModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 relative animate-fadeIn">
-            <button
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold focus:outline-none"
-              onClick={() => setShowStatusModal(false)}
-              aria-label="Close modal"
-            >
-              &times;
-            </button>
-            <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">Modal Title</h2>
-            <p className="text-gray-600 mb-6 text-center">
-              Bu yerda modal mazmuni bo'ladi. Siz bu joyga kerakli ma'lumot yoki formani joylashtirishingiz mumkin.
-            </p>
-            <div className="flex justify-center">
-              <button
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition duration-200"
-                onClick={() => setShowStatusModal(false)}
-              >
-                Yopish
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      
     </div>
   )
 }
