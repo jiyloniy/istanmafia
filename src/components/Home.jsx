@@ -1765,7 +1765,7 @@ const Home = () => {
                           marginTop: '16px',
                           display: isExpanded ? 'grid' : 'none',
                           gridTemplateColumns: post.additional_media.length === 1 ? '1fr' : 
-                                             post.additional_media.length === 2 ? '1fr 1fr' : 
+                                             post.additional_media.length === 2 ? '1fr 1fr' :   
                                              'repeat(auto-fill, minmax(200px, 1fr))',
                           gap: '8px',
                           borderRadius: '8px',
@@ -1780,19 +1780,36 @@ const Home = () => {
                               overflow: 'hidden'
                             }}>
                               {media.media_type === 'image' && (
-                                <img
-                                  src={media.file_url}
-                                  alt={media.filename}
-                                  onError={handleImageError}
-                                  style={{
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: 0,
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover'
-                                  }}
-                                />
+                                /\.heic$/i.test(media.file_url || media.filename)
+                                  ? (
+                                    <img
+                                      src={Default}
+                                      alt="Unsupported format"
+                                      style={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                        opacity: 0.7
+                                      }}
+                                    />
+                                  ) : (
+                                    <img
+                                      src={media.file_url}
+                                      alt={media.filename}
+                                      onError={handleImageError}
+                                      style={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover'
+                                      }}
+                                    />
+                                  )
                               )}
                             </div>
                           ))}

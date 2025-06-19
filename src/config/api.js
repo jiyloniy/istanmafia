@@ -32,6 +32,8 @@ export const ENDPOINTS = {
     // Article interaction endpoints
     ARTICLE_LIKE: 'user/article/like/',
     ARTICLE_SAVE: 'user/article/saved/',
+    FOLLOWING: 'user/following/',
+    FOLLOWERS: 'user/followers/',
 };
 
 // Full API paths
@@ -56,6 +58,8 @@ export const API = {
     // Article interaction endpoints
     ARTICLE_LIKE: API_URL + ENDPOINTS.ARTICLE_LIKE,
     ARTICLE_SAVE: API_URL + ENDPOINTS.ARTICLE_SAVE,
+    FOLLOWING: API_URL + ENDPOINTS.FOLLOWING,
+    FOLLOWERS: API_URL + ENDPOINTS.FOLLOWERS,
 };
 
 // application/json
