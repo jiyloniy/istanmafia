@@ -20,73 +20,76 @@ const Email = ({ onClose }) => {
 
   const emails = [
     {
-      sender: 'Taylor Grey',
-      subject: 'Timesheet nextweek?',
-      preview: 'Hey what was our timesheet that was for...',
-      time: 'May 6',
+      sender: 'Otabek Arabboyev',
+      subject: 'Haftalik hisobot',
+      preview: 'Salom, shu hafta uchun hisobotni yuborishingizni so\'rayman...',
+      time: 'Bugun, 14:30',
       isStarred: true,
       avatar: profile1
     },
     {
-      sender: 'Stephanie Everhill',
-      subject: 'When do we meet again?',
-      preview: 'I would meet at the Western Mall if you...',
-      time: '11:27 pm',
+      sender: 'Istan',
+      subject: 'Yangi xabar!',
+      preview: 'Sizga Abduqodir oshnadan yangi xabar keldi.',
+      time: '11:27',
       isStarred: false,
       avatar: profile2
     },
     {
-      sender: 'Fortune Company co.',
-      subject: 'Important Files!',
-      preview: 'Make sure you receive these.',
-      time: '11:27 pm',
+      sender: 'Google',
+      subject: 'Xavfsizlik ogohlantirishi',
+      preview: 'Sizning hisobingizga yangi qurilmadan kirildi.',
+      time: 'Kecha',
       isStarred: true,
-      avatar: profile3,
-      attachments: [
-        { type: 'Pre-Order...', count: 3 },
-        { type: 'Image' } 
-      ]
-    },
-    {
-      sender: 'Stephanie Everhill',
-      subject: 'When do we meet again?',
-      preview: 'I would meet at the Western Mall if you...',
-      time: '11:27 pm',
-      isStarred: false,
-      avatar: profile2
-    },
-    {
-      sender: 'Random Bank Online',
-      subject: 'Random Bank Account Balance Update',
-      preview: 'Time to check your bank information an...',
-      time: 'June 19',
-      isStarred: false,
-      avatar: 'R',
+      avatar: 'G',
       isInitial: true
     },
     {
-      sender: 'Taylor Grey',
-      subject: 'Timesheet nextweek?',
-      preview: 'Hey what was our timesheet that was for...',
-      time: 'May 6',
-      isStarred: true,
-      avatar: profile1
+      sender: 'Asaxiy Books',
+      subject: 'Yangi kitoblar chegirmada!',
+      preview: 'Sevimli kitoblaringizni 50% gacha chegirma bilan xarid qiling.',
+      time: '2-iyun',
+      isStarred: false,
+      avatar: 'A',
+      isInitial: true
     },
     {
-      sender: 'UniqueYou by SecretKissShop',
-      subject: 'Learn new Tricks',
-      preview: 'Now is great time to shop great new fash...',
-      time: 'May 6',
-      isStarred: false,
+      sender: 'Malika Azizova',
+      subject: 'Uchrashuv haqida',
+      preview: 'Ertangi uchrashuvimiz soat 10:00da bo\'ladi, unutmasangiz...',
+      time: '1-iyun',
+      isStarred: true,
       avatar: profile4
     },
     {
-      sender: 'Stephanie Everhill',
-      subject: 'When do we meet again?',
-      preview: 'When do we meet again?',
-      time: '11:27 pm',
+      sender: 'Uztelecom',
+      subject: 'Hisobingizni to\'ldiring',
+      preview: 'Hurmatli abonent, internet uchun to\'lovni amalga oshiring.',
+      time: '31-may',
       isStarred: false,
-      avatar: profile2
+      avatar: 'U',
+      isInitial: true
+    },
+    {
+      sender: 'HR Departamenti',
+      subject: 'Muhim: Yangi ish tartibi',
+      preview: 'Ertadan boshlab yangi ish tartibi kuchga kiradi. Faylni ko\'rib chiqing.',
+      time: '30-may',
+      isStarred: true,
+      avatar: profile3,
+      attachments: [
+        { type: 'Ish_tartibi.pdf' },
+        { type: 'Rasm' }
+      ]
+    },
+    {
+      sender: 'LinkedIn',
+      subject: 'Sizda 5 ta yangi taklif bor',
+      preview: 'Sizning profilingizni ko\'rgan kompaniyalardan yangi takliflar...',
+      time: '29-may',
+      isStarred: false,
+      avatar: 'L',
+      isInitial: true
     }
   ];
 
@@ -96,10 +99,10 @@ const Email = ({ onClose }) => {
         <div className="header-wrapper">
           <div className="header-content">
             <button className="menu-btn">
-              <img src={menuIcon} alt="Menu" className="menu-icon-img" />
+              <img src={menuIcon} alt="Menyu" className="menu-icon-img" />
             </button>
             <h1>Mailda qidirish</h1>
-            <img src={profile5} alt="Profile" className="profile-pic" />
+            <img src={profile5} alt="Profil" className="profile-pic" />
           </div>
          
         </div>
@@ -107,7 +110,7 @@ const Email = ({ onClose }) => {
 
       {/* Email List */}
       <div className="email-list">
-        <div className="section-title">Primary</div>
+        <div className="section-title">Asosiy</div>
         {emails.map((email, index) => (
           <div key={index} className="email-item">
             <div className="email-left">
@@ -154,7 +157,7 @@ const Email = ({ onClose }) => {
                 navigate('/home');
               }}
             >
-              <img src={home || "Default"} alt="Home" className="tab-icon" />
+              <img src={home || "Default"} alt="Bosh sahifa" className="tab-icon" />
             </button>
             <button 
               className={`nav-tab ${activeTab === 'search' ? 'active-tab' : ''}`} 
@@ -164,7 +167,7 @@ const Email = ({ onClose }) => {
                 navigate('/search');
               }}
             >
-              <img src={search || "Default"} alt="Search" className="tab-icon" />
+              <img src={search || "Default"} alt="Qidiruv" className="tab-icon" />
             </button>
             <button 
               className={`nav-tab ${activeTab === 'addContent' ? 'active-tab' : ''}`} 
@@ -174,7 +177,7 @@ const Email = ({ onClose }) => {
                 navigate('/createPost');
               }}
             >
-              <img src={addContent || "Default"} alt="Add Content" className="tab-icon" />
+              <img src={addContent || "Default"} alt="Qo'shish" className="tab-icon" />
             </button>
             <button 
               className={`nav-tab ${activeTab === 'email' ? 'active-tab' : ''}`} 
@@ -183,7 +186,7 @@ const Email = ({ onClose }) => {
                 navigate('/email');
               }}
             >
-              <img src={email || "Default"} alt="Email" className="tab-icon" />
+              <img src={email || "Default"} alt="Xabarlar" className="tab-icon" />
             </button>
             <button 
               className={`nav-tab ${activeTab === 'apps' ? 'active-tab' : ''}`} 
@@ -192,7 +195,7 @@ const Email = ({ onClose }) => {
                 navigate('/more-apps');
               }}
             >
-              <img src={apps || "Default"} alt="Apps" className="tab-icon" />
+              <img src={apps || "Default"} alt="Ilovalar" className="tab-icon" />
             </button>
           </div>
         </div>

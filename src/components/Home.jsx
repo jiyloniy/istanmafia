@@ -87,6 +87,194 @@ const getRandomStatus = () => {
   return statuses[randomIndex]
 }
 
+// --- Ad data for famous Uzbek companies ---
+const adCardsData = [
+  {
+    id: 'ad-1',
+    company: 'UzAuto Motors',
+    logo: 'https://api.logobank.uz/media/logos_png/UzAuto-01.png',
+    title: "Frontend dasturchi (React)",
+    location: "Asaka, Andijon",
+    url: "https://uzautomotors.com/careers",
+    description: "UzAuto Motors kompaniyasiga zamonaviy React dasturchi kerak. Rasmiy ish, yaxshi jamoa va yuqori maosh!"
+  },
+  {
+    id: 'ad-2',
+    company: 'Beeline Uzbekistan',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/e/ef/Beeline-Uzbekistan-logo-2022.png',
+    title: "Marketing mutaxassisi",
+    location: "Toshkent",
+    url: "https://beeline.uz/career",
+    description: "Beeline Uzbekistan marketing bo‘limiga kreativ va faol mutaxassis qidirmoqda."
+  },
+  {
+    id: 'ad-3',
+    company: 'Artel',
+    logo: 'https://api.logobank.uz/media/logos_png/Artel-01.png',
+    title: "Sifat nazorati muhandisi",
+    location: "Toshkent",
+    url: "https://artelgroup.org/careers/",
+    description: "Artel kompaniyasiga sifat nazorati bo‘yicha muhandis kerak. Tajribangizni biz bilan baham ko‘ring!"
+  },
+  {
+    id: 'ad-4',
+    company: 'Yandex Go Uzbekistan',
+    logo: 'https://api.ony.ru/images/uploads/a489396996194ce664a490d9d70dbf42.jpeg',
+    title: "Backend dasturchi (Python)",
+    location: "Toshkent",
+    url: "https://yandex.uz/jobs/",
+    description: "Yandex Go jamoasiga Python dasturchi kerak. Zamonaviy texnologiyalar va xalqaro loyiha."
+  },
+  {
+    id: 'ad-5',
+    company: 'Click',
+    logo: 'https://ictweek.uz/uploads/F5Q8C3029/click-01.png',
+    title: "Mobil ilovalar testeri",
+    location: "Toshkent",
+    url: "https://click.uz/careers/",
+    description: "Click kompaniyasiga mobil ilovalarni test qiluvchi mutaxassis kerak."
+  },
+  {
+    id: 'ad-6',
+    company: 'Uzbektelecom',
+    logo: 'https://uztelecom.uz/images/logo.svg',
+    title: "Tarmoq administrator",
+    location: "Toshkent",
+    url: "https://uztelecom.uz/career/",
+    description: "Uzbektelecom tarmoq administratorini ishga taklif qiladi."
+  },
+  {
+    id: 'ad-7',
+    company: 'TBC Bank Uzbekistan',
+    logo: 'https://finrank.uz/wp-content/uploads/2023/07/59f2e34dd318e048acb3547cfdf3fe59.png',
+    title: "Data Analyst",
+    location: "Toshkent",
+    url: "https://tbcbank.uz/career/",
+    description: "TBC Bank Uzbekistan ma’lumotlar tahlilchisi lavozimi uchun ochiq ish o‘rni."
+  },
+  {
+    id: 'ad-8',
+    company: 'Texnopark',
+    logo: 'https://pr.uz/wp-content/uploads/2022/09/logo_white.png',
+    title: "HR menejer",
+    location: "Toshkent",
+    url: "https://texnopark.uz/career/",
+    description: "Texnopark HR menejerini ishga taklif qiladi. Jamoamizga qo‘shiling!"
+  },
+  {
+    id: 'ad-9',
+    company: 'Ucell',
+    logo: 'https://api.logobank.uz/media/logos_png/Ucell-01.png',
+    title: "Bosh hisobchi",
+    location: "Toshkent",
+    url: "https://ucell.uz/career/",
+    description: "Ucell kompaniyasiga bosh hisobchi kerak. Moliyaviy barqarorlik va rivojlanish kafolatlanadi."
+  },
+  {
+    id: 'ad-10',
+    company: 'MyTaxi',
+    logo: 'https://habrastorage.org/getpro/moikrug/uploads/company/100/008/624/8/logo/big_a2328669aab15bee6de3428166617d37.png',
+    title: "Product Manager",
+    location: "Toshkent",
+    url: "https://mytaxi.uz/career/",
+    description: "MyTaxi kompaniyasiga Product Manager lavozimi uchun ochiq ish o‘rni."
+  },
+];
+
+
+const handleImageError = (e) => {
+  if (!e || !e.target) return
+  e.target.onerror = null
+  if (Default && typeof Default === "string") {
+    e.target.src = Default
+  } else {
+    e.target.style.display = "none"
+  }
+}
+
+// --- AdCard component ---
+const AdCard = ({ ad }) => (
+  <div
+    className="ad-card"
+    style={{
+      border: '1px solid #e0f7f7',
+      borderRadius: '18px',
+      background: 'linear-gradient(135deg, #f7fbfc 0%, #e3f6f6 100%)',
+      margin: '20px 0',
+      display: 'flex',
+      alignItems: 'center',
+      padding: '20px',
+      gap: '20px',
+      boxShadow: '0 6px 24px rgba(0,140,140,0.09)',
+      position: 'relative',
+      transition: 'box-shadow 0.2s',
+      overflow: 'hidden',
+    }}
+    onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,140,140,0.17)')}
+    onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 6px 24px rgba(0,140,140,0.09)')}
+  >
+    <span
+      style={{
+        position: 'absolute',
+        top: '14px',
+        right: '14px',
+        background: 'rgba(0,140,140,0.14)',
+        color: '#008c8c',
+        padding: '4px 12px',
+        borderRadius: '8px',
+        fontSize: '12px',
+        fontWeight: 700,
+        letterSpacing: '0.5px',
+        zIndex: 2,
+      }}
+    >
+      Reklama
+    </span>
+    <img
+      src={ad.logo}
+      alt={ad.company}
+      style={{
+        width: 70,
+        height: 70,
+        borderRadius: 16,
+        background: '#fff',
+        objectFit: 'contain',
+        border: '1.5px solid #e0f7f7',
+        boxShadow: '0 2px 8px rgba(0,140,140,0.08)',
+      }}
+      onError={handleImageError}
+    />
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 2, color: '#1a1a1a', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{ad.company}</div>
+      <div style={{ fontWeight: 700, fontSize: 15, color: '#008c8c', marginBottom: 2 }}>{ad.title}</div>
+      <div style={{ fontSize: 13, color: '#666', marginBottom: 7 }}>{ad.location}</div>
+      <div style={{ fontSize: 14, color: '#444', marginBottom: 10, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{ad.description}</div>
+      <a
+        href={ad.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          display: 'inline-block',
+          color: '#fff',
+          background: 'linear-gradient(45deg, #008c8c, #00b6b6)',
+          padding: '8px 22px',
+          borderRadius: '8px',
+          textDecoration: 'none',
+          fontWeight: 700,
+          fontSize: 15,
+          marginTop: 2,
+          transition: 'background 0.18s, transform 0.18s',
+          boxShadow: '0 2px 8px rgba(0,140,140,0.09)',
+        }}
+        onMouseEnter={e => (e.currentTarget.style.background = 'linear-gradient(45deg, #00b6b6, #008c8c)')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'linear-gradient(45deg, #008c8c, #00b6b6)')}
+      >
+        Ariza topshirish
+      </a>
+    </div>
+  </div>
+);
+
 const Home = () => {
   const navigate = useNavigate()
 
@@ -105,6 +293,7 @@ const Home = () => {
     setSelectedAIStatus(status)
     setShowAIStatusModal(true)
   }
+
 
   // Add state for storing user statuses
   const [userStatuses, setUserStatuses] = useState(new Map())
@@ -215,6 +404,12 @@ const Home = () => {
   const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(1)
   const [error, setError] = useState(null)
+
+  // --- Ad-injected posts state ---
+  const [mixedFeed, setMixedFeed] = useState([])
+  // Reklama offseti: har page uchun qaysi reklama ishlatilganini saqlaydi
+  const [adOffset, setAdOffset] = useState(0);
+
 
   // AI status constants
   const AI_STATUS = {
@@ -374,6 +569,30 @@ const Home = () => {
     fetchData()
   }, [])
 
+  // --- Helper: Insert ad cards randomly into posts ---
+  // Yangi: page-local reklama aralashtirish
+  function insertAdsIntoFeedPage(postsArr, adArr, interval = 5, adOffset = 0) {
+    const result = [];
+    const maxAds = Math.floor(postsArr.length / interval);
+    let adIndex = adOffset;
+    let adsUsed = 0;
+    for (let i = 0; i < postsArr.length; i++) {
+      result.push(postsArr[i]);
+      // Reklama oxirida chiqmasligi uchun:
+      if (
+        (i + 1) % interval === 0 &&
+        adsUsed < maxAds &&
+        adIndex < adArr.length &&
+        i + 1 < postsArr.length // oxirgi element emas
+      ) {
+        result.push({ ...adArr[adIndex], isAd: true });
+        adIndex++;
+        adsUsed++;
+      }
+    }
+    return { feed: result, nextAdOffset: adIndex };
+  }
+
   // Fetch posts from posts/feed endpoint when component mounts or page changes
   useEffect(() => {
     const fetchPosts = async () => {
@@ -429,6 +648,27 @@ const Home = () => {
           }
 
           setHasMore(result.data.posts.length > 0 && result.data.pagination.has_next)
+
+          // Shuffle ads for each page so the first ad is not always the same
+          function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+          }
+          const shuffledAds = shuffleArray(adCardsData);
+          if (page === 1) {
+            const { feed, nextAdOffset } = insertAdsIntoFeedPage(result.data.posts, shuffledAds, 5, 0);
+            setMixedFeed(feed);
+            setAdOffset(nextAdOffset);
+          } else {
+            const { feed, nextAdOffset } = insertAdsIntoFeedPage(result.data.posts, shuffledAds, 5, adOffset);
+            setMixedFeed((prev) => [...prev, ...feed]);
+            setAdOffset(nextAdOffset);
+          }
+
         } else {
           console.error("Unexpected API response format:", result)
           setError("Unexpected API response format")
@@ -1267,10 +1507,16 @@ const Home = () => {
   // const articles = posts.filter((p) => p.type === 'article')
   // const normalPosts = posts.filter((p) => p.type !== 'article')
 
+  // --- Render logic: use mixedFeed if available, fallback to posts ---
+  const feedToRender = mixedFeed.length > 0 ? mixedFeed : posts
+
   return (
     <div className="app-container">
       {showNotifications && <Notifications onClose={() => setShowNotifications(false)} />}
       {showPostCreate && <CreatePost onClose={() => setShowPostCreate(false)} />}
+
+      {/* --- Feed with Ads and Posts --- */}
+      
 
       {/* Full Screen Story Viewer */}
       {showStory && activeUserStory && activeUserStory.stories && activeUserStory.stories.length > 0 && (
@@ -1684,9 +1930,14 @@ const Home = () => {
             </div>
           )} */}
 
-          {posts.length > 0
-            ? posts.map((post, index) => {
-                const isLastItem = index === posts.length - 1
+          {mixedFeed.length > 0
+            ? mixedFeed.map((item, index) => {
+                if (item.isAd) {
+                  return <AdCard ad={item} key={item.id} />;
+                }
+                // eski post rendering code shu yerda bo'ladi
+                const post = item;
+                const isLastItem = index === mixedFeed.length - 1;
 
                 // Render different UI based on post type
                 if (!post.main_media) {
