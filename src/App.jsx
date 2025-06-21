@@ -5,6 +5,7 @@ import Kirish from './components/Kirish';
 import Home from './components/Home';
 import Onboarding from './components/Onboarding';
 import Messenger from './components/Messenger';
+import ClubView from './components/ClubView';
 import Onboarding2 from './components/Onboarding2';
 import Onboarding3 from './components/Onboarding3';
 import Login from './components/Login';
@@ -155,7 +156,14 @@ function App() {
             <ArchivePage />
           </PrivateRoute>
         } />
-        
+
+        {/* ClubView route */}
+        <Route path="/clubs/:id" element={
+          <PrivateRoute>
+            <ClubView />
+          </PrivateRoute>
+        } />
+
         {/* Catch all route - redirect to login or home based on auth status */}
         <Route path="*" element={
           isAuthenticated() ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />

@@ -10,12 +10,15 @@ import zugerberk from "../assets/4.webp"
 import pichaai from "../assets/5.jpg"
 import sam from "../assets/7.webp"
 import ChatView from './ChatView';
+import { Users, Lock, Unlock, BadgeCheck, UserCheck, Lightbulb, Calendar, Video, FileText, MessageCircle, MessageSquare, TrendingUp, Coins, Award } from 'lucide-react';
 
 const Messenger = () => {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState("Suhbatlar")
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedChat, setSelectedChat] = useState(null);
+
+  const [clubTab, setClubTab] = useState('Barchasi');
 
   const handleChatClick = (chat) => {
     // Guruhlar uchun ham xabarlar mavjud bo'lsa, ChatView ochiladi
@@ -124,7 +127,7 @@ const Messenger = () => {
       },
       {
         id: 4,
-        name: "Abduqodir oshna",
+        name: "Abduqodir oshna",  
         message: "Ok, ko'rishguncha. Ehtiyot bo'ling!",
         time: "Thu",
         image: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=800&auto=format&fit=crop&q=60",
@@ -598,281 +601,139 @@ const Messenger = () => {
       // ...
         ],
         Klublar: [
-      // Klublar uchun hozircha messages yo'q
       {
         id: 1,
-        name: "Frontend Development Club",
-        type: "LIVE",
-        status: "Hozir Efirda",
-        topic: "React va NextJS loyihalar",
-        time: "Live",
-        image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&auto=format&fit=crop&q=60",
-        members: 450,
-        verified: true,
-        features: ["Live Coding", "Q&A Session", "Project Reviews"],
-        instructor: "Aziz Rakhimov",
-        nextSession: "Bugun 15:00",
-        unread: 5,
+        name: "IELTS Accelerator Club",
+        banner: "https://optim.tildacdn.pro/tild3230-6530-4263-b865-616432653462/-/resize/400x/-/format/webp/logo1.png.webp",
+        logo: "https://optim.tildacdn.pro/tild3230-6530-4263-b865-616432653462/-/resize/400x/-/format/webp/logo1.png.webp",
+        category: "Til",
+        status: "Premium",
+        description: "Foydalanuvchilarni 6 oy ichida IELTS 6.5–7.0 darajaga olib chiqish. Mentorlar: 7.5+ ball olgan ustozlar. Haftalik jonli darslar, test arxivlari, model javoblar, writing correction, speaking pair tizimi.",
+        features: [
+          "Haftalik jonli darslar (speaking, writing)",
+          "Test arxivlari, model javoblar",
+          "Writing correction replay'lari",
+          "Speaking Pair tizimi",
+          "Mentorlar: IELTS bo‘yicha 7.5+ ball olgan ustozlar",
+          "Statusga qarab kirish: 'Bek' dan yuqori"
+        ],
+        monetization: [
+          "Premium speaking guruhi (har oy $10)",
+          "Essay tahlili xizmatlari"
+        ],
+        members: 320,
+        instructor: "Dilshod Karimov",
+        nextSession: "Payshanba 20:00",
+        badge: "IELTS Hero",
+        leaderboard: true,
+        progress: 70,
       },
       {
         id: 2,
-        name: "AI & Machine Learning Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "TensorFlow, PyTorch, ML algoritmlar",
-        time: "Dushanba",
-        image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=60",
-        members: 320,
-        verified: true,
-        features: ["Workshop", "Mentor Support"],
-        instructor: "Dilshod Karimov",
-        nextSession: "Ertaga 18:00",
-        unread: 2,
+        name: "Frontend Developer Starter Club",
+        banner: "https://media2.dev.to/dynamic/image/width=320,height=320,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fuser%2Fprofile_image%2F1212702%2F8ce9906d-ce52-4c20-abe6-af3708fb3577.png",
+        logo: "https://media2.dev.to/dynamic/image/width=320,height=320,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fuser%2Fprofile_image%2F1212702%2F8ce9906d-ce52-4c20-abe6-af3708fb3577.png",
+        category: "Texnika",
+        status: "Premium",
+        description: "HTML, CSS, JavaScript asoslarini o‘rgatish (0 → Junior). Har oyda 1 loyiha, har hafta jonli kodlash sessiyasi, GitHub portfel, interaktiv forum va mini hackathonlar.",
+        features: [
+          "Project-based learning",
+          "Har oyda 1 loyiha",
+          "Har hafta jonli kodlash sessiyasi",
+          "GitHub’da yakuniy portfel",
+          "Interaktiv forum: 'Kodim ishlamayapti'",
+          "Mini hackathonlar"
+        ],
+        monetization: [
+          "Portfolio review",
+          "Mentorlik sessiyalari"
+        ],
+        members: 450,
+        instructor: "Aziz Rakhimov",
+        nextSession: "Dushanba 18:00",
+        badge: "Frontend Star",
+        leaderboard: true,
+        progress: 55,
       },
       {
         id: 3,
-        name: "Cybersecurity Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "Etik xakerlik, xavfsizlik testlari",
-        time: "Payshanba",
-        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=800&auto=format&fit=crop&q=60",
+        name: "KitobXonlik & Fikr",
+        banner: "https://eventgo-asset.s3.eu-central-1.amazonaws.com/events/images/01J4SMEBQ1FCM70N1KGXSH98M7.jpg",
+        logo: "https://eventgo-asset.s3.eu-central-1.amazonaws.com/events/images/01J4SMEBQ1FCM70N1KGXSH98M7.jpg",
+        category: "Ilhom",
+        status: "Ochiq",
+        description: "Har oy bir ta’sirchan kitobni o‘qib, tahlil qilish, fikr almashish. Liderlik, o‘zini rivojlantirish, badiiy psixologik kitoblar, BookTalk va Best Essay yorlig‘i.",
+        features: [
+          "1 ta kitob + 3 ta sessiya",
+          "Tahliliy essay topshiruv",
+          "Best Essay yorlig‘i",
+          "BookTalk — Zoom’dagi muhokama sessiyasi"
+        ],
+        monetization: [
+          "Best Essay badge",
+          "Audio/video review"
+        ],
         members: 210,
-        verified: false,
-        features: ["CTF", "Security News"],
         instructor: "Kamola Tursunova",
-        nextSession: "Payshanba 20:00",
-        unread: 0,
+        nextSession: "Juma 19:00",
+        badge: "BookTalk Winner",
+        leaderboard: true,
+        progress: 80,
       },
       {
         id: 4,
-        name: "Backend Developers Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "NodeJS, Express, API dizayn",
-        time: "Chorshanba",
-        image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&auto=format&fit=crop&q=60",
-        members: 180,
-        verified: true,
-        features: ["API Review", "Code Sharing"],
-        instructor: "Jasur Rahimov",
-        nextSession: "Chorshanba 19:00",
-        unread: 1,
+        name: "Soft Skills & Leadership Club",
+        banner: "https://c8.alamy.com/comp/2CAPMC4/soft-skills-round-ribbon-isolated-label-soft-skills-sign-2CAPMC4.jpg",
+        logo: "https://c8.alamy.com/comp/2CAPMC4/soft-skills-round-ribbon-isolated-label-soft-skills-sign-2CAPMC4.jpg",
+        category: "Kasbiy",
+        status: "So‘rov orqali",
+        description: "Talabalar va yosh mutaxassislar uchun kelajak liderlarini shakllantirish. Public speaking, conflict resolution, teamwork, time management, feedback sessiyalar.",
+        features: [
+          "Public Speaking",
+          "Conflict Resolution",
+          "Teamwork & Emotional Intelligence",
+          "Time Management",
+          "Role play — 'CEO bo‘lib nutq so‘zla' challenge"
+        ],
+        monetization: [
+          "Certificate kurs ($5–10)",
+          "Mentorlik (individual konsultatsiya)"
+        ],
+        members: 150,
+        instructor: "Shahnoza Karimova",
+        nextSession: "Shanba 17:00",
+        badge: "Leader of the Month",
+        leaderboard: true,
+        progress: 45,
       },
       {
         id: 5,
-        name: "Mobile App Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "Flutter, React Native, Android/iOS",
-        time: "Juma",
-        image: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=800&auto=format&fit=crop&q=60",
-        members: 150,
-        verified: false,
-        features: ["App Showcase", "Mentor Session"],
-        instructor: "Malika Azizova",
-        nextSession: "Juma 17:00",
-        unread: 3,
-      },
-      {
-        id: 6,
-        name: "Game Development Club",
-        type: "LIVE",
-        status: "Hozir Efirda",
-        topic: "Unity, Unreal Engine, 2D/3D Games",
-        time: "Live",
-        image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800&auto=format&fit=crop&q=60",
-        members: 90,
-        verified: true,
-        features: ["Game Jam", "Live Demo"],
-        instructor: "Akmal Karimov",
-        nextSession: "Bugun 21:00",
-        unread: 0,
-      },
-      {
-        id: 7,
-        name: "UI/UX Design Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "Figma, Sketch, Design Systems",
-        time: "Shanba",
-        image: "https://images.unsplash.com/photo-1503676382389-4809596d5290?w=800&auto=format&fit=crop&q=60",
-        members: 200,
-        verified: false,
-        features: ["Portfolio Review", "Design Critique"],
-        instructor: "Nodira Azizova",
-        nextSession: "Shanba 16:00",
-        unread: 2,
-      },
-      
-      {
-        id: 9,
-        name: "Data Science Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "Pandas, NumPy, Data Visualization",
-        time: "Dushanba",
-        image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800&auto=format&fit=crop&q=60",
-        members: 175,
-        verified: false,
-        features: ["Data Challenge", "Mentor Session"],
-        instructor: "Davron Inoyatov",
-        nextSession: "Dushanba 20:00",
-        unread: 0,
-      },
-      {
-        id: 10,
-        name: "Cloud Computing Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "AWS, Azure, Google Cloud",
-        time: "Seshanba",
-        image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&auto=format&fit=crop&q=60",
-        members: 140,
-        verified: true,
-        features: ["Cloud Labs", "Certification Tips"],
-        instructor: "Kamol Sobitov",
-        nextSession: "Seshanba 18:00",
-        unread: 4,
-      },
-      {
-        id: 11,
-        name: "Startup Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "Biznes modellar, MVP, Pitching",
-        time: "Payshanba",
-        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=800&auto=format&fit=crop&q=60",
-        members: 95,
-        verified: false,
-        features: ["Pitch Practice", "Mentor Advice"],
-        instructor: "Shahnoza Karimova",
-        nextSession: "Payshanba 19:00",
-        unread: 0,
-      },
-      {
-        id: 12,
-        name: "Robotics Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "Arduino, Raspberry Pi, IoT",
-        time: "Juma",
-        image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=60",
-        members: 60,
-        verified: true,
-        features: ["Hardware Demo", "Project Review"],
-        instructor: "Rustam Qodirov",
-        nextSession: "Juma 15:00",
-        unread: 2,
-      },
-      {
-        id: 13,
-        name: "Blockchain Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "Smart Contracts, DeFi, NFT",
-        time: "Chorshanba",
-        image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&auto=format&fit=crop&q=60",
-        members: 80,
-        verified: false,
-        features: ["Demo Day", "Q&A"],
-        instructor: "Aziz Rakhimov",
-        nextSession: "Chorshanba 20:00",
-        unread: 1,
-      },
-      {
-        id: 14,
-        name: "QA & Testing Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "Manual, Automation, Selenium",
-        time: "Yakshanba",
-        image: "https://images.unsplash.com/photo-1503676382389-4809596d5290?w=800&auto=format&fit=crop&q=60",
-        members: 70,
-        verified: true,
-        features: ["Bug Bash", "Test Automation"],
-        instructor: "Malika Azizova",
-        nextSession: "Yakshanba 17:00",
-        unread: 0,
-      },
-      
-      {
-        id: 16,
-        name: "Product Management Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "Agile, Scrum, Product Design",
-        time: "Seshanba",
-        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=800&auto=format&fit=crop&q=60",
-        members: 85,
-        verified: true,
-        features: ["Case Study", "Q&A"],
-        instructor: "Kamola Tursunova",
-        nextSession: "Seshanba 19:00",
-        unread: 1,
-      },
-      {
-        id: 17,
-        name: "Digital Marketing Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "SEO, SMM, Analytics",
-        time: "Chorshanba",
-        image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=60",
-        members: 120,
-        verified: false,
-        features: ["Campaign Review", "Mentor Session"],
-        instructor: "Nodira Azizova",
-        nextSession: "Chorshanba 18:00",
-        unread: 0,
-      },
-      {
-        id: 18,
-        name: "English for IT Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "IT English, Speaking, Writing",
-        time: "Juma",
-        image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&auto=format&fit=crop&q=60",
-        members: 100,
-        verified: true,
-        features: ["Speaking Club", "Vocabulary"],
-        instructor: "Jamshid Tursunov",
-        nextSession: "Juma 16:00",
-        unread: 2,
-      },
-      {
-        id: 19,
-        name: "Freelance Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "Upwork, Fiverr, Portfolio",
-        time: "Shanba",
-        image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&auto=format&fit=crop&q=60",
-        members: 160,
-        verified: false,
-        features: ["Profile Review", "Mentor Advice"],
-        instructor: "Davron Inoyatov",
-        nextSession: "Shanba 15:00",
-        unread: 1,
-      },
-      {
-        id: 20,
-        name: "Women in Tech Club",
-        type: "TALIM",
-        status: "Faol",
-        topic: "Mentorship, Career, Networking",
-        time: "Yakshanba",
-        image: "https://images.unsplash.com/photo-1503676382389-4809596d5290?w=800&auto=format&fit=crop&q=60",
-        members: 70,
-        verified: true,
-        features: ["Mentor Session", "Panel Discussion"],
-        instructor: "Shahnoza Karimova",
-        nextSession: "Yakshanba 18:00",
-        unread: 0,
-      },
-      
+        name: "Startup Lab Club",
+        banner: "https://i.ytimg.com/vi/ZqJSpB9zLqo/maxresdefault.jpg",
+        logo: "https://i.ytimg.com/vi/ZqJSpB9zLqo/maxresdefault.jpg",
+        category: "Texnika",
+        status: "Status talab qiladi",
+        description: "Yoshlar o‘z startuplarini MVP bosqichigacha yetkazish. G‘oya tanlash, raqobatchi tahlili, MVP qurish, pitch tayyorlash, demo day va grant imkoniyati.",
+        features: [
+          "G‘oya tanlash",
+          "Raqobatchi tahlili",
+          "MVP qurish (NoCode yordamida)",
+          "Pitch tayyorlash",
+          "Investor simulate session",
+          "Demo day, grant imkoniyati"
         ],
+        monetization: [
+          "Mentorlik",
+          "Demo day grant"
+        ],
+        members: 90,
+        instructor: "Akmal Karimov",
+        nextSession: "Yakshanba 18:00",
+        badge: "Startup Hero",
+        leaderboard: true,
+        progress: 60,
+      },
+    ],
       // ...
     };
   
@@ -896,11 +757,173 @@ const Messenger = () => {
     { id: "Klublar", label: "Klublar" },
   ]
 
+  // Klub uchun modal yoki kengaygan kartochka
+
+
   if (selectedChat) {
     return <ChatView chat={selectedChat} onBack={handleBack} />;
   }
 
-  const newStyles = `
+  // --- INLINE STYLES for CLUBS ---
+  const styles = {
+    clubsSection: {
+      background: 'linear-gradient(120deg, #f0f2f5 0%, #e7eaf0 100%)',
+      minHeight: '100vh',
+      paddingBottom: 32,
+    },
+    clubList: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '32px 24px',
+      justifyContent: 'flex-start',
+      margin: '24px 0 0 0',
+    },
+    clubCard: {
+      background: '#fff',
+      borderRadius: 20,
+      boxShadow: '0 4px 24px 0 rgba(60,60,100,0.07), 0 1.5px 4px 0 rgba(60,60,100,0.08)',
+      width: 340,
+      cursor: 'pointer',
+      transition: 'transform 0.15s, box-shadow 0.15s',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden',
+      border: '1.5px solid #f1f3f7',
+      position: 'relative',
+    },
+    clubCardHover: {
+      transform: 'translateY(-4px) scale(1.03)',
+      boxShadow: '0 8px 32px 0 rgba(60,60,100,0.14), 0 3px 8px 0 rgba(60,60,100,0.12)',
+      borderColor: '#c3e8fa',
+    },
+    clubCardBanner: (banner) => ({
+      height: 120,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      position: 'relative',
+      display: 'flex',
+      alignItems: 'flex-end',
+      padding: '0 0 0 12px',
+      backgroundImage: `url(${banner})`,
+    }),
+    clubCardLogo: {
+      width: 56,
+      height: 56,
+      borderRadius: 16,
+      boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+      background: '#fff',
+      border: '2px solid #f8fafc',
+      position: 'absolute',
+      left: 18,
+      bottom: -28,
+      zIndex: 2,
+    },
+    clubCardStatus: {
+      position: 'absolute',
+      top: 10,
+      right: 18,
+      background: 'linear-gradient(90deg,#34c759,#00c6fb)',
+      color: '#fff',
+      fontSize: 12,
+      fontWeight: 600,
+      padding: '4px 14px',
+      borderRadius: 14,
+      boxShadow: '0 2px 8px rgba(52,199,89,0.06)',
+      letterSpacing: '0.2px',
+    },
+    clubCardContent: {
+      padding: '38px 20px 18px 20px',
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-end',
+    },
+    clubCardHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    clubCardTitle: {
+      fontSize: 20,
+      fontWeight: 700,
+      color: '#222',
+      margin: 0,
+    },
+    clubCardBadge: {
+      background: '#f8fafc',
+      color: '#00c6fb',
+      fontSize: 13,
+      fontWeight: 600,
+      padding: '3px 9px 3px 5px',
+      borderRadius: 12,
+      display: 'flex',
+      alignItems: 'center',
+      gap: 3,
+    },
+    clubCardDesc: {
+      fontSize: 14,
+      color: '#666',
+      margin: '8px 0 0 0',
+      minHeight: 36,
+    },
+    clubCardMeta: {
+      display: 'flex',
+      gap: 18,
+      marginTop: 12,
+      fontSize: 13,
+      color: '#00b2ff',
+      alignItems: 'center',
+    },
+  };
+
+  // Klub status badge (inline style)
+  const ClubStatus = ({ open }) => open
+    ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#16a34a', fontSize: 12, fontWeight: 600 }}> <Unlock size={16}/> Ochiq</span>
+    : <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#ef4444', fontSize: 12, fontWeight: 600 }}> <Lock size={16}/> Yopiq</span>;
+
+// Klub kartasi (inline style)
+const ClubListItem = ({ club }) => {
+  const navigate = useNavigate();
+  // Always show a valid image (fallback to avatar if missing)
+  const imageSrc = club.image || club.logo || club.banner || `https://ui-avatars.com/api/?name=${encodeURIComponent(club.name)}&background=random`;
+  return (
+    <div
+      style={{
+        background: '#fff',
+        boxShadow: '0 1px 4px 0 rgba(0,0,0,0.03)',
+        borderRadius: 18,
+        padding: '18px 16px',
+        marginBottom: 12,
+        cursor: 'pointer',
+        border: '1.5px solid #e5e7eb',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 16,
+        transition: 'all 0.2s',
+        position: 'relative',
+      }}
+      onClick={() => navigate(`/clubs/${club.id}`)}
+    >
+      <img src={imageSrc} alt={club.name} style={{ width: 56, height: 56, borderRadius: 12, objectFit: 'cover', border: '1.5px solid #e5e7eb' }} />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+          <span style={{ fontWeight: 600, fontSize: 16, color: '#222', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{club.name}</span>
+          {club.verified && <BadgeCheck size={16} color="#2563eb" />}
+          <ClubStatus open={club.open} />
+          <span style={{ fontSize: 12, padding: '2px 8px', borderRadius: 8, background: club.type === 'LIVE' ? '#fee2e2' : '#dcfce7', color: club.type === 'LIVE' ? '#ef4444' : '#16a34a', fontWeight: 600 }}>{club.type}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#64748b', marginBottom: 2 }}><Lightbulb size={14}/>{club.topic}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 12, color: '#60a5fa' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Users size={13}/>{club.members} a'zo</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><UserCheck size={13}/>{club.instructor}</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Calendar size={13}/>{club.nextSession}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const newStyles = `
     .messenger {
       background-color: #f0f2f5; /* Light gray background for the whole component */
     }
@@ -1000,6 +1023,7 @@ const Messenger = () => {
     }
   `;
 
+// Asosiy render
   return (
     <div className="messenger">
       <style>{newStyles}</style>
@@ -1010,7 +1034,7 @@ const Messenger = () => {
               <path d="M15 18L9 12L15 6" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <h1 className="header-title">Suhbatlar</h1>
+          <h1 className="header-title">{activeTab}</h1>
           <button className="search-button">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path
@@ -1029,7 +1053,7 @@ const Messenger = () => {
               <button
                 key={tab.id}
                 className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => { setActiveTab(tab.id); }}
               >
                 {tab.label}
               </button>
@@ -1038,73 +1062,43 @@ const Messenger = () => {
         </div>
       </div>
       <div className="chat-list">
-        {activeTab && allChats[activeTab] ? (
+        {activeTab === 'Klublar' ? (
+          allChats.Klublar.map(club => (
+            <ClubListItem key={club.id} club={club} />
+          ))
+        ) : activeTab && allChats[activeTab] ? (
           allChats[activeTab].map((chat) => {
             const isGroup = activeTab === 'Guruhlar';
             return (
-            <div key={chat.id} className={`chat-item ${isGroup ? 'group' : ''} ${chat.subscribers ? "channel" : ""} ${chat.type ? "club" : ""}`} onClick={isGroup ? undefined : () => handleChatClick(chat)}>
-              {chat.type ? (
-                // Club Item Layout
-                <>
-                  {/* Club layout remains unchanged */}
-                  <div className="club-header">
+              <div key={chat.id} className={`chat-item ${isGroup ? 'group' : ''} ${chat.subscribers ? "channel" : ""} ${chat.type ? "club" : ""}`} onClick={isGroup ? undefined : () => handleChatClick(chat)}>
+                {chat.type ? (
+                  // Club Item Layout
+                  <>
+                    {/* Club layout remains unchanged */}
+                    <div className="club-header">
+                      <div className="chat-avatar">
+                        <img src={chat.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(chat.name)}&background=random`} alt={chat.name} />
+                      </div>
+                      <div className="club-content">
+                        <div className="chat-name">{chat.name}</div>
+                        <div className="club-meta">
+                          <span className={`club-type ${chat.type.toLowerCase()}`}>{chat.type}</span>
+                          <span className={`club-status ${chat.type.toLowerCase()}`}>{chat.status}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="club-topic">{chat.topic}</div>
+                  </>
+                ) : isGroup ? (
+                  // New Group Item Layout
+                  <>
                     <div className="chat-avatar">
                       <img src={chat.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(chat.name)}&background=random`} alt={chat.name} />
                     </div>
-                    <div className="club-content">
-                      <div className="chat-name">{chat.name}</div>
-                      <div className="club-meta">
-                        <span className={`club-type ${chat.type.toLowerCase()}`}>{chat.type}</span>
-                        <span className={`club-status ${chat.type.toLowerCase()}`}>{chat.status}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="club-topic">{chat.topic}</div>
-                </>
-              ) : isGroup ? (
-                // New Group Item Layout
-                <>
-                  <div className="chat-avatar">
-                    <img src={chat.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(chat.name)}&background=random`} alt={chat.name} />
-                  </div>
-                  <div className="chat-content">
-                    <div className="chat-name-row">
-                      <div className="chat-name">
-                        <span>{chat.name}</span>
-                        {chat.verified && (
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="verified-badge">
-                            <path d="M8 0C3.6 0 0 3.6 0 8C0 12.4 3.6 16 8 16C12.4 16 16 12.4 16 8C16 3.6 12.4 0 8 0Z" fill="#0095F6"/>
-                            <path d="M7 11.4L3.6 8L5 6.6L7 8.6L11 4.6L12.4 6L7 11.4Z" fill="white" />
-                          </svg>
-                        )}
-                      </div>
-                      <span className="chat-time">{chat.time}</span>
-                    </div>
-                    <div className="chat-message-row">
-                      <div className="chat-message">
-                        {chat.lastMessage && chat.lastMessage.status === 'read' && (
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="sent-icon" style={{ marginRight: '4px' }}>
-                                <path d="M2.5 8L6.5 12L13.5 5" stroke="#34C759" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M2.5 8L6.5 12L13.5 5" stroke="#34C759" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.3" transform="translate(3, -3)"/>
-                            </svg>
-                        )}
-                        {chat.lastMessage && <span className="message-sender">{chat.lastMessage.sender}:&nbsp;</span>}
-                        <span className="message-text">{chat.lastMessage ? chat.lastMessage.text : chat.message}</span>
-                      </div>
-                      {chat.unread > 0 && <span className="unread-badge">{chat.unread}</span>}
-                    </div>
-                  </div>
-                </>
-              ) : (
-                // Regular Chat/Channel Item Layout
-                <>
-                  <div className="chat-avatar">
-                    <img src={chat.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(chat.name)}&background=random`} alt={chat.name} />
-                  </div>
-                  <div className="chat-content">
-                    <div className="chat-name-row">
+                    <div className="chat-content">
+                      <div className="chat-name-row">
                         <div className="chat-name">
-                          {chat.name}
+                          <span>{chat.name}</span>
                           {chat.verified && (
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="verified-badge">
                               <path d="M8 0C3.6 0 0 3.6 0 8C0 12.4 3.6 16 8 16C12.4 16 16 12.4 16 8C16 3.6 12.4 0 8 0Z" fill="#0095F6"/>
@@ -1112,30 +1106,64 @@ const Messenger = () => {
                             </svg>
                           )}
                         </div>
-                        <div className="chat-time">{chat.time}</div>
-                    </div>
-                    <div className="chat-message-row">
+                        <span className="chat-time">{chat.time}</span>
+                      </div>
+                      <div className="chat-message-row">
                         <div className="chat-message">
-                          {chat.sent && (
-                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="sent-icon">
-                              <path d="M2.5 8L6.5 12L13.5 5" stroke="#34C759" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
+                          {chat.lastMessage && chat.lastMessage.status === 'read' && (
+                              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="sent-icon" style={{ marginRight: '4px' }}>
+                                  <path d="M2.5 8L6.5 12L13.5 5" stroke="#34C759" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <path d="M2.5 8L6.5 12L13.5 5" stroke="#34C759" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.3" transform="translate(3, -3)"/>
+                              </svg>
                           )}
-                          <span className="message-text" style={{ color: chat.sent ? "#65676B" : "#050505" }}>
-                            {chat.message}
-                          </span>
+                          {chat.lastMessage && <span className="message-sender">{chat.lastMessage.sender}:&nbsp;</span>}
+                          <span className="message-text">{chat.lastMessage ? chat.lastMessage.text : chat.message}</span>
                         </div>
                         {chat.unread > 0 && <span className="unread-badge">{chat.unread}</span>}
-                    </div>
-                    {chat.subscribers && (
-                      <div className="channel-info">
-                        {chat.subscribers.toLocaleString()} obunachi
                       </div>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
+                    </div>
+                  </>
+                ) : (
+                  // Regular Chat/Channel Item Layout
+                  <>
+                    <div className="chat-avatar">
+                      <img src={chat.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(chat.name)}&background=random`} alt={chat.name} />
+                    </div>
+                    <div className="chat-content">
+                      <div className="chat-name-row">
+                          <div className="chat-name">
+                            {chat.name}
+                            {chat.verified && (
+                              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="verified-badge">
+                                <path d="M8 0C3.6 0 0 3.6 0 8C0 12.4 3.6 16 8 16C12.4 16 16 12.4 16 8C16 3.6 12.4 0 8 0Z" fill="#0095F6"/>
+                                <path d="M7 11.4L3.6 8L5 6.6L7 8.6L11 4.6L12.4 6L7 11.4Z" fill="white" />
+                              </svg>
+                            )}
+                          </div>
+                          <div className="chat-time">{chat.time}</div>
+                      </div>
+                      <div className="chat-message-row">
+                          <div className="chat-message">
+                            {chat.sent && (
+                              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="sent-icon">
+                                <path d="M2.5 8L6.5 12L13.5 5" stroke="#34C759" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            )}
+                            <span className="message-text" style={{ color: chat.sent ? "#65676B" : "#050505" }}>
+                              {chat.message}
+                            </span>
+                          </div>
+                          {chat.unread > 0 && <span className="unread-badge">{chat.unread}</span>}
+                      </div>
+                      {chat.subscribers && (
+                        <div className="channel-info">
+                          {chat.subscribers.toLocaleString()} obunachi
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
             )
           })
         ) : (
@@ -1145,7 +1173,7 @@ const Messenger = () => {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 export default Messenger
