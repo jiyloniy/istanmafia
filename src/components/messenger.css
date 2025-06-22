@@ -123,6 +123,7 @@
 }
 
 .back-button {
+  margin-top: 16px;
   border: none;
   background: none;
   padding: 8px;
