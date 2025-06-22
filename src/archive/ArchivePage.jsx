@@ -984,7 +984,7 @@ const ArchivePage = () => {
             gap: "16px"
           }}>
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/home')}
               style={{
                 border: "none",
                 background: "none",
