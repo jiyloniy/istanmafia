@@ -1950,18 +1950,28 @@ const Home = () => {
                     <div key={post.id} className="post article-card" ref={isLastItem ? lastPostElementRef : null}>
                       <div className="article-header">
                         <div className="article-profile">
-                          <img
-                            src={getSafeImageUrl(post.user.profile_picture, API_URL2) || Default}
-                            alt={post.user.name} 
-                            className="article-avatar"
-                            onError={handleImageError}
-                          />
-                          <div className="article-user-info"
-                            style={
-                              { display: "flex", alignItems: "center", cursor: "pointer" }
-                            }
+                          <span
+                            style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+                            onClick={() => navigate(`/profile/${post.user.id}`)}
+                            tabIndex={0}
+                            role="button"
+                            aria-label={`View ${post.user.name}'s profile`}
+                            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') navigate(`/profile/${post.user.id}`) }}
                           >
+                            <img
+                              src={getSafeImageUrl(post.user.profile_picture, API_URL2) || Default}
+                              alt={post.user.name}
+                              className="article-avatar"
+                              onError={handleImageError}
+                            />
                             <span className="article-author">{post.user.name}</span>
+                          </span>
+                          <div className="article-user-info"
+                            style={{
+                              display: "flex",
+                              alignItems: "center"
+                            }}
+                          >
                             <div className="article-ai-badges">
                               <span style={{
                                 display: "inline-block",
@@ -2386,33 +2396,51 @@ const Home = () => {
                             height: "58px",
                           }}
                         >
-                          <img
-                            src={getSafeImageUrl(post.user.profile_picture, API_URL2) || "/placeholder.svg"}
-                            alt={post.user.name}
-                            className="avatar-img"
-                            onError={handleImageError}
-                            style={{
-                              borderRadius: "50%",
-                              width: "52px",
-                              height: "52px",
-                              objectFit: "cover",
-                              border: "2px solid #fff",
-                            }}
-                          />
+                          <span
+  style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+  onClick={() => navigate(`/profile/${post.user.id}`)}
+  tabIndex={0}
+  role="button"
+  aria-label={`View ${post.user.name}'s profile`}
+  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') navigate(`/profile/${post.user.id}`) }}
+>
+  <img
+    src={getSafeImageUrl(post.user.profile_picture, API_URL2) || "/placeholder.svg"}
+    alt={post.user.name}
+    className="avatar-img"
+    onError={handleImageError}
+    style={{
+      borderRadius: "50%",
+      width: "52px",
+      height: "52px",
+      objectFit: "cover",
+      border: "2px solid #fff",
+    }}
+  />
+</span>
                         </div>
                         <div className="post-user-info">
                           <div className="user-name-container">
-                            <div
-                              className="user-name"
-                              style={{
-                                color: "#262626",
-                                fontWeight: 700,
-                                fontSize: "16px",
-                                letterSpacing: "0.01em",
-                              }}
-                            >
-                              {post.user.name}  <span style={statusStyles.statusPostAndArticle}>{getUserStatus(post.user.id)}</span>
-                            </div>
+                            <span
+  style={{ cursor: "pointer", display: "inline-block" }}
+  onClick={() => navigate(`/profile/${post.user.id}`)}
+  tabIndex={0}
+  role="button"
+  aria-label={`View ${post.user.name}'s profile`}
+  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') navigate(`/profile/${post.user.id}`) }}
+>
+  <div
+    className="user-name"
+    style={{
+      color: "#262626",
+      fontWeight: 700,
+      fontSize: "16px",
+      letterSpacing: "0.01em",
+    }}
+  >
+    {post.user.name} <span style={statusStyles.statusPostAndArticle}>{getUserStatus(post.user.id)}</span>
+  </div>
+</span>
                             {post.is_own_post && (
                               <div className="verification-badge">
                                 <svg className="verification-icon-small" fill="currentColor" viewBox="0 0 24 24">

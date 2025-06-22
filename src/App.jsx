@@ -15,6 +15,7 @@ import { isAuthenticated } from './auth/authUtils';
 import Email from './components/Email';
 
 import Profile from './components/Profile';
+import UserProfile from './components/UserProfile';
 import Settings from './components/Settings';
 import CreatePost from './components/CreatePost.jsx';
 import MoreApps from './components/MoreApps';
@@ -111,6 +112,11 @@ function App() {
         <Route path="/profile" element={
           <PrivateRoute>
             <Profile />
+          </PrivateRoute>
+        } />
+        <Route path="/profile/:userId" element={
+          <PrivateRoute>
+            <UserProfile />
           </PrivateRoute>
         } />
 
